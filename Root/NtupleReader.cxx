@@ -17,8 +17,10 @@ using namespace std;
 
 //_________________________________________________________________________________
 //
-NtupleReader::NtupleReader(NtupleData* ntupData, OptionsBase* opt )
-: m_ntupData(ntupData), m_opt(opt){
+NtupleReader::NtupleReader(NtupleData* ntupData, OptionsBase* opt ):
+m_opt(opt),
+m_ntupData(ntupData)
+{
     
     m_chain = NULL;
     
@@ -52,7 +54,6 @@ void NtupleReader::Init(){
     m_chain -> SetBranchStatus("*",0);
     
     if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::Init()" << std::endl;
-
     return;
 }
 
@@ -65,12 +66,10 @@ void NtupleReader::Finalise(){
     EmptyBranches();
     delete m_chain;
     delete m_opt;
-    
     m_ntupData->EmptyNtupleData();
     delete m_ntupData;
 
     if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::Finalize()" << std::endl;
-    
     return;
 }
 
@@ -78,26 +77,7 @@ void NtupleReader::Finalise(){
 //
 void NtupleReader::EmptyBranches(){
     
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::EmptyBranches()" << std::endl;
-    
-    //Fat jets
-    for(vector<int>::iterator brit = (m_ntupData->m_fjcol_list).begin(); brit != (m_ntupData->m_fjcol_list).end(); brit++){
-        if(b_fatjet_n.find(*brit) != b_fatjet_n.end()){delete b_fatjet_n[*brit];}
-        if(b_fatjet_n.find(*brit) != b_fatjet_n.end()){delete b_fatjet_pt[*brit];}
-    }
-    
-    b_fatjet_n.clear();
-    b_fatjet_pt.clear();
-    
-    //Jet
-    delete b_jet_n;
-    delete b_jet_pt;
-    
-    delete b_mu;
-    delete b_vxp_n;
-    
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::EmptyBranches()" << std::endl;
-    
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "In NtupleReader::EmptyBranches(): this is empty" << std::endl;
     return;
 }
 
@@ -117,7 +97,6 @@ void NtupleReader::ChainFromTextFile(TChain* ch, string inputfilename){
     inlist.close();
     
     if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::ChainFromTextFile()" << std::endl;
-    
     return;
 }
 
@@ -137,7 +116,6 @@ void NtupleReader::ChainFromStrList(TChain* ch, string inputfilelist){
         tmp.clear();
     }
     if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::ChainFromStrList()" << std::endl;
-
     return;
 }
 
@@ -145,36 +123,16 @@ void NtupleReader::ChainFromStrList(TChain* ch, string inputfilelist){
 //
 int NtupleReader::setEventBranchAddresses(){
     
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setEventBranchAddresses()" << std::endl;
-    
-    int b_stat = 0;
-    
-    m_chain -> SetBranchStatus("vxp_n",1);
-    m_chain -> SetBranchStatus("averageIntPerXing",1);
-    b_stat += m_chain->SetBranchAddress("vxp_n", &(m_ntupData->vxp_n), &b_vxp_n);
-    b_stat += m_chain->SetBranchAddress("averageIntPerXing", &(m_ntupData->mu), &b_mu);
-    
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::setEventBranchAddresses()" << std::endl;
-    
-    return b_stat;
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "In NtupleReader::setEventBranchAddresses(): this is empty" << std::endl;
+    return -1;
     
 }
 
 //_________________________________________________________________________________
 //
 int NtupleReader::setJetBranchAddresses(const string &sj){
-    
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setJetBranchAddresses()" << std::endl;
-    
-    int b_stat = 0;
-    m_chain -> SetBranchStatus(Form("%s_n",sj.c_str()),1);
-    m_chain -> SetBranchStatus(Form("%s_pt",sj.c_str()),1);
-    b_stat += m_chain->SetBranchAddress(Form("%s_n",sj.c_str()), &(m_ntupData->jet_n), &b_jet_n);
-    b_stat += m_chain->SetBranchAddress(Form("%s_pt",sj.c_str()), &(m_ntupData->jet_pt), &b_jet_pt);
-    
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::setJetBranchAddresses()" << std::endl;
-    
-    return b_stat;
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "In NtupleReader::setJetBranchAddresses(): this is empty" << std::endl;
+    return -1;
     
 }
 
@@ -182,26 +140,8 @@ int NtupleReader::setJetBranchAddresses(const string &sj){
 //
 int NtupleReader::setFatJetBranchAddresses(int sfj_key, const string &sfj){
     
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setFatJetBranchAddresses()" << std::endl;
-    
-    int b_stat = 0;
-    
-    (m_ntupData->fatjet_n)[sfj_key] = 0;
-    (m_ntupData->fatjet_pt)[sfj_key] = 0;
-    
-    //
-    b_fatjet_n[sfj_key] = 0;
-    b_fatjet_pt[sfj_key] = 0;
-    //
-    
-    m_chain -> SetBranchStatus(Form("%s_n",sfj.c_str()),1);
-    m_chain -> SetBranchStatus(Form("%s_pt",sfj.c_str()),1);
-    b_stat += m_chain->SetBranchAddress(Form("%s_n",sfj.c_str()), &((m_ntupData->fatjet_n)[sfj_key]), &b_fatjet_n[sfj_key]);
-    b_stat += m_chain->SetBranchAddress(Form("%s_pt",sfj.c_str()), &((m_ntupData->fatjet_pt)[sfj_key]), &b_fatjet_pt[sfj_key]);
-    
-    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::setFatJetBranchAddresses()" << std::endl;
-    
-    return b_stat;
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setFatJetBranchAddresses(): this is empty" << std::endl;
+    return -1;
 }
 
 
@@ -209,11 +149,7 @@ int NtupleReader::setFatJetBranchAddresses(int sfj_key, const string &sfj){
 //
 int NtupleReader::setElectronBranchAddresses(const string &sfj){
     
-    if(m_opt->msgLevel()==Debug::DEBUG){
-        std::cout << "Entering in NtupleReader::setElectronBranchAddresses()";
-        std::cout << "==> Noting implemented ... You should not be there" << std::endl;
-    }
-    
+    if(m_opt->msgLevel()==Debug::DEBUG)std::cout << "Entering in NtupleReader::setElectronBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
@@ -221,10 +157,7 @@ int NtupleReader::setElectronBranchAddresses(const string &sfj){
 //
 int NtupleReader::setMuonBranchAddresses(const string &sfj){
     
-    if(m_opt->msgLevel()==Debug::DEBUG){
-        std::cout << "Entering in NtupleReader::setMuonBranchAddresses()";
-        std::cout << "==> Noting implemented ... You should not be there" << std::endl;
-    }
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setMuonBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
@@ -233,10 +166,7 @@ int NtupleReader::setMuonBranchAddresses(const string &sfj){
 //
 int NtupleReader::setLeptonBranchAddresses(const string &sfj){
     
-    if(m_opt->msgLevel()==Debug::DEBUG){
-        std::cout << "Entering in NtupleReader::setLeptonBranchAddresses()";
-        std::cout << "==> Noting implemented ... You should not be there" << std::endl;
-    }
+    if(m_opt->msgLevel()==Debug::DEBUG)std::cout << "Entering in NtupleReader::setLeptonBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
@@ -245,10 +175,7 @@ int NtupleReader::setLeptonBranchAddresses(const string &sfj){
 //
 int NtupleReader::setMETBranchAddresses(const string &sfj){
     
-    if(m_opt->msgLevel()==Debug::DEBUG){
-        std::cout << "Entering in NtupleReader::setMETBranchAddresses()";
-        std::cout << "==> Noting implemented ... You should not be there" << std::endl;
-    }
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setMETBranchAddresses(): this is empty"<< std::endl;
     return -1;
 }
 
@@ -256,9 +183,6 @@ int NtupleReader::setMETBranchAddresses(const string &sfj){
 //
 int NtupleReader::setWeightBranchAddresses(const string &sfj){
     
-    if(m_opt->msgLevel()==Debug::DEBUG){
-        std::cout << "Entering in NtupleReader::setWeightBranchAddresses()";
-        std::cout << "==> Noting implemented ... You should not be there" << std::endl;
-    }
+    if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setWeightBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
