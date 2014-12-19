@@ -21,11 +21,8 @@ NtupleReader::NtupleReader(NtupleData* ntupData, OptionsBase* opt ):
 m_opt(opt),
 m_ntupData(ntupData)
 {
-    
     m_chain = NULL;
-    
     EmptyBranches();
-    //m_treetype = m_opt; -->OptionsBase will also have inheritances
     return;
 }
 
@@ -186,3 +183,4 @@ int NtupleReader::setWeightBranchAddresses(const string &sfj){
     if(m_opt->msgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setWeightBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
+

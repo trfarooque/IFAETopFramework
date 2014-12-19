@@ -16,6 +16,8 @@ public:
     void ClearNtupleData();
     void EmptyNtupleData();
     
+public:
+    
     ///////////////////////////////////////////
     //
     // EVENT CARACTERISTIC VARIABLES
@@ -113,7 +115,6 @@ public:
     vector<int>     *mu_author;
     vector<int>     *mu_tight;
    
-    vector<double> *BTag_breakdown_up;
     ///////////////////////////////////////////
     //
     // MET VARIABLES
@@ -129,7 +130,46 @@ public:
     // WEIGHT VARIABLES
     //
     ///////////////////////////////////////////
-    Float_t         WeightNom;
+    
+    /*
+     Two kinds of variables for the weights:
+     * Variables extracted from the tree 
+        - Their name starts with tree_*
+     * The computed variables (used in the common codes such as the systematics)
+        - Their name starts with finalEvent_*
+     The finalEvent_* variables are based on the assumption that they represent
+     the *TOTAL* weight of a given event:
+        --> Nominal case: product of all weights (leptons SF, btag SF, ...)
+        --> Systematic case: product of all nominal weights but the systematic one
+     !!!! Please stick to this convention !!!!
+     */
+    
+    //Nominal weights
+    Float_t tree_Weight, tree_BTagWeight,tree_LeptonSF;
+    std::vector < double > *tree_TRFExBTagWeight, *tree_TRFInBTagWeight;
+    
+    //Systematics for direct tagging
+    std::vector < double > *tree_BTag_breakdown_up, *tree_BTag_breakdown_down;//1 component: 1 breakdown
+    std::vector < double > *tree_CTag_breakdown_up, *tree_CTag_breakdown_down;
+    std::vector < double > *tree_LTag_breakdown_up, *tree_LTag_breakdown_down;
+    
+    //Systematics for TRF "tagging" (exclusive selection)
+    std::vector < std::vector < double > > *tree_TRFBTag_ex_breakdown_up, *tree_TRFBTag_ex_breakdown_down;//1 component: 1 tag mult., 1 breakdown
+    std::vector < std::vector < double > > *tree_TRFCTag_ex_breakdown_up, *tree_TRFCTag_ex_breakdown_down;
+    std::vector < std::vector < double > > *tree_TRFLTag_ex_breakdown_up, *tree_TRFLTag_ex_breakdown_down;
+    
+    //Systematics for TRF "tagging" (inclusive selection)
+    std::vector < std::vector < double > > *tree_TRFBTag_in_breakdown_up, *tree_TRFBTag_in_breakdown_down;//1 component: 1 tag mult., 1 breakdown
+    std::vector < std::vector < double > > *tree_TRFCTag_in_breakdown_up, *tree_TRFCTag_in_breakdown_down;
+    std::vector < std::vector < double > > *tree_TRFLTag_in_breakdown_up, *tree_TRFLTag_in_breakdown_down;
+    
+    Float_t     finalEvent_weightNom;
+    vector<double> *finalEvent_BTag_breakdown_up;
+    vector<double> *finalEvent_BTag_breakdown_down;
+    vector<double> *finalEvent_CTag_breakdown_up;
+    vector<double> *finalEvent_CTag_breakdown_down;
+    vector<double> *finalEvent_LTag_breakdown_up;
+    vector<double> *finalEvent_LTag_breakdown_down;
     
     UInt_t          larError;
     UInt_t          tileError;

@@ -13,7 +13,6 @@ class NtupleReader{
     
 public:
     NtupleReader(NtupleData* ntupData, OptionsBase* opt);
-    
     virtual ~NtupleReader();
     
     void Init();
@@ -45,7 +44,6 @@ public:
     // the ntupledata which it must fill
     
 protected:
-    
     TChain* m_chain;    //!
     OptionsBase* m_opt;
     NtupleData* m_ntupData;

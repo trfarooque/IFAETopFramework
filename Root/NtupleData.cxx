@@ -3,69 +3,53 @@
 
 using namespace std;
 NtupleData::NtupleData():
-mu(0),
-vxp_n(0),
-runNumber(0),
-eventNumber(0),
+//Event variables
+mu(0),vxp_n(0),runNumber(0),eventNumber(0),
+
+//Jet variables
 jet_n(0),
-jet_pt(0),
-jet_eta(0),
-jet_phi(0),
-jet_E(0),
-jet_m(0),
-jet_jvf(0),
-jet_trueflav(0),
-jet_tagged(0),
-jet_MV1(0),
-jet_nTrk_pv0_1GeV(0),
-jet_trackWIDTH_pv0_1GeV(0),
-jet_constit_n(0),
-jet_constit_index(0),
-lep_n(0),
-lep_ind(0),
-lep_flav(0),
-lep_E(0),
-lep_pt(0),
-lep_eta(0),
-lep_phi(0),
-lep_charge(0),
-lep_d0(0),
-lep_z0(0),
-lep_d0sig(0),
-lep_z0sig(0),
+jet_pt(0),jet_eta(0),jet_phi(0),jet_E(0),jet_m(0),jet_jvf(0),
+jet_trueflav(0),jet_tagged(0),jet_MV1(0),
+jet_nTrk_pv0_1GeV(0),jet_trackWIDTH_pv0_1GeV(0),
+jet_constit_n(0),jet_constit_index(0),
+
+//Lepton variables
+lep_n(0),lep_ind(0),lep_flav(0),
+lep_E(0),lep_pt(0),lep_eta(0),lep_phi(0),lep_charge(0),
+lep_d0(0),lep_z0(0),lep_d0sig(0),lep_z0sig(0),
+
+//Electron variables
 el_n(0),
-el_E(0),
-el_Et(0),
-el_pt(0),
-el_eta(0),
-el_phi(0),
-el_charge(0),
-el_author(0),
-el_tightPP(0),
-el_trackz0pvunbiased(0),
-el_tracketa(0),
-el_trackphi(0),
-el_cl_E(0),
-el_cl_pt(0),
-el_cl_eta(0),
-el_cl_phi(0),
-el_OQ(0),
-el_etap(0),
-el_etas2(0),
+el_E(0),el_Et(0),el_pt(0),el_eta(0),el_phi(0),el_charge(0),
+el_author(0),el_tightPP(0),
+el_trackz0pvunbiased(0),el_tracketa(0),el_trackphi(0),
+el_cl_E(0),el_cl_pt(0),el_cl_eta(0),el_cl_phi(0),
+el_OQ(0),el_etap(0),el_etas2(0),
 el_MI10_max40_ptsum(0),
+
+//Muon variables
 mu_n(0),
-mu_E(0),
-mu_pt(0),
-mu_eta(0),
-mu_phi(0),
-mu_charge(0),
-mu_author(0),
-mu_tight(0),
-BTag_breakdown_up(0)
-{
-    //ClearNtupleData();
-    return;
-}
+mu_E(0),mu_pt(0),mu_eta(0),mu_phi(0),
+mu_charge(0),mu_author(0),mu_tight(0),
+
+//Weight variables
+tree_Weight(0),tree_BTagWeight(0),tree_LeptonSF(0),
+tree_TRFExBTagWeight(0),tree_TRFInBTagWeight(0),
+tree_BTag_breakdown_up(0),tree_BTag_breakdown_down(0),
+tree_CTag_breakdown_up(0),tree_CTag_breakdown_down(0),
+tree_LTag_breakdown_up(0),tree_LTag_breakdown_down(0),
+tree_TRFBTag_ex_breakdown_up(0),tree_TRFBTag_ex_breakdown_down(0),
+tree_TRFCTag_ex_breakdown_up(0),tree_TRFCTag_ex_breakdown_down(0),
+tree_TRFLTag_ex_breakdown_up(0),tree_TRFLTag_ex_breakdown_down(0),
+tree_TRFBTag_in_breakdown_up(0),tree_TRFBTag_in_breakdown_down(0),
+tree_TRFCTag_in_breakdown_up(0),tree_TRFCTag_in_breakdown_down(0),
+tree_TRFLTag_in_breakdown_up(0),tree_TRFLTag_in_breakdown_down(0),
+
+finalEvent_weightNom(0),
+finalEvent_BTag_breakdown_up(0),finalEvent_BTag_breakdown_down(0),
+finalEvent_CTag_breakdown_up(0),finalEvent_CTag_breakdown_down(0),
+finalEvent_LTag_breakdown_up(0),finalEvent_LTag_breakdown_down(0)
+{}
 
 void NtupleData::ClearNtupleData(){
     
@@ -175,8 +159,6 @@ void NtupleData::ClearNtupleData(){
     // WEIGHT VARIABLES (including systematics)
     //
     ///////////////////////////////////////////
-
-    WeightNom = 0;
     
     m_fjcol_list.clear();
     fatjet_n.clear();

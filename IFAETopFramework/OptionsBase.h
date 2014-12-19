@@ -40,6 +40,7 @@ public:
     inline bool isData() const { return m_isData; }
     inline bool computeWeightSys() const { return m_computeWeightSys; }
     inline bool textFileList() const { return m_textFileList; }
+    inline bool useTRF() const { return m_useTRF; }
     
     inline std::string sampleNameStr() const { return m_str_sampleName; }
     inline std::string sysNameStr() const { return m_str_sysName; }
@@ -62,7 +63,7 @@ private:
     char** m_argv;
     
     Debug::debug m_msgLevel;
-    bool m_isData,m_computeWeightSys,m_textFileList;
+    bool m_isData,m_computeWeightSys,m_textFileList,m_useTRF;
     SampleName::sample m_sampleName;
     SysName::sys m_sysName;
     AnaType::ana m_anaType;

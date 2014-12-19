@@ -14,6 +14,7 @@ m_msgLevel(Debug::STANDARD),
 m_isData(false),
 m_computeWeightSys(false),//do you want to run the weight systematics
 m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
+m_useTRF(false),
 
 m_sampleName(SampleName::TTH),//enum
 m_sysName(SysName::NOMINAL),//enum
@@ -38,6 +39,7 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_isData            = q.m_isData;
     m_computeWeightSys  = q.m_computeWeightSys;
     m_textFileList      = q.m_textFileList;
+    m_useTRF            = q.m_useTRF;
     
     m_sampleName        = q.m_sampleName;
     m_sysName           = q.m_sysName;
@@ -112,6 +114,12 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             else if ( value.find("FALSE") != std::string::npos) 	m_textFileList = false;
             else{std::cout<<"Unknown TEXTFILELIST option"<<std::endl;}
         }
+        else if( argument.find("--USETRF") != std::string::npos ){
+            std::transform(value.begin(), value.end(), value.begin(), toupper);
+            if ( value.find("TRUE") != std::string::npos) 	m_useTRF = true;
+            else if ( value.find("FALSE") != std::string::npos) 	m_useTRF = false;
+            else{std::cout<<"Unknown USETRF option"<<std::endl;}
+        }
         else if( argument.find("--SAMPLENAME") != std::string::npos ){
             std::transform(value.begin(), value.end(), value.begin(), toupper);
             if ( value.find("DATA") != std::string::npos) 	m_sampleName = SampleName::DATA;
@@ -127,7 +135,7 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             if ( value.find("NOMINAL") != std::string::npos) 	m_sysName = SysName::NOMINAL;
             else if ( value.find("JES") != std::string::npos) 	m_sysName = SysName::JES;
             else if ( value.find("JER") != std::string::npos) 	m_sysName = SysName::JER;
-            else {std::cout<<"Unknown systematics name"<<std::endl;}
+            else { std::cout<<"Unknown systematics name"<<std::endl; }
             m_str_sysName = value;
         }
         else if( argument.find("--ANATYPE") != std::string::npos ){
@@ -135,7 +143,7 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             if ( value.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
             else if ( value.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
             else if ( value.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
-            else{std::cout<<"Unknown analysis type"<<std::endl;}
+            else{ std::cout<<"Unknown analysis type"<<std::endl; }
             m_str_anaType = value;
         }
         else if( argument.find("--INPUTTREE") != std::string::npos ){
@@ -175,10 +183,11 @@ void OptionsBase::printOptions()
     std::cout << " m_isData             = " << m_isData << std::endl;
     std::cout << " m_computeWeightSys   = " << m_computeWeightSys << std::endl;
     std::cout << " m_textFileList       = " << m_textFileList << std::endl;
+    std::cout << " m_useTRF             = " << m_useTRF << std::endl;
     
-    std::cout << " m_str_sampleName         = " << m_str_sampleName << std::endl;
-    std::cout << " m_str_sysName            = " << m_str_sysName << std::endl;
-    std::cout << " m_str_anaType            = " << m_str_anaType << std::endl;
+    std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
+    std::cout << " m_str_sysName        = " << m_str_sysName << std::endl;
+    std::cout << " m_str_anaType        = " << m_str_anaType << std::endl;
     std::cout << " m_inputTree          = " << m_inputTree << std::endl;
     std::cout << " m_outputTree         = " << m_outputTree << std::endl;
     std::cout << " m_inputFile          = " << m_inputFile << std::endl;
