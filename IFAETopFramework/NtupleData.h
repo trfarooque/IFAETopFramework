@@ -114,7 +114,7 @@ public:
     vector<float>   *mu_charge;
     vector<int>     *mu_author;
     vector<int>     *mu_tight;
-   
+    
     ///////////////////////////////////////////
     //
     // MET VARIABLES
@@ -133,14 +133,14 @@ public:
     
     /*
      Two kinds of variables for the weights:
-     * Variables extracted from the tree 
-        - Their name starts with tree_*
+     * Variables extracted from the tree
+     - Their name starts with tree_*
      * The computed variables (used in the common codes such as the systematics)
-        - Their name starts with finalEvent_*
+     - Their name starts with finalEvent_*
      The finalEvent_* variables are based on the assumption that they represent
      the *TOTAL* weight of a given event:
-        --> Nominal case: product of all weights (leptons SF, btag SF, ...)
-        --> Systematic case: product of all nominal weights but the systematic one
+     --> Nominal case: product of all weights (leptons SF, btag SF, ...)
+     --> Systematic case: product of all nominal weights but the systematic one
      !!!! Please stick to this convention !!!!
      */
     
@@ -170,6 +170,19 @@ public:
     vector<double> *finalEvent_CTag_breakdown_down;
     vector<double> *finalEvent_LTag_breakdown_up;
     vector<double> *finalEvent_LTag_breakdown_down;
+    
+    
+    ///////////////////////////////////////////
+    //
+    // KINEMATIC VARIABLES
+    //
+    ///////////////////////////////////////////
+    
+    double HTalljets;//scalar sum of pt of all jets
+    double LT;//scalar sum of pt of all leptons
+    double HTleptonsJets;//scalar sum of pt of all leptons and jets
+    double meff;//effective mass = HTleptonsJets + Met
+    
     
     UInt_t          larError;
     UInt_t          tileError;
