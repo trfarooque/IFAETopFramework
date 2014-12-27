@@ -147,6 +147,7 @@ public:
     //Nominal weights
     Float_t tree_Weight, tree_BTagWeight,tree_LeptonSF;
     std::vector < double > *tree_TRFExBTagWeight, *tree_TRFInBTagWeight;
+    Float_t ToptTpTDataweight;
     
     //Systematics for direct tagging
     std::vector < double > *tree_BTag_breakdown_up, *tree_BTag_breakdown_down;//1 component: 1 breakdown

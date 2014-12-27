@@ -122,11 +122,24 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
         }
         else if( argument.find("--SAMPLENAME") != std::string::npos ){
             std::transform(value.begin(), value.end(), value.begin(), toupper);
+            //DATA
             if ( value.find("DATA") != std::string::npos) 	m_sampleName = SampleName::DATA;
-            else if ( value.find("TTH") != std::string::npos) 	m_sampleName = SampleName::TTH;
+            //BACKAGROUNDS
             else if ( value.find("TTBAR") != std::string::npos) m_sampleName = SampleName::TTBAR;
+            else if ( value.find("TTBARBB") != std::string::npos) m_sampleName = SampleName::TTBARBB;
+            else if ( value.find("TTBARCC") != std::string::npos) m_sampleName = SampleName::TTBARCC;
+            else if ( value.find("TTBARLIGHT") != std::string::npos) m_sampleName = SampleName::TTBARLIGHT;
+            else if ( value.find("DIBOSONS") != std::string::npos) m_sampleName = SampleName::DIBOSONS;
+            else if ( value.find("SINGLETOP") != std::string::npos) m_sampleName = SampleName::SINGLETOP;
+            else if ( value.find("WJETS") != std::string::npos) m_sampleName = SampleName::WJETS;
+            else if ( value.find("ZJETS") != std::string::npos) m_sampleName = SampleName::ZJETS;
+            else if ( value.find("TTH") != std::string::npos) 	m_sampleName = SampleName::TTH;
             else if ( value.find("TTZ") != std::string::npos) 	m_sampleName = SampleName::TTZ;
             else if ( value.find("TTW") != std::string::npos) 	m_sampleName = SampleName::TTW;
+            else if ( value.find("TTV") != std::string::npos) m_sampleName = SampleName::TTV;
+            //SIGNALS
+            else if ( value.find("VLQ") != std::string::npos) m_sampleName = SampleName::VLQ;
+            else if ( value.find("GUINO") != std::string::npos) m_sampleName = SampleName::GLUINO;
             else{std::cout<<"Unknown sample name"<<std::endl;}
             m_str_sampleName = value;
         }
@@ -185,7 +198,9 @@ void OptionsBase::printOptions()
     std::cout << " m_textFileList       = " << m_textFileList << std::endl;
     std::cout << " m_useTRF             = " << m_useTRF << std::endl;
     
+    std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
+    std::cout << " m_sysName            = " << m_sysName << std::endl;
     std::cout << " m_str_sysName        = " << m_str_sysName << std::endl;
     std::cout << " m_str_anaType        = " << m_str_anaType << std::endl;
     std::cout << " m_inputTree          = " << m_inputTree << std::endl;

@@ -4,7 +4,25 @@
 namespace Debug{ enum debug{SILENT=0,STANDARD,VERBOSE,DEBUG}; };
 namespace AnaType{ enum ana{ HSG8=1, SUSY, VLQ }; };
 namespace InputType{ enum input { IND3PD=0, INMINI }; }; //will be moved to ttH
-namespace SampleName{ enum sample{ DATA=1, TTH, TTBAR, TTZ, TTW}; };
+namespace SampleName{
+    enum sample{
+        DATA=1,
+        TTBAR,
+        TTBARBB,
+        TTBARCC,
+        TTBARLIGHT,
+        DIBOSONS,
+        SINGLETOP,
+        WJETS,
+        ZJETS,
+        TTH,
+        TTZ,
+        TTW,
+        TTV,
+        VLQ,
+        GLUINO
+    };
+};
 namespace SysName{ enum sys{ NOMINAL=0, JES, JER, ELEID, MUID }; };
 
 namespace WeightSys{
