@@ -45,7 +45,7 @@ public:
     vector<float>*         jet_m;
     vector<float>*         jet_jvf;
     vector<int>*           jet_trueflav;
-    vector<int>*           jet_tagged;
+    vector<bool>*           jet_tagged;
     vector<float>*         jet_MV1;
     vector<float>*         jet_nTrk_pv0_1GeV;
     vector<float>*         jet_trackWIDTH_pv0_1GeV;
