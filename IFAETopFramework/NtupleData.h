@@ -52,6 +52,15 @@ public:
     vector<int>*           jet_constit_n;
     vector<vector<int> >*  jet_constit_index;
     
+    
+    ///////////////////////////////////////////
+    //
+    // BJET VARIABLES
+    //
+    ///////////////////////////////////////////
+    
+    Int_t                   bjet_n;
+    
     ///////////////////////////////////////////
     //
     // LEPTON VARIABLES

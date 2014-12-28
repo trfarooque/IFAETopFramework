@@ -13,6 +13,9 @@ jet_trueflav(0),jet_tagged(0),jet_MV1(0),
 jet_nTrk_pv0_1GeV(0),jet_trackWIDTH_pv0_1GeV(0),
 jet_constit_n(0),jet_constit_index(0),
 
+//Bjets
+bjet_n(0),
+
 //Lepton variables
 lep_n(0),lep_ind(0),lep_flav(0),
 lep_E(0),lep_pt(0),lep_eta(0),lep_phi(0),lep_charge(0),
