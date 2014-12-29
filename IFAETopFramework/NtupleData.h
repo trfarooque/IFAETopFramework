@@ -45,7 +45,7 @@ public:
     vector<float>*         jet_m;
     vector<float>*         jet_jvf;
     vector<int>*           jet_trueflav;
-    vector<bool>*           jet_tagged;
+    vector<bool>*          jet_tagged;
     vector<float>*         jet_MV1;
     vector<float>*         jet_nTrk_pv0_1GeV;
     vector<float>*         jet_trackWIDTH_pv0_1GeV;
@@ -59,7 +59,7 @@ public:
     //
     ///////////////////////////////////////////
     
-    Int_t                   bjet_n;
+    Int_t           bjet_n;
     
     ///////////////////////////////////////////
     //
@@ -192,6 +192,7 @@ public:
     double LT;//scalar sum of pt of all leptons
     double HTleptonsJets;//scalar sum of pt of all leptons and jets
     double meff;//effective mass = HTleptonsJets + Met
+    double mT;//transverse mass of the leptonic W boson
     
     
     UInt_t          larError;

@@ -56,7 +56,7 @@ finalEvent_CTag_breakdown_up(0),finalEvent_CTag_breakdown_down(0),
 finalEvent_LTag_breakdown_up(0),finalEvent_LTag_breakdown_down(0),
 
 //Kinematic variables
-HTalljets(0),LT(0),HTleptonsJets(0),meff(0)
+HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)
 {}
 
 void NtupleData::ClearNtupleData(){
