@@ -128,7 +128,7 @@ class JobSet:
         if not(self.logDir==""):
             com += " -o "+self.logDir+" -e "+self.logDir
 
-        #os.system(com)
+        os.system(com)
 
 class Job:
     """

@@ -27,7 +27,7 @@ def printGoodNews(text):
 
 #___________________________________________________________________
 #
-def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder=""):
+def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder="",exclusions=[]):
     #return a library containing the necessary informations
     if (UseList and ListFolder==""):
         printError("No ListFolder given ... returns ...")
@@ -43,7 +43,7 @@ def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder=""):
     for iSys in range(len(systs)):
         
         ListName = ListFolder + "/" + SampleName + "_" + systs[iSys]
-        failed = produceList([sample['name'],systs[iSys]],InputDir,ListName)
+        failed = produceList([sample['name'],systs[iSys]],InputDir,ListName,exclusions)
         if(failed):#in case there are no files, skip this systematic
             continue
         nListFiles = splitList(ListName,ListName+"_",NFiles)
@@ -79,7 +79,7 @@ def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder=""):
 
 #___________________________________________________________________
 #
-def produceList(Patterns, InputDirectory, listName):
+def produceList(Patterns, InputDirectory, listName,exclusions=[]):
     com = ""
     
     if(InputDirectory.find("eos")>-1):#if you use the eos system, you have to change a bit the commands
@@ -89,6 +89,10 @@ def produceList(Patterns, InputDirectory, listName):
         
     for iPattern in range(len(Patterns)):
         com += " | grep "+Patterns[iPattern]
+
+    for iExclusion in range(len(exclusions)):
+        com += " | grep -v "+exclusions[iExclusion]
+
     com += " > "+listName
 
     result = os.system(com)
