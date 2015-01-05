@@ -27,8 +27,9 @@ def printGoodNews(text):
 
 #___________________________________________________________________
 #
-def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder="",exclusions=[]):
-    #return a library containing the necessary informations
+def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[]):
+    
+    # Return a library containing the necessary informations
     if (UseList and ListFolder==""):
         printError("No ListFolder given ... returns ...")
         return
@@ -39,20 +40,39 @@ def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder="",exclu
 
     # Creates the file lists (always needed even when using list files in command line)
     Result = []
-    systs = sample['objSyst']
-    for iSys in range(len(systs)):
+
+    # Creates the list of object systematics (different instances of the code)
+    Systs = []
+    for iterator_sys in sample['objSyst']:
+        if iterator_sys['oneSided']:#one-sided systematics
+            Systs += [iterator_sys['name']]
+        else:
+            Systs += [iterator_sys['nameUp']]
+            Systs += [iterator_sys['nameDown']]
+
+    # Loop over all the object systematics to be processed (including the nominal)
+    for iSys in range(len(Systs)):
         
-        ListName = ListFolder + "/" + SampleName + "_" + systs[iSys]
-        failed = produceList([sample['name'],systs[iSys]],InputDir,ListName,exclusions)
+        # Producing the list of all files corresponding to the expected ones
+        ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
+        failed = produceList([sample['name'],Systs[iSys]],InputDir,ListName,exclusions)
         if(failed):#in case there are no files, skip this systematic
             continue
+        
+        # Split the list according to the number of input files to be merged
         nListFiles = splitList(ListName,ListName+"_",NFiles)
 
+        # Get the weight systematicsin case we run over the nimnal object
         listWeight=""
-        if(systs[iSys]=="nominal"):
-            for iWS in sample['weightSyst']:   listWeight+=iWS+","
+        if(Systs[iSys]=="nominal"):
+            for iWS in sample['weightSyst']:
+                if iWS['oneSided']:
+                    listWeight+=iWS['name']+","
+                else:
+                    listWeight+=iWS['nameUp']+","
+                    listWeight+=iWS['nameDown']+","
 
-        #for each file, creates a dictionnary
+        # For each file/syst, creates a dictionnary
         for i in range(nListFiles):
             listFileName = ListName + "_"
             if(i<1000): listFileName = listFileName + "0"
@@ -66,37 +86,28 @@ def getSampleJobs(sample,InputDir="",NFiles="",UseList=False,ListFolder="",exclu
             else:
                 fileListCommandLine = listFileName
 
-            ## builds a dictionnary with all interesting informations for the loop
+            # Builds a dictionnary with all interesting informations for the loop
             sample = {
                         'sampleType':sample['sampleType'],
                         'name':SampleName,
                         'filelist':fileListCommandLine,
-                        'objSyst':systs[iSys],
+                        'objSyst':Systs[iSys],
                         'weightSyst':listWeight
                     }
             Result += [sample]
+                
     return Result
 
 #___________________________________________________________________
 #
 def produceList(Patterns, InputDirectory, listName,exclusions=[]):
-    com = ""
-    
-    if(InputDirectory.find("eos")>-1):#if you use the eos system, you have to change a bit the commands
-        com = "eos find " + InputDirectory
-    else:
-        com = "ls "+InputDirectory+"*.root*"
-        
+    com = "ls "+InputDirectory+"*.root*"
     for iPattern in range(len(Patterns)):
         com += " | grep "+Patterns[iPattern]
-
     for iExclusion in range(len(exclusions)):
         com += " | grep -v "+exclusions[iExclusion]
-
     com += " > "+listName
-
     result = os.system(com)
-
     return result
 
 #___________________________________________________________________

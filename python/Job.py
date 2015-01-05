@@ -86,7 +86,7 @@ class JobSet:
         f.write(">& "+job.jobName+".log \n")
         f.write("\n")
         f.write("echo '==> After running the code'\n")
-        f.write("mkdir $OUTDIR\n")
+        f.write("mkdir -p $OUTDIR\n")
         f.write("\n")
         f.write("mv *.root $OUTDIR \n")
         f.write("mv *.log $OUTDIR \n")
@@ -115,8 +115,6 @@ class JobSet:
         self.Terminate(f)
         f.close()
         
-        self.scriptName = ""
-
     ##_________________________________________________________________________
     def submitSet(self):
         com=""
@@ -127,7 +125,6 @@ class JobSet:
         com += " " + self.scriptDir+"/"+self.scriptName+" "
         if not(self.logDir==""):
             com += " -o "+self.logDir+" -e "+self.logDir
-
         os.system(com)
 
 class Job:

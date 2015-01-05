@@ -63,6 +63,12 @@ void HistManager::FinaliseTH1Bins(string s_hist){
 
   m_h1d[s_hist]->SetBinError(1, sqrt(e_first*e_first + e_uf*e_uf) );
   m_h1d[s_hist]->SetBinError(nbins, sqrt(e_last*e_last + e_of*e_of) );
+    
+  //Since the over/underflows are set in the last/first bins, remove the under/over flow component
+  m_h1d[s_hist]->SetBinContent(0, 0.);
+  m_h1d[s_hist]->SetBinContent(nbins+1, 0.);
+  m_h1d[s_hist]->SetBinError(0, 0. );
+  m_h1d[s_hist]->SetBinError(nbins+1, 0. );
 
   return;
 }
