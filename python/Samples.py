@@ -86,11 +86,12 @@ CommonWeightSystematics += [getSystematics(name="LTAGBREAK12",nameUp="LTAGBREAK1
 
 ##____________________________________________________________
 ## Defining the samples
-def getSampleUncertainties(type="",name="",objSyst=[],weightSyst=[]):
+def getSampleUncertainties(type="",name="",objSyst=[],weightSyst=[],isSignal=False):
     Sample = {
                 'sampleType':type,
                 'name':name,
                 'objSyst':objSyst,
-                'weightSyst':weightSyst
+                'weightSyst':weightSyst,
+                'isSignal':isSignal
             }
     return Sample
