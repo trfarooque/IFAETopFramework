@@ -38,7 +38,8 @@ mu_charge(0),mu_author(0),mu_tight(0),
 //Weight variables
 tree_Weight(0),tree_BTagWeight(0),tree_LeptonSF(0),
 tree_TRFExBTagWeight(0),tree_TRFInBTagWeight(0),
-ToptTpTDataweight(0),
+tree_ToptTpTDataweight(0),
+tree_qcdWeight(0),tree_crossSection(0),
 
 tree_BTag_breakdown_up(0),tree_BTag_breakdown_down(0),
 tree_CTag_breakdown_up(0),tree_CTag_breakdown_down(0),
