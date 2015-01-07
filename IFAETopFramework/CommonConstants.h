@@ -19,6 +19,7 @@ namespace SampleName{
         TTZ,
         TTW,
         TTV,
+        QCD,
         VLQ,
         GLUINO
     };

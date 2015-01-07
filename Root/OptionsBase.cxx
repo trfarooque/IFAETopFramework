@@ -137,6 +137,7 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             else if ( value.find("TTZ") != std::string::npos) 	m_sampleName = SampleName::TTZ;
             else if ( value.find("TTW") != std::string::npos) 	m_sampleName = SampleName::TTW;
             else if ( value.find("TTV") != std::string::npos) m_sampleName = SampleName::TTV;
+            else if ( value.find("QCD") != std::string::npos) m_sampleName = SampleName::QCD;
             //SIGNALS
             else if ( value.find("VLQ") != std::string::npos) m_sampleName = SampleName::VLQ;
             else if ( value.find("GUINO") != std::string::npos) m_sampleName = SampleName::GLUINO;
@@ -146,8 +147,6 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
         else if( argument.find("--SYSNAME") != std::string::npos ){
             std::transform(value.begin(), value.end(), value.begin(), toupper);
             if ( value.find("NOMINAL") != std::string::npos) 	m_sysName = SysName::NOMINAL;
-            else if ( value.find("JES") != std::string::npos) 	m_sysName = SysName::JES;
-            else if ( value.find("JER") != std::string::npos) 	m_sysName = SysName::JER;
             else { std::cout<<"Unknown systematics name"<<std::endl; }
             m_str_sysName = value;
         }
