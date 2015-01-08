@@ -125,10 +125,10 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             //DATA
             if ( value.find("DATA") != std::string::npos) 	m_sampleName = SampleName::DATA;
             //BACKAGROUNDS
-            else if ( value.find("TTBAR") != std::string::npos) m_sampleName = SampleName::TTBAR;
             else if ( value.find("TTBARBB") != std::string::npos) m_sampleName = SampleName::TTBARBB;
             else if ( value.find("TTBARCC") != std::string::npos) m_sampleName = SampleName::TTBARCC;
             else if ( value.find("TTBARLIGHT") != std::string::npos) m_sampleName = SampleName::TTBARLIGHT;
+            else if ( value.find("TTBAR") != std::string::npos) m_sampleName = SampleName::TTBAR;
             else if ( value.find("DIBOSONS") != std::string::npos) m_sampleName = SampleName::DIBOSONS;
             else if ( value.find("SINGLETOP") != std::string::npos) m_sampleName = SampleName::SINGLETOP;
             else if ( value.find("WJETS") != std::string::npos) m_sampleName = SampleName::WJETS;
