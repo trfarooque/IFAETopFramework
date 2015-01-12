@@ -34,6 +34,10 @@ class JobSet:
         self.scriptName=""
 
     ##_________________________________________________________________________
+    def setQueue(self,queue):
+	self.queue=queue
+
+    ##_________________________________________________________________________
     def setLogDir(self,logDir):
         self.logDir=logDir
     

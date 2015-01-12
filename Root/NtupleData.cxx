@@ -9,7 +9,7 @@ mu(0),vxp_n(0),runNumber(0),eventNumber(0),
 //Jet variables
 jet_n(0),
 jet_pt(0),jet_eta(0),jet_phi(0),jet_E(0),jet_m(0),jet_jvf(0),
-jet_trueflav(0),jet_tagged(0),jet_MV1(0),
+jet_btag_weight(0),jet_trueflav(0),jet_tagged(0),jet_MV1(0),
 jet_nTrk_pv0_1GeV(0),jet_trackWIDTH_pv0_1GeV(0),
 jet_constit_n(0),jet_constit_index(0),
 
@@ -20,6 +20,7 @@ bjet_n(0),
 lep_n(0),lep_ind(0),lep_flav(0),
 lep_E(0),lep_pt(0),lep_eta(0),lep_phi(0),lep_charge(0),
 lep_d0(0),lep_z0(0),lep_d0sig(0),lep_z0sig(0),
+n_lep_vetoed(0),
 
 //Electron variables
 el_n(0),
@@ -40,6 +41,10 @@ tree_Weight(0),tree_BTagWeight(0),tree_LeptonSF(0),
 tree_TRFExBTagWeight(0),tree_TRFInBTagWeight(0),
 tree_ToptTpTDataweight(0),
 tree_qcdWeight(0),tree_crossSection(0),
+tree_ttcc_rw(0),tree_ttbb_rw(0),
+
+tree_TRFDiscreteBTagWeight_ex(0),tree_TRFDiscreteBTagWeight_in(0),
+tree_TRFChosenTag_ex(0),tree_TRFChosenTag_in(0),
 
 tree_BTag_breakdown_up(0),tree_BTag_breakdown_down(0),
 tree_CTag_breakdown_up(0),tree_CTag_breakdown_down(0),
@@ -55,6 +60,7 @@ finalEvent_weightNom(0),
 finalEvent_BTag_breakdown_up(0),finalEvent_BTag_breakdown_down(0),
 finalEvent_CTag_breakdown_up(0),finalEvent_CTag_breakdown_down(0),
 finalEvent_LTag_breakdown_up(0),finalEvent_LTag_breakdown_down(0),
+finalEvent_BTagExtrap_up(0),finalEvent_BTagExtrap_down(0),
 
 //Kinematic variables
 HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)

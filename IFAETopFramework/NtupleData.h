@@ -44,6 +44,7 @@ public:
     vector<float>*         jet_E;
     vector<float>*         jet_m;
     vector<float>*         jet_jvf;
+    vector<float>*         jet_btag_weight;
     vector<int>*           jet_trueflav;
     vector<bool>*          jet_tagged;
     vector<float>*         jet_MV1;
@@ -51,6 +52,7 @@ public:
     vector<float>*         jet_trackWIDTH_pv0_1GeV;
     vector<int>*           jet_constit_n;
     vector<vector<int> >*  jet_constit_index;
+    
     
     
     ///////////////////////////////////////////
@@ -79,6 +81,7 @@ public:
     vector<float>*  lep_z0;
     vector<float>*  lep_d0sig;
     vector<float>*  lep_z0sig;
+    Int_t n_lep_vetoed;
     
     
     ///////////////////////////////////////////
@@ -156,7 +159,10 @@ public:
     //Nominal weights
     Float_t tree_Weight, tree_BTagWeight,tree_LeptonSF;
     std::vector < double > *tree_TRFExBTagWeight, *tree_TRFInBTagWeight;
-    Float_t tree_ToptTpTDataweight,tree_qcdWeight,tree_crossSection;
+    Float_t tree_ToptTpTDataweight,tree_qcdWeight,tree_crossSection,tree_ttcc_rw,tree_ttbb_rw;
+    
+    std::vector< std::vector< float > > *tree_TRFDiscreteBTagWeight_ex, *tree_TRFDiscreteBTagWeight_in;
+    std::vector< std::vector< bool > > *tree_TRFChosenTag_ex, *tree_TRFChosenTag_in;
     
     //Systematics for direct tagging
     std::vector < double > *tree_BTag_breakdown_up, *tree_BTag_breakdown_down;//1 component: 1 breakdown
@@ -180,6 +186,7 @@ public:
     vector<double> *finalEvent_CTag_breakdown_down;
     vector<double> *finalEvent_LTag_breakdown_up;
     vector<double> *finalEvent_LTag_breakdown_down;
+    double finalEvent_BTagExtrap_up,finalEvent_BTagExtrap_down;
     
     
     ///////////////////////////////////////////

@@ -15,6 +15,7 @@ m_isData(false),
 m_computeWeightSys(false),//do you want to run the weight systematics
 m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
 m_useTRF(false),
+m_recomputeBtag(false),
 
 m_sampleName(SampleName::TTH),//enum
 m_sysName(SysName::NOMINAL),//enum
@@ -40,6 +41,7 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_computeWeightSys  = q.m_computeWeightSys;
     m_textFileList      = q.m_textFileList;
     m_useTRF            = q.m_useTRF;
+    m_recomputeBtag      = q.m_recomputeBtag;
     
     m_sampleName        = q.m_sampleName;
     m_sysName           = q.m_sysName;
@@ -120,6 +122,12 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             else if ( value.find("FALSE") != std::string::npos) 	m_useTRF = false;
             else{std::cout<<"Unknown USETRF option"<<std::endl;}
         }
+        else if( argument.find("--RECOMPUTEBTAG") != std::string::npos ){
+            std::transform(value.begin(), value.end(), value.begin(), toupper);
+            if ( value.find("TRUE") != std::string::npos) 	m_recomputeBtag = true;
+            else if ( value.find("FALSE") != std::string::npos) 	m_recomputeBtag = false;
+            else{std::cout<<"Unknown RECOMPUTETRF option"<<std::endl;}
+        }
         else if( argument.find("--SAMPLENAME") != std::string::npos ){
             std::transform(value.begin(), value.end(), value.begin(), toupper);
             //DATA
@@ -196,6 +204,7 @@ void OptionsBase::printOptions()
     std::cout << " m_computeWeightSys   = " << m_computeWeightSys << std::endl;
     std::cout << " m_textFileList       = " << m_textFileList << std::endl;
     std::cout << " m_useTRF             = " << m_useTRF << std::endl;
+    std::cout << " m_recomputeBtag       = " << m_recomputeBtag << std::endl;
     
     std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
