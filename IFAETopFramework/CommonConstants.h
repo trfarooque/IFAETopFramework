@@ -3,6 +3,7 @@
 
 namespace Debug{ enum debug{SILENT=0,STANDARD,VERBOSE,DEBUG}; };
 namespace AnaType{ enum ana{ HSG8=1, SUSY, VLQ }; };
+namespace LeptonChannel{ enum lepch{ELEC=0,MUON,ALLHAD};};
 namespace InputType{ enum input { IND3PD=0, INMINI }; }; //will be moved to ttH
 namespace SampleName{
     enum sample{

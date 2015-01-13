@@ -50,6 +50,7 @@ public:
     inline SampleName::sample sampleName() const { return m_sampleName; }
     inline SysName::sys sysName() const { return m_sysName; }
     inline AnaType::ana anaType() const { return m_anaType; }
+    inline LeptonChannel::lepch leptonChannel() const { return m_leptonChannel; }
     
     inline std::string inputTree() const { return m_inputTree; }
     inline std::string outputTree() const { return m_outputTree; }
@@ -68,8 +69,9 @@ private:
     SampleName::sample m_sampleName;
     SysName::sys m_sysName;
     AnaType::ana m_anaType;
+    LeptonChannel::lepch m_leptonChannel;
 
-    std::string m_str_sampleName,m_str_sysName,m_str_anaType;
+    std::string m_str_sampleName,m_str_sysName,m_str_anaType,m_str_leptonChannel;
     std::string m_inputTree,m_outputTree,m_inputFile,m_outputFile,m_outputFolder;
     
 };

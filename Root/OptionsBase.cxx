@@ -20,10 +20,12 @@ m_recomputeBtag(false),
 m_sampleName(SampleName::TTH),//enum
 m_sysName(SysName::NOMINAL),//enum
 m_anaType(AnaType::HSG8),//enum
+m_leptonChannel(LeptonChannel::ELEC),//enum
 
 m_str_sampleName(""),//used to define the enum
 m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_anaType(""),
+m_str_leptonChannel(""),
 m_inputTree(""),
 m_outputTree(""),
 m_inputFile(""),
@@ -45,9 +47,12 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     
     m_sampleName        = q.m_sampleName;
     m_sysName           = q.m_sysName;
+    m_anaType           = q.m_anaType;
+    m_leptonChannel     = q.m_leptonChannel;
     
     m_str_sampleName    = q.m_str_sampleName;
     m_str_sysName       = q.m_str_sysName;
+    m_str_leptonChannel = q.m_str_leptonChannel;
     
     m_inputTree         = q.m_inputTree;
     m_outputTree        = q.m_outputTree;
@@ -166,6 +171,13 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             else{ std::cout<<"Unknown analysis type"<<std::endl; }
             m_str_anaType = value;
         }
+        else if( argument.find("--LEPTONCHANNEL") != std::string::npos ){
+            std::transform(value.begin(), value.end(), value.begin(), toupper);
+            if ( value.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
+            else if ( value.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
+            else{ std::cout<<"Unknown lepton type"<<std::endl; }
+            m_str_leptonChannel = value;
+        }
         else if( argument.find("--INPUTTREE") != std::string::npos ){
             m_inputTree = value;
         }
@@ -210,7 +222,11 @@ void OptionsBase::printOptions()
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
     std::cout << " m_sysName            = " << m_sysName << std::endl;
     std::cout << " m_str_sysName        = " << m_str_sysName << std::endl;
+    std::cout << " m_anaType            = " << m_anaType << std::endl;
     std::cout << " m_str_anaType        = " << m_str_anaType << std::endl;
+    std::cout << " m_leptonChannel      = " << m_leptonChannel << std::endl;
+    std::cout << " m_str_leptonChannel  = " << m_str_leptonChannel << std::endl;
+    
     std::cout << " m_inputTree          = " << m_inputTree << std::endl;
     std::cout << " m_outputTree         = " << m_outputTree << std::endl;
     std::cout << " m_inputFile          = " << m_inputFile << std::endl;

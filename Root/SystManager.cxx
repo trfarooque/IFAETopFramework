@@ -102,10 +102,24 @@ bool SystManager::LoadWeightSysts() const
         else if(current=="LTAGBREAK7DW")    AddToSystVector(WeightSys::LtagBreak7Dw,current);
         else if(current=="LTAGBREAK8DW")    AddToSystVector(WeightSys::LtagBreak8Dw,current);
         else if(current=="LTAGBREAK9DW")    AddToSystVector(WeightSys::LtagBreak9Dw,current);
-        else if(current=="LTAGBREAK10DW")    AddToSystVector(WeightSys::LtagBreak10Dw,current);
-        else if(current=="LTAGBREAK11DW")    AddToSystVector(WeightSys::LtagBreak11Dw,current);
-        else if(current=="LTAGBREAK12DW")    AddToSystVector(WeightSys::LtagBreak12Dw,current);
+        else if(current=="LTAGBREAK10DW")   AddToSystVector(WeightSys::LtagBreak10Dw,current);
+        else if(current=="LTAGBREAK11DW")   AddToSystVector(WeightSys::LtagBreak11Dw,current);
+        else if(current=="LTAGBREAK12DW")   AddToSystVector(WeightSys::LtagBreak12Dw,current);
+        else if(current=="BTAGEXTRAPUP")    AddToSystVector(WeightSys::BtagExtrapUp,current);
+        else if(current=="BTAGEXTRAPDW")    AddToSystVector(WeightSys::BtagExtrapDw,current);
         
+        else if(current=="MUONTRIGSFUP")    AddToSystVector(WeightSys::MuonTrigSFUp,current);
+        else if(current=="MUONTRIGSFDW")    AddToSystVector(WeightSys::MuonTrigSFDw,current);
+        else if(current=="MUONRECOSFUP")    AddToSystVector(WeightSys::MuonRecoSFUp,current);
+        else if(current=="MUONRECOSFDW")    AddToSystVector(WeightSys::MuonRecoSFDw,current);
+        else if(current=="MUONIDSFUP")      AddToSystVector(WeightSys::MuonIdSFUp,current);
+        else if(current=="MUONIDSFDW")      AddToSystVector(WeightSys::MuonIdSFDw,current);
+        else if(current=="ELECTRONTRIGSFUP")AddToSystVector(WeightSys::ElectronTrigSFUp,current);
+        else if(current=="ELECTRONTRIGSFDW")AddToSystVector(WeightSys::ElectronTrigSFDw,current);
+        else if(current=="ELECTRONRECOSFUP")AddToSystVector(WeightSys::ElectronRecoSFUp,current);
+        else if(current=="ELECTRONRECOSFDW")AddToSystVector(WeightSys::ElectronRecoSFDw,current);
+        else if(current=="ELECTRONIDSFUP")  AddToSystVector(WeightSys::ElectronIdSFUp,current);
+        else if(current=="ELECTRONIDSFDW")  AddToSystVector(WeightSys::ElectronIdSFDw,current);
         
         else { std::cout << "The systematic *" << current << "* is not known ..." << std::endl; }
         sysList.erase(0, pos + delimiter.length());
@@ -279,7 +293,40 @@ bool SystManager::ComputeWeights( const NtupleData *data ) const
             if(data->finalEvent_LTag_breakdown_down && data->finalEvent_LTag_breakdown_down->size()>11)
                 m_systVector->at(iSys)->value = data->finalEvent_LTag_breakdown_down->at(11);
         }
-        
+        //BTAG EXTRAP UP
+        else if(m_systVector->at(iSys)->sysType==WeightSys::BtagExtrapUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_BTagExtrap_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::BtagExtrapDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_BTagExtrap_down;
+        }
+        //MUON SCALE FACTORS
+        else if(m_systVector->at(iSys)->sysType==WeightSys::MuonTrigSFUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_MuonTrig_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::MuonTrigSFDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_MuonTrig_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::MuonRecoSFUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_MuonReco_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::MuonRecoSFDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_MuonReco_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::MuonIdSFUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_MuonID_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::MuonIdSFDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_MuonID_down;
+        }
+        //ELECTRON SCALE FACTORS
+        else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronTrigSFUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_EleTrig_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronTrigSFDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_EleTrig_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronRecoSFUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_EleReco_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronRecoSFDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_EleReco_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronIdSFUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_EleID_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronIdSFDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_EleID_down;
+        }
         else {
             std::cout << "The systematic *"<<m_systVector->at(iSys)->name<<"* is unknown ..." << std::endl;
         }
