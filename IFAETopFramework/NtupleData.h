@@ -194,6 +194,8 @@ public:
     Float_t tree_ttbartop_pt_rw_bJES_up,tree_ttbartop_pt_rw_bJES_down,tree_ttbartop_pt_rw_closebyJES_up,tree_ttbartop_pt_rw_closebyJES_down;
     Float_t tree_ttbartop_pt_rw_etacalibJES_up,tree_ttbartop_pt_rw_etacalibJES_down,tree_ttbartop_pt_rw_effdetset1JES_up,tree_ttbartop_pt_rw_effdetset1JES_down;
     Float_t tree_ttbartop_pt_rw_btageff_up,tree_ttbartop_pt_rw_btageff_down;
+    Float_t tree_MadgraphMC_up,tree_MadgraphMC_down,tree_MadgraphMB_up,tree_MadgraphMB_down,tree_MadgraphQ2_up,tree_MadgraphQ2_down,tree_MadgraphMatch_up,tree_MadgraphPP;
+    Float_t tree_toppt_only,tree_ttbarpt_only;
     
     //final systematic event weights
     Float_t     finalEvent_weightNom;
@@ -213,7 +215,9 @@ public:
     double finalEvent_ttbartop_pt_rw_bJES_up,finalEvent_ttbartop_pt_rw_bJES_down,finalEvent_ttbartop_pt_rw_closebyJES_up,finalEvent_ttbartop_pt_rw_closebyJES_down;
     double finalEvent_ttbartop_pt_rw_etacalibJES_up,finalEvent_ttbartop_pt_rw_etacalibJES_down,finalEvent_ttbartop_pt_rw_effdetset1JES_up,finalEvent_ttbartop_pt_rw_effdetset1JES_down;
     double finalEvent_ttbartop_pt_rw_btageff_up,finalEvent_ttbartop_pt_rw_btageff_down;
-    
+    double finalEvent_MadgraphMC_up,finalEvent_MadgraphMC_down,finalEvent_MadgraphMB_up,finalEvent_MadgraphMB_down;
+    double finalEvent_MadgraphQ2_up,finalEvent_MadgraphQ2_down,finalEvent_MadgraphMatch_up,finalEvent_MadgraphPP;
+    double finalEvent_toppt_only,finalEvent_ttbarpt_only;
     
     ///////////////////////////////////////////
     //

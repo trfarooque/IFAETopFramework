@@ -104,6 +104,8 @@ namespace WeightSys{
         ElectronIdSFDw,
         
         /*ttbar specific uncertainties*/
+        
+        //tt pt reweighting
         ttbarTopPtDataWeight_ISRUp,
         ttbarTopPtDataWeight_ISRDw,
         ttbarTopPtDataWeight_FragmentationUp,
@@ -122,18 +124,20 @@ namespace WeightSys{
         ttbarTopPtDataWeight_effdetset1JESDw,
         ttbarTopPtDataWeight_BtagEffUp,
         ttbarTopPtDataWeight_BtagEffDw,
+        ttbar_toppt_only,
+        ttbar_ttbarpt_only,
         
-        ttbar_MadgraphMatchUp,
-        ttbar_MadgraphMatchDw,
-        ttbar_MadgraphMbUp,
-        ttbar_MadgraphMbDw,
+        //ttcc weight systematics
         ttbar_MadgraphMcUp,
         ttbar_MadgraphMcDw,
+        ttbar_MadgraphMbUp,
+        ttbar_MadgraphMbDw,
         ttbar_MadgraphQ2Up,
         ttbar_MadgraphQ2Dw,
-        ttbar_MadgraphPPUp,
-        ttbar_MadgraphPPDw,
+        ttbar_MadgraphMatch,
+        ttbar_MadgraphPP,
         
+        //ttbb NLO reweighting 
         ttbb_defaultX2_rw,
         ttbb_defaultX05_rw,
         ttbb_CSS_KIN_rw,
@@ -152,7 +156,7 @@ namespace WeightSys{
         /*ttH*/
         ttH_scaleUp,
         ttH_scaleDw,
-	ttH_scaleStatic,
+        ttH_scaleStatic,
         
         /*ttV*/
         ttV_scaleUp,

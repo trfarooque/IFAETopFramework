@@ -143,6 +143,17 @@ bool SystManager::LoadWeightSysts() const
         else if(current=="TTBARRWEFFDETJESDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_effdetset1JESDw,current);
         else if(current=="TTBARRWBTAGEFFUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_BtagEffUp,current);
         else if(current=="TTBARRWBTAGEFFDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_BtagEffDw,current);
+        else if(current=="TTBARTOPPTONLY")    AddToSystVector(WeightSys::ttbar_toppt_only,current);
+        else if(current=="TTBARTTBARPTONLY")    AddToSystVector(WeightSys::ttbar_ttbarpt_only,current);
+        
+        else if(current=="TTBARMGMCUP")    AddToSystVector(WeightSys::ttbar_MadgraphMcUp,current);
+        else if(current=="TTBARMGMCDW")    AddToSystVector(WeightSys::ttbar_MadgraphMcDw,current);
+        else if(current=="TTBARMGMBUP")    AddToSystVector(WeightSys::ttbar_MadgraphMbUp,current);
+        else if(current=="TTBARMGMBDW")    AddToSystVector(WeightSys::ttbar_MadgraphMbDw,current);
+        else if(current=="TTBARMGQ2UP")    AddToSystVector(WeightSys::ttbar_MadgraphQ2Up,current);
+        else if(current=="TTBARMGQ2DW")    AddToSystVector(WeightSys::ttbar_MadgraphQ2Dw,current);
+        else if(current=="TTBARMGMATCH")    AddToSystVector(WeightSys::ttbar_MadgraphMatch,current);
+        else if(current=="TTBARMGPP")    AddToSystVector(WeightSys::ttbar_MadgraphPP,current);
         
         else { std::cout << "The systematic *" << current << "* is not known ..." << std::endl; }
         sysList.erase(0, pos + delimiter.length());
@@ -395,6 +406,28 @@ bool SystManager::ComputeWeights( const NtupleData *data ) const
             m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_btageff_up;
         } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_BtagEffDw){
             m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_btageff_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_toppt_only){
+            m_systVector->at(iSys)->value = data -> finalEvent_toppt_only;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_ttbarpt_only){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarpt_only;
+        }
+        // TTBAR CC REWEIGHTING UNCERTATINTIES
+        else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphMcUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphMC_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphMcDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphMC_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphMbUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphMB_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphMbDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphMB_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphQ2Up){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphQ2_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphQ2Dw){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphQ2_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphMatch){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphMatch_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphPP){
+            m_systVector->at(iSys)->value = data -> finalEvent_MadgraphPP;
         }
         else {
             std::cout << "The systematic *"<<m_systVector->at(iSys)->name<<"* is unknown ..." << std::endl;

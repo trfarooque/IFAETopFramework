@@ -107,6 +107,15 @@ ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWETACALIBJES",nam
 ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWEFFDETJES",nameUp="TTBARRWEFFDETJESUP",nameDown="TTBARRWEFFDETJESDW",oneSided=False,type="W")]
 ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWBTAGEFF",nameUp="TTBARRWBTAGEFFUP",nameDown="TTBARRWBTAGEFFDW",oneSided=False,type="W")]
 
+ttbarccWeightUncertainties =  []
+ttbarccWeightUncertainties += [getSystematics(name="TTBARTOPPTONLY",nameUp="TTBARTOPPTONLY",nameDown="TTBARTOPPTONLY",oneSided=True,type="W")]
+ttbarccWeightUncertainties += [getSystematics(name="TTBARTTBARPTONLY",nameUp="TTBARTTBARPTONLY",nameDown="TTBARTTBARPTONLY",oneSided=True,type="W")]
+ttbarccWeightUncertainties += [getSystematics(name="TTBARMGMC",nameUp="TTBARMGMCUP",nameDown="TTBARMGMCDW",oneSided=False,type="W")]
+ttbarccWeightUncertainties += [getSystematics(name="TTBARMGMB",nameUp="TTBARMGMBUP",nameDown="TTBARMGMBDW",oneSided=False,type="W")]
+ttbarccWeightUncertainties += [getSystematics(name="TTBARMGQ2",nameUp="TTBARMGQ2UP",nameDown="TTBARMGQ2DW",oneSided=False,type="W")]
+ttbarccWeightUncertainties += [getSystematics(name="TTBARMGMATCH",nameUp="TTBARMGMATCH",nameDown="TTBARMGMATCH",oneSided=True,type="W")]
+ttbarccWeightUncertainties += [getSystematics(name="TTBARMGPP",nameUp="TTBARMGPP",nameDown="TTBARMGPP",oneSided=True,type="W")]
+
 
 ##____________________________________________________________
 ## Defining the samples

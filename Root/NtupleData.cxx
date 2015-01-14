@@ -78,6 +78,10 @@ tree_ttbartop_pt_rw_etacalibJES_up(0),tree_ttbartop_pt_rw_etacalibJES_down(0),
 tree_ttbartop_pt_rw_effdetset1JES_up(0),tree_ttbartop_pt_rw_effdetset1JES_down(0),
 tree_ttbartop_pt_rw_btageff_up(0),tree_ttbartop_pt_rw_btageff_down(0),
 
+tree_MadgraphMC_up(0),tree_MadgraphMC_down(0),tree_MadgraphMB_up(0),tree_MadgraphMB_down(0),
+tree_MadgraphQ2_up(0),tree_MadgraphQ2_down(0),tree_MadgraphMatch_up(0),tree_MadgraphPP(0),
+tree_toppt_only(0),tree_ttbarpt_only(0),
+
 finalEvent_weightNom(0),
 finalEvent_BTag_breakdown_up(0),finalEvent_BTag_breakdown_down(0),
 finalEvent_CTag_breakdown_up(0),finalEvent_CTag_breakdown_down(0),
@@ -100,6 +104,10 @@ finalEvent_ttbartop_pt_rw_closebyJES_up(0),finalEvent_ttbartop_pt_rw_closebyJES_
 finalEvent_ttbartop_pt_rw_etacalibJES_up(0),finalEvent_ttbartop_pt_rw_etacalibJES_down(0),
 finalEvent_ttbartop_pt_rw_effdetset1JES_up(0),finalEvent_ttbartop_pt_rw_effdetset1JES_down(0),
 finalEvent_ttbartop_pt_rw_btageff_up(0),finalEvent_ttbartop_pt_rw_btageff_down(0),
+
+finalEvent_MadgraphMC_up(0),finalEvent_MadgraphMC_down(0),finalEvent_MadgraphMB_up(0),finalEvent_MadgraphMB_down(0),
+finalEvent_MadgraphQ2_up(0),finalEvent_MadgraphQ2_down(0),finalEvent_MadgraphMatch_up(0),finalEvent_MadgraphPP(0),
+finalEvent_toppt_only(0),finalEvent_ttbarpt_only(0),
 
 //Kinematic variables
 HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)
