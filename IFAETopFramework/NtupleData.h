@@ -29,7 +29,7 @@ public:
     
     Int_t           runNumber;
     Int_t           eventNumber;
-    
+    Int_t           HFtype;
     
     ///////////////////////////////////////////
     //
@@ -196,6 +196,7 @@ public:
     Float_t tree_ttbartop_pt_rw_btageff_up,tree_ttbartop_pt_rw_btageff_down;
     Float_t tree_MadgraphMC_up,tree_MadgraphMC_down,tree_MadgraphMB_up,tree_MadgraphMB_down,tree_MadgraphQ2_up,tree_MadgraphQ2_down,tree_MadgraphMatch_up,tree_MadgraphPP;
     Float_t tree_toppt_only,tree_ttbarpt_only;
+    Float_t tree_ttbarbb_CSS_kin,tree_ttbarbb_R_Mbb,tree_ttbarbb_NNPDF,tree_ttbarbb_MSTW,tree_ttbarbb_QCMMPS,tree_ttbarbb_scale05,tree_ttbarbb_scale2;
     
     //final systematic event weights
     Float_t     finalEvent_weightNom;
@@ -218,6 +219,8 @@ public:
     double finalEvent_MadgraphMC_up,finalEvent_MadgraphMC_down,finalEvent_MadgraphMB_up,finalEvent_MadgraphMB_down;
     double finalEvent_MadgraphQ2_up,finalEvent_MadgraphQ2_down,finalEvent_MadgraphMatch_up,finalEvent_MadgraphPP;
     double finalEvent_toppt_only,finalEvent_ttbarpt_only;
+    double finalEvent_ttbarbb_MPI,finalEvent_ttbarbb_FSR;
+    double finalEvent_ttbarbb_CSS_kin,finalEvent_ttbarbb_R_Mbb,finalEvent_ttbarbb_NNPDF,finalEvent_ttbarbb_MSTW,finalEvent_ttbarbb_QCMMPS,finalEvent_ttbarbb_scale05,finalEvent_ttbarbb_scale2;
     
     ///////////////////////////////////////////
     //

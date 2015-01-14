@@ -4,7 +4,7 @@
 using namespace std;
 NtupleData::NtupleData():
 //Event variables
-mu(0),vxp_n(0),runNumber(0),eventNumber(0),
+mu(0),vxp_n(0),runNumber(0),eventNumber(0),HFtype(0),
 
 //Jet variables
 jet_n(0),
@@ -82,6 +82,9 @@ tree_MadgraphMC_up(0),tree_MadgraphMC_down(0),tree_MadgraphMB_up(0),tree_Madgrap
 tree_MadgraphQ2_up(0),tree_MadgraphQ2_down(0),tree_MadgraphMatch_up(0),tree_MadgraphPP(0),
 tree_toppt_only(0),tree_ttbarpt_only(0),
 
+tree_ttbarbb_CSS_kin(0),tree_ttbarbb_R_Mbb(0),tree_ttbarbb_NNPDF(0),tree_ttbarbb_MSTW(0),
+tree_ttbarbb_QCMMPS(0),tree_ttbarbb_scale05(0),tree_ttbarbb_scale2(0),
+
 finalEvent_weightNom(0),
 finalEvent_BTag_breakdown_up(0),finalEvent_BTag_breakdown_down(0),
 finalEvent_CTag_breakdown_up(0),finalEvent_CTag_breakdown_down(0),
@@ -108,6 +111,8 @@ finalEvent_ttbartop_pt_rw_btageff_up(0),finalEvent_ttbartop_pt_rw_btageff_down(0
 finalEvent_MadgraphMC_up(0),finalEvent_MadgraphMC_down(0),finalEvent_MadgraphMB_up(0),finalEvent_MadgraphMB_down(0),
 finalEvent_MadgraphQ2_up(0),finalEvent_MadgraphQ2_down(0),finalEvent_MadgraphMatch_up(0),finalEvent_MadgraphPP(0),
 finalEvent_toppt_only(0),finalEvent_ttbarpt_only(0),
+
+finalEvent_ttbarbb_CSS_kin(0),finalEvent_ttbarbb_R_Mbb(0),finalEvent_ttbarbb_NNPDF(0),finalEvent_ttbarbb_MSTW(0),finalEvent_ttbarbb_QCMMPS(0),finalEvent_ttbarbb_scale05(0),finalEvent_ttbarbb_scale2(0),
 
 //Kinematic variables
 HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)

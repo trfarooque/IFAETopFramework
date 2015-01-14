@@ -155,6 +155,16 @@ bool SystManager::LoadWeightSysts() const
         else if(current=="TTBARMGMATCH")    AddToSystVector(WeightSys::ttbar_MadgraphMatch,current);
         else if(current=="TTBARMGPP")    AddToSystVector(WeightSys::ttbar_MadgraphPP,current);
         
+        else if(current=="TTBARBBMPIUP")     AddToSystVector(WeightSys::MPI_up,current);
+        else if(current=="TTBARBBFSRUP")     AddToSystVector(WeightSys::FSR_up,current);
+        else if(current=="TTBARBBCSSKIN")     AddToSystVector(WeightSys::ttbb_CSS_KIN_rw,current);
+        else if(current=="TTBARBBRMBB")     AddToSystVector(WeightSys::ttbb_R_Mbb_rw,current);
+        else if(current=="TTBARBBNNPDF")     AddToSystVector(WeightSys::ttbb_NNPDF_rw,current);
+        else if(current=="TTBARBBMSTW")     AddToSystVector(WeightSys::ttbb_MSTW_rw,current);
+        else if(current=="TTBARBBQCMMPS")     AddToSystVector(WeightSys::ttbb_Q_CMMPS_rw,current);
+        else if(current=="TTBARBBSCALEX2")     AddToSystVector(WeightSys::ttbb_defaultX2_rw,current);
+        else if(current=="TTBARBBSCALEX05")     AddToSystVector(WeightSys::ttbb_defaultX05_rw,current);
+        
         else { std::cout << "The systematic *" << current << "* is not known ..." << std::endl; }
         sysList.erase(0, pos + delimiter.length());
     }
@@ -428,6 +438,26 @@ bool SystManager::ComputeWeights( const NtupleData *data ) const
             m_systVector->at(iSys)->value = data -> finalEvent_MadgraphMatch_up;
         } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbar_MadgraphPP){
             m_systVector->at(iSys)->value = data -> finalEvent_MadgraphPP;
+        }
+        // TTBAR BB REWEIGHTING UNCERTAINTIES
+        else if(m_systVector->at(iSys)->sysType==WeightSys::MPI_up){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_MPI;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::FSR_up){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_FSR;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_CSS_KIN_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_CSS_kin;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_R_Mbb_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_R_Mbb;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_NNPDF_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_NNPDF;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_MSTW_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_MSTW;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_Q_CMMPS_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_QCMMPS;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_defaultX2_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_scale2;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_defaultX05_rw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_scale05;
         }
         else {
             std::cout << "The systematic *"<<m_systVector->at(iSys)->name<<"* is unknown ..." << std::endl;
