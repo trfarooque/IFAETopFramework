@@ -125,6 +125,25 @@ bool SystManager::LoadWeightSysts() const
         else if(current=="TTHSCALEUP")      AddToSystVector(WeightSys::ttH_scaleUp,current);
         else if(current=="TTHSCALEDW")    AddToSystVector(WeightSys::ttH_scaleDw,current);
         
+        else if(current=="TTBARRWISRUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_ISRUp,current);
+        else if(current=="TTBARRWISRDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_ISRDw,current);
+        else if(current=="TTBARRWFRAGMENTATIONUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_FragmentationUp,current);
+        else if(current=="TTBARRWFRAGMENTATIONDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_FragmentationDw,current);
+        else if(current=="TTBARRWMCGENUP")   AddToSystVector(WeightSys::ttbarTopPtDataWeight_MCgenUp,current);
+        else if(current=="TTBARRWMCGENDW")   AddToSystVector(WeightSys::ttbarTopPtDataWeight_MCgenDw,current);
+        else if(current=="TTBARRWJERUP")     AddToSystVector(WeightSys::ttbarTopPtDataWeight_JERUp,current);
+        else if(current=="TTBARRWJERDW")     AddToSystVector(WeightSys::ttbarTopPtDataWeight_JERDw,current);
+        else if(current=="TTBARRWBJESUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_bJESUp,current);
+        else if(current=="TTBARRWBJESDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_bJESDw,current);
+        else if(current=="TTBARRWCLOSEBYJESUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_CloseByJESUp,current);
+        else if(current=="TTBARRWCLOSEBYJESDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_CloseByJESDw,current);
+        else if(current=="TTBARRWETACALIBJESUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_EtaCalibJESUp,current);
+        else if(current=="TTBARRWETACALIBJESDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_EtaCalibJESDw,current);
+        else if(current=="TTBARRWEFFDETJESUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_effdetset1JESUp,current);
+        else if(current=="TTBARRWEFFDETJESDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_effdetset1JESDw,current);
+        else if(current=="TTBARRWBTAGEFFUP")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_BtagEffUp,current);
+        else if(current=="TTBARRWBTAGEFFDW")    AddToSystVector(WeightSys::ttbarTopPtDataWeight_BtagEffDw,current);
+        
         else { std::cout << "The systematic *" << current << "* is not known ..." << std::endl; }
         sysList.erase(0, pos + delimiter.length());
     }
@@ -338,6 +357,44 @@ bool SystManager::ComputeWeights( const NtupleData *data ) const
             m_systVector->at(iSys)->value = data -> finalEvent_ttH_scale_up;
         } else if(m_systVector->at(iSys)->sysType==WeightSys::ttH_scaleDw){
             m_systVector->at(iSys)->value = data -> finalEvent_ttH_scale_down;
+        }
+        //TTBAR TOP/TTBAR PT REWEIGHTING UNCERTAINTIES
+        else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_ISRUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_IFSR_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_ISRDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_IFSR_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_FragmentationUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_Fragmentation_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_FragmentationDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_Fragmentation_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_MCgenUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_MCgen_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_MCgenDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_MCgen_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_JERUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_JER_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_JERDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_JER_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_bJESUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_bJES_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_bJESDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_bJES_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_CloseByJESUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_closebyJES_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_CloseByJESDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_closebyJES_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_EtaCalibJESUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_etacalibJES_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_EtaCalibJESDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_etacalibJES_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_effdetset1JESUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_effdetset1JES_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_effdetset1JESDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_effdetset1JES_down;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_BtagEffUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_btageff_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbarTopPtDataWeight_BtagEffDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttbartop_pt_rw_btageff_down;
         }
         else {
             std::cout << "The systematic *"<<m_systVector->at(iSys)->name<<"* is unknown ..." << std::endl;

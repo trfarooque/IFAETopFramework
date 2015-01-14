@@ -96,6 +96,18 @@ ttHWeightSystenatics = []
 ttHWeightSystenatics += [getSystematics(name="TTHSCALESTATIC",nameUp="TTHSCALESTATIC",nameDown="TTHSCALESTATIC",oneSided=True,type="W")]
 ttHWeightSystenatics += [getSystematics(name="TTHSCALE",nameUp="TTHSCALEUP",nameDown="TTHSCALEDW",oneSided=False,type="W")]
 
+ttbarptReweightingUncertainties =  []
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWISR",nameUp="TTBARRWISRUP",nameDown="TTBARRWISRDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWFRAGMENTATION",nameUp="TTBARRWFRAGMENTATIONUP",nameDown="TTBARRWFRAGMENTATIONDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWMCGEN",nameUp="TTBARRWMCGENUP",nameDown="TTBARRWMCGENUDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWJER",nameUp="TTBARRWJERUP",nameDown="TTBARRWJERDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWBJES",nameUp="TTBARRWBJESUP",nameDown="TTBARRWBJESUDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWCLOSEBYJES",nameUp="TTBARRWCLOSEBYJESUP",nameDown="TTBARRWCLOSEBYJESDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWETACALIBJES",nameUp="TTBARRWETACALIBJESUP",nameDown="TTBARRWETACALIBJESDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWEFFDETJES",nameUp="TTBARRWEFFDETJESUP",nameDown="TTBARRWEFFDETJESDW",oneSided=False,type="W")]
+ttbarptReweightingUncertainties += [getSystematics(name="TTBARRWBTAGEFF",nameUp="TTBARRWBTAGEFFUP",nameDown="TTBARRWBTAGEFFDW",oneSided=False,type="W")]
+
+
 ##____________________________________________________________
 ## Defining the samples
 def getSampleUncertainties(type="",name="",objSyst=[],weightSyst=[],isSignal=False):

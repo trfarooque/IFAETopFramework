@@ -188,6 +188,14 @@ public:
     //ttH weight systematic uncertainties
     Float_t tree_ttH_scale_static, tree_ttH_scale_up, tree_ttH_scale_down;
     
+    //ttbar weight systematics
+    Float_t tree_ttbartop_pt_rw_IFSR_up,tree_ttbartop_pt_rw_IFSR_down,tree_ttbartop_pt_rw_Fragmentation_up,tree_ttbartop_pt_rw_Fragmentation_down;
+    Float_t tree_ttbartop_pt_rw_MCgen_up,tree_ttbartop_pt_rw_MCgen_down,tree_ttbartop_pt_rw_JER_up,tree_ttbartop_pt_rw_JER_down;
+    Float_t tree_ttbartop_pt_rw_bJES_up,tree_ttbartop_pt_rw_bJES_down,tree_ttbartop_pt_rw_closebyJES_up,tree_ttbartop_pt_rw_closebyJES_down;
+    Float_t tree_ttbartop_pt_rw_etacalibJES_up,tree_ttbartop_pt_rw_etacalibJES_down,tree_ttbartop_pt_rw_effdetset1JES_up,tree_ttbartop_pt_rw_effdetset1JES_down;
+    Float_t tree_ttbartop_pt_rw_btageff_up,tree_ttbartop_pt_rw_btageff_down;
+    
+    //final systematic event weights
     Float_t     finalEvent_weightNom;
     vector<double> *finalEvent_BTag_breakdown_up;
     vector<double> *finalEvent_BTag_breakdown_down;
@@ -199,6 +207,12 @@ public:
     double finalEvent_EleID_up, finalEvent_EleID_down,finalEvent_EleReco_up, finalEvent_EleReco_down,finalEvent_EleTrig_up, finalEvent_EleTrig_down;
     double finalEvent_MuonID_up, finalEvent_MuonID_down,finalEvent_MuonReco_up, finalEvent_MuonReco_down,finalEvent_MuonTrig_up, finalEvent_MuonTrig_down;
     double finalEvent_ttH_scale_static, finalEvent_ttH_scale_up, finalEvent_ttH_scale_down;
+    
+    double finalEvent_ttbartop_pt_rw_IFSR_up,finalEvent_ttbartop_pt_rw_IFSR_down,finalEvent_ttbartop_pt_rw_Fragmentation_up,finalEvent_ttbartop_pt_rw_Fragmentation_down;
+    double finalEvent_ttbartop_pt_rw_MCgen_up,finalEvent_ttbartop_pt_rw_MCgen_down,finalEvent_ttbartop_pt_rw_JER_up,finalEvent_ttbartop_pt_rw_JER_down;
+    double finalEvent_ttbartop_pt_rw_bJES_up,finalEvent_ttbartop_pt_rw_bJES_down,finalEvent_ttbartop_pt_rw_closebyJES_up,finalEvent_ttbartop_pt_rw_closebyJES_down;
+    double finalEvent_ttbartop_pt_rw_etacalibJES_up,finalEvent_ttbartop_pt_rw_etacalibJES_down,finalEvent_ttbartop_pt_rw_effdetset1JES_up,finalEvent_ttbartop_pt_rw_effdetset1JES_down;
+    double finalEvent_ttbartop_pt_rw_btageff_up,finalEvent_ttbartop_pt_rw_btageff_down;
     
     
     ///////////////////////////////////////////
