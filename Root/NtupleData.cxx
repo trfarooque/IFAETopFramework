@@ -66,6 +66,8 @@ tree_MuonSF_TrigSF_up(0),tree_MuonSF_TrigSF_down(0),
 tree_MuonSF_IDSF_up(0),tree_MuonSF_IDSF_down(0),
 tree_MuonSF_RecoSF_up(0),tree_MuonSF_RecoSF_down(0),
 
+tree_ttH_scale_static(0),tree_ttH_scale_up(0), tree_ttH_scale_down(0),
+
 finalEvent_weightNom(0),
 finalEvent_BTag_breakdown_up(0),finalEvent_BTag_breakdown_down(0),
 finalEvent_CTag_breakdown_up(0),finalEvent_CTag_breakdown_down(0),
@@ -77,6 +79,7 @@ finalEvent_EleTrig_up(0), finalEvent_EleTrig_down(0),
 finalEvent_MuonID_up(0), finalEvent_MuonID_down(0),
 finalEvent_MuonReco_up(0), finalEvent_MuonReco_down(0),
 finalEvent_MuonTrig_up(0), finalEvent_MuonTrig_down(0),
+finalEvent_ttH_scale_static(0),finalEvent_ttH_scale_up(0), finalEvent_ttH_scale_down(0),
 
 //Kinematic variables
 HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)

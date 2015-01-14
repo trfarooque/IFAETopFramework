@@ -152,6 +152,7 @@ namespace WeightSys{
         /*ttH*/
         ttH_scaleUp,
         ttH_scaleDw,
+	ttH_scaleStatic,
         
         /*ttV*/
         ttV_scaleUp,

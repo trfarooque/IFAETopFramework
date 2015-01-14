@@ -68,8 +68,6 @@ CommonWeightSystematics += [getSystematics(name="CTAGBREAK1",nameUp="CTAGBREAK1U
 CommonWeightSystematics += [getSystematics(name="CTAGBREAK2",nameUp="CTAGBREAK2UP",nameDown="CTAGBREAK2DW",oneSided=False,type="W")]
 CommonWeightSystematics += [getSystematics(name="CTAGBREAK3",nameUp="CTAGBREAK3UP",nameDown="CTAGBREAK3DW",oneSided=False,type="W")]
 CommonWeightSystematics += [getSystematics(name="CTAGBREAK4",nameUp="CTAGBREAK4UP",nameDown="CTAGBREAK4DW",oneSided=False,type="W")]
-#CommonWeightSystematics += [getSystematics(name="CTAGBREAK5",nameUp="CTAGBREAK5UP",nameDown="CTAGBREAK5DW",oneSided=False,type="W")]
-#CommonWeightSystematics += [getSystematics(name="CTAGBREAK6",nameUp="CTAGBREAK6UP",nameDown="CTAGBREAK6DW",oneSided=False,type="W")]
 
 CommonWeightSystematics += [getSystematics(name="LTAGBREAK1",nameUp="LTAGBREAK1UP",nameDown="LTAGBREAK1DW",oneSided=False,type="W")]
 CommonWeightSystematics += [getSystematics(name="LTAGBREAK2",nameUp="LTAGBREAK2UP",nameDown="LTAGBREAK2DW",oneSided=False,type="W")]
@@ -93,6 +91,10 @@ CommonWeightSystematics += [getSystematics(name="MUONIDSF",nameUp="MUONIDSFUP",n
 CommonWeightSystematics += [getSystematics(name="ELECTRONTRIGSF",nameUp="ELECTRONTRIGSFUP",nameDown="ELECTRONTRIGSFDW",oneSided=False,type="W")]
 CommonWeightSystematics += [getSystematics(name="ELECTRONRECOSF",nameUp="ELECTRONRECOSFUP",nameDown="ELECTRONRECOSFDW",oneSided=False,type="W")]
 CommonWeightSystematics += [getSystematics(name="ELECTRONIDSF",nameUp="ELECTRONIDSFUP",nameDown="ELECTRONIDSFDW",oneSided=False,type="W")]
+
+ttHWeightSystenatics = []
+ttHWeightSystenatics += [getSystematics(name="TTHSCALESTATIC",nameUp="TTHSCALESTATIC",nameDown="TTHSCALESTATIC",oneSided=True,type="W")]
+ttHWeightSystenatics += [getSystematics(name="TTHSCALE",nameUp="TTHSCALEUP",nameDown="TTHSCALEDW",oneSided=False,type="W")]
 
 ##____________________________________________________________
 ## Defining the samples

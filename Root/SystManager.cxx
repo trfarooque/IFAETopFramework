@@ -121,6 +121,10 @@ bool SystManager::LoadWeightSysts() const
         else if(current=="ELECTRONIDSFUP")  AddToSystVector(WeightSys::ElectronIdSFUp,current);
         else if(current=="ELECTRONIDSFDW")  AddToSystVector(WeightSys::ElectronIdSFDw,current);
         
+        else if(current=="TTHSCALESTATIC")  AddToSystVector(WeightSys::ttH_scaleStatic,current);
+        else if(current=="TTHSCALEUP")      AddToSystVector(WeightSys::ttH_scaleUp,current);
+        else if(current=="TTHSCALEDW")    AddToSystVector(WeightSys::ttH_scaleDw,current);
+        
         else { std::cout << "The systematic *" << current << "* is not known ..." << std::endl; }
         sysList.erase(0, pos + delimiter.length());
     }
@@ -326,6 +330,14 @@ bool SystManager::ComputeWeights( const NtupleData *data ) const
             m_systVector->at(iSys)->value = data -> finalEvent_EleID_up;
         } else if(m_systVector->at(iSys)->sysType==WeightSys::ElectronIdSFDw){
             m_systVector->at(iSys)->value = data -> finalEvent_EleID_down;
+        }
+        //TTH SCALE UNCERTAINTIES
+        else if(m_systVector->at(iSys)->sysType==WeightSys::ttH_scaleStatic){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttH_scale_static;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttH_scaleUp){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttH_scale_up;
+        } else if(m_systVector->at(iSys)->sysType==WeightSys::ttH_scaleDw){
+            m_systVector->at(iSys)->value = data -> finalEvent_ttH_scale_down;
         }
         else {
             std::cout << "The systematic *"<<m_systVector->at(iSys)->name<<"* is unknown ..." << std::endl;

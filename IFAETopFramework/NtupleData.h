@@ -161,6 +161,7 @@ public:
     std::vector < double > *tree_TRFExBTagWeight, *tree_TRFInBTagWeight;
     Float_t tree_ToptTpTDataweight,tree_qcdWeight,tree_crossSection,tree_ttcc_rw,tree_ttbb_rw,tree_VpT_rw,tree_VpTHF_rw;
     
+    
     std::vector< std::vector< float > > *tree_TRFDiscreteBTagWeight_ex, *tree_TRFDiscreteBTagWeight_in;
     std::vector< std::vector< bool > > *tree_TRFChosenTag_ex, *tree_TRFChosenTag_in;
     
@@ -184,6 +185,8 @@ public:
     Float_t tree_EleSF_TrigSF_up,tree_EleSF_TrigSF_down,tree_EleSF_IDSF_up,tree_EleSF_IDSF_down,tree_EleSF_RecoSF_up,tree_EleSF_RecoSF_down;
     Float_t tree_MuonSF_TrigSF_up,tree_MuonSF_TrigSF_down,tree_MuonSF_IDSF_up,tree_MuonSF_IDSF_down,tree_MuonSF_RecoSF_up,tree_MuonSF_RecoSF_down;
     
+    //ttH weight systematic uncertainties
+    Float_t tree_ttH_scale_static, tree_ttH_scale_up, tree_ttH_scale_down;
     
     Float_t     finalEvent_weightNom;
     vector<double> *finalEvent_BTag_breakdown_up;
@@ -195,6 +198,7 @@ public:
     double finalEvent_BTagExtrap_up,finalEvent_BTagExtrap_down;
     double finalEvent_EleID_up, finalEvent_EleID_down,finalEvent_EleReco_up, finalEvent_EleReco_down,finalEvent_EleTrig_up, finalEvent_EleTrig_down;
     double finalEvent_MuonID_up, finalEvent_MuonID_down,finalEvent_MuonReco_up, finalEvent_MuonReco_down,finalEvent_MuonTrig_up, finalEvent_MuonTrig_down;
+    double finalEvent_ttH_scale_static, finalEvent_ttH_scale_up, finalEvent_ttH_scale_down;
     
     
     ///////////////////////////////////////////
