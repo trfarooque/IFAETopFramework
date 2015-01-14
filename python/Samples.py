@@ -100,9 +100,9 @@ CommonWeightSystematics += [getSystematics(name="ELECTRONTRIGSF",nameUp="ELECTRO
 CommonWeightSystematics += [getSystematics(name="ELECTRONRECOSF",nameUp="ELECTRONRECOSFUP",nameDown="ELECTRONRECOSFDW",oneSided=False,type="W")]
 CommonWeightSystematics += [getSystematics(name="ELECTRONIDSF",nameUp="ELECTRONIDSFUP",nameDown="ELECTRONIDSFDW",oneSided=False,type="W")]
 #TTH ONLY SYSTEMATICS
-ttHWeightSystenatics = []
-ttHWeightSystenatics += [getSystematics(name="TTHSCALESTATIC",nameUp="TTHSCALESTATIC",nameDown="TTHSCALESTATIC",oneSided=True,type="W")]
-ttHWeightSystenatics += [getSystematics(name="TTHSCALE",nameUp="TTHSCALEUP",nameDown="TTHSCALEDW",oneSided=False,type="W")]
+ttHWeightSystematics = []
+ttHWeightSystematics += [getSystematics(name="TTHSCALESTATIC",nameUp="TTHSCALESTATIC",nameDown="TTHSCALESTATIC",oneSided=True,type="W")]
+ttHWeightSystematics += [getSystematics(name="TTHSCALE",nameUp="TTHSCALEUP",nameDown="TTHSCALEDW",oneSided=False,type="W")]
 #ALL TTBAR UNCERTAINTIES
 ttbarlightccWeightUncertainties =  []
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWISR",nameUp="TTBARRWISRUP",nameDown="TTBARRWISRDW",oneSided=False,type="W")]
