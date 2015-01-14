@@ -165,6 +165,8 @@ bool SystManager::LoadWeightSysts() const
         else if(current=="TTBARBBSCALEX2")     AddToSystVector(WeightSys::ttbb_defaultX2_rw,current);
         else if(current=="TTBARBBSCALEX05")     AddToSystVector(WeightSys::ttbb_defaultX05_rw,current);
         
+        else if(current=="NOVPT")     AddToSystVector(WeightSys::noVpT,current);
+        
         else { std::cout << "The systematic *" << current << "* is not known ..." << std::endl; }
         sysList.erase(0, pos + delimiter.length());
     }
@@ -458,6 +460,10 @@ bool SystManager::ComputeWeights( const NtupleData *data ) const
             m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_scale2;
         } else if(m_systVector->at(iSys)->sysType==WeightSys::ttbb_defaultX05_rw){
             m_systVector->at(iSys)->value = data -> finalEvent_ttbarbb_scale05;
+        }
+        //WJETS PT REWEIGHTING
+        else if(m_systVector->at(iSys)->sysType==WeightSys::noVpT){
+            m_systVector->at(iSys)->value = data -> finalEvent_noVpt_rw;
         }
         else {
             std::cout << "The systematic *"<<m_systVector->at(iSys)->name<<"* is unknown ..." << std::endl;

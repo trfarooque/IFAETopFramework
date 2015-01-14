@@ -221,6 +221,7 @@ public:
     double finalEvent_toppt_only,finalEvent_ttbarpt_only;
     double finalEvent_ttbarbb_MPI,finalEvent_ttbarbb_FSR;
     double finalEvent_ttbarbb_CSS_kin,finalEvent_ttbarbb_R_Mbb,finalEvent_ttbarbb_NNPDF,finalEvent_ttbarbb_MSTW,finalEvent_ttbarbb_QCMMPS,finalEvent_ttbarbb_scale05,finalEvent_ttbarbb_scale2;
+    double finalEvent_noVpt_rw;
     
     ///////////////////////////////////////////
     //

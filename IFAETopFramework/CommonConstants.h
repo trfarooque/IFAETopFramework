@@ -150,8 +150,7 @@ namespace WeightSys{
         FSR_up,
         
         /*V+jets*/
-        noVpTWeight,
-        noVpTOnly,
+        noVpT,
         
         /*ttH*/
         ttH_scaleUp,

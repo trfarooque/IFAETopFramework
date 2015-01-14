@@ -126,6 +126,8 @@ ttbarbbWeightUncertainties += [getSystematics(name="TTBARBBMSTW",nameUp="TTBARBB
 ttbarbbWeightUncertainties += [getSystematics(name="TTBARBBQCMMPS",nameUp="TTBARBBQCMMPS",nameDown="TTBARBBQCMMPS",oneSided=True,type="W")]
 ttbarbbWeightUncertainties += [getSystematics(name="TTBARBBSCALE",nameUp="TTBARBBSCALEX2",nameDown="TTBARBBSCALEX05",oneSided=False,type="W")]
 
+WjetsWeightUncertainties += [getSystematics(name="NOVPT",nameUp="NOVPT",nameDown="NOVPT",oneSided=True,type="W")]
+
 ##____________________________________________________________
 ## Defining the samples
 def getSampleUncertainties(type="",name="",objSyst=[],weightSyst=[],isSignal=False):

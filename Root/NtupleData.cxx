@@ -114,6 +114,8 @@ finalEvent_toppt_only(0),finalEvent_ttbarpt_only(0),
 
 finalEvent_ttbarbb_CSS_kin(0),finalEvent_ttbarbb_R_Mbb(0),finalEvent_ttbarbb_NNPDF(0),finalEvent_ttbarbb_MSTW(0),finalEvent_ttbarbb_QCMMPS(0),finalEvent_ttbarbb_scale05(0),finalEvent_ttbarbb_scale2(0),
 
+finalEvent_noVpt_rw(0),
+
 //Kinematic variables
 HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)
 {}
