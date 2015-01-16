@@ -45,7 +45,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
     Systs = []
     for iterator_sys in sample['objSyst']:
         if iterator_sys['oneSided']:#one-sided systematics
-            Systs += [iterator_sys['name']]
+            Systs += [iterator_sys['nameUp']]
         else:
             Systs += [iterator_sys['nameUp']]
             Systs += [iterator_sys['nameDown']]
@@ -107,6 +107,7 @@ def produceList(Patterns, InputDirectory, listName,exclusions=[]):
     for iExclusion in range(len(exclusions)):
         com += " | grep -v "+exclusions[iExclusion]
     com += " > "+listName
+
     result = os.system(com)
     return result
 

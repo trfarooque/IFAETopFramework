@@ -1,6 +1,24 @@
 #!/usr/bin/env python
 from BatchTools import *
 
+'''
+Place where are stored the object and weight systematics for all samples.
+They are recorded into list of Objects that are declared in the following way:
+
+getSystematics(name="BJesUnc",nameUp="BJesUnc_up",nameDown="BJesUnc_down",oneSided=False)
+
+--> name: name of the nuisance parameter
+--> nameUp: pattern used to recognise the systematic variation
+    . for the weight systematic: names recored in SystManager
+    . for the object systematics: pattern to recognise the corresponding files
+--> nameDown: same
+--> oneSided: is the systematic one-sided (e.g. JER)
+
+NOTE: for the one-sided systematics, nameDown is not required
+
+getSystematics(name="JER",nameUp="jer_",oneSided=True)
+'''
+
 ##____________________________________________________________
 ## Defining the samples
 def getSystematics(name="",nameUp="",nameDown="",oneSided=False,type="O"):
@@ -18,7 +36,8 @@ def getSystematics(name="",nameUp="",nameDown="",oneSided=False,type="O"):
 ## OBJECT SYSTEMATICS
 ##
 ObjectSystematics =  []
-ObjectSystematics += [getSystematics(name="nominal",oneSided=True)] # the nominal is considered as a systematic variation
+
+ObjectSystematics += [getSystematics(name="nominal",nameUp="nominal",oneSided=True)] # the nominal is considered as a systematic variation
 ObjectSystematics += [getSystematics(name="BJesUnc",nameUp="BJesUnc_up",nameDown="BJesUnc_down",oneSided=False)]
 ObjectSystematics += [getSystematics(name="eer",nameUp="eer_up",nameDown="eer_down",oneSided=False)]
 ObjectSystematics += [getSystematics(name="ees",nameUp="ees_up",nameDown="ees_down",oneSided=False)]
@@ -103,13 +122,13 @@ CommonWeightSystematics += [getSystematics(name="ELECTRONIDSF",nameUp="ELECTRONI
 ttHWeightSystematics = []
 ttHWeightSystematics += [getSystematics(name="TTHSCALESTATIC",nameUp="TTHSCALESTATIC",nameDown="TTHSCALESTATIC",oneSided=True,type="W")]
 ttHWeightSystematics += [getSystematics(name="TTHSCALE",nameUp="TTHSCALEUP",nameDown="TTHSCALEDW",oneSided=False,type="W")]
-#ALL TTBAR UNCERTAINTIES
+#TTBAR CC/LIGHT UNCERTAINTIES
 ttbarlightccWeightUncertainties =  []
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWISR",nameUp="TTBARRWISRUP",nameDown="TTBARRWISRDW",oneSided=False,type="W")]
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWFRAGMENTATION",nameUp="TTBARRWFRAGMENTATIONUP",nameDown="TTBARRWFRAGMENTATIONDW",oneSided=False,type="W")]
-ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWMCGEN",nameUp="TTBARRWMCGENUP",nameDown="TTBARRWMCGENUDW",oneSided=False,type="W")]
+ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWMCGEN",nameUp="TTBARRWMCGENUP",nameDown="TTBARRWMCGENDW",oneSided=False,type="W")]
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWJER",nameUp="TTBARRWJERUP",nameDown="TTBARRWJERDW",oneSided=False,type="W")]
-ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWBJES",nameUp="TTBARRWBJESUP",nameDown="TTBARRWBJESUDW",oneSided=False,type="W")]
+ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWBJES",nameUp="TTBARRWBJESUP",nameDown="TTBARRWBJESDW",oneSided=False,type="W")]
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWCLOSEBYJES",nameUp="TTBARRWCLOSEBYJESUP",nameDown="TTBARRWCLOSEBYJESDW",oneSided=False,type="W")]
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWETACALIBJES",nameUp="TTBARRWETACALIBJESUP",nameDown="TTBARRWETACALIBJESDW",oneSided=False,type="W")]
 ttbarlightccWeightUncertainties += [getSystematics(name="TTBARRWEFFDETJES",nameUp="TTBARRWEFFDETJESUP",nameDown="TTBARRWEFFDETJESDW",oneSided=False,type="W")]
@@ -135,7 +154,10 @@ ttbarbbWeightUncertainties += [getSystematics(name="TTBARBBQCMMPS",nameUp="TTBAR
 ttbarbbWeightUncertainties += [getSystematics(name="TTBARBBSCALE",nameUp="TTBARBBSCALEX2",nameDown="TTBARBBSCALEX05",oneSided=False,type="W")]
 #W+JETS SYSTEMATICS
 WjetsWeightUncertainties =  []
-WjetsWeightUncertainties += [getSystematics(name="NOVPT",nameUp="NOVPT",nameDown="NOVPT",oneSided=True,type="W")]
+WjetsWeightUncertainties += [getSystematics(name="NOVPTW",nameUp="NOVPTW",nameDown="NOVPTW",oneSided=True,type="W")]
+#Z+JETS SYSTEMATICS
+ZjetsWeightUncertainties =  []
+ZjetsWeightUncertainties += [getSystematics(name="NOVPTZ",nameUp="NOVPTZ",nameDown="NOVPTZ",oneSided=True,type="W")]
 
 
 ##____________________________________________________________
