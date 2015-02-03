@@ -5,6 +5,7 @@ using namespace std;
 NtupleData::NtupleData():
 //Event variables
 mu(0),vxp_n(0),runNumber(0),eventNumber(0),HFtype(0),
+finalEvent_VLQType(0),
 
 //Jet variables
 jet_n(0),
@@ -112,7 +113,9 @@ finalEvent_MadgraphMC_up(0),finalEvent_MadgraphMC_down(0),finalEvent_MadgraphMB_
 finalEvent_MadgraphQ2_up(0),finalEvent_MadgraphQ2_down(0),finalEvent_MadgraphMatch_up(0),finalEvent_MadgraphPP(0),
 finalEvent_toppt_only(0),finalEvent_ttbarpt_only(0),
 
-finalEvent_ttbarbb_CSS_kin(0),finalEvent_ttbarbb_R_Mbb(0),finalEvent_ttbarbb_NNPDF(0),finalEvent_ttbarbb_MSTW(0),finalEvent_ttbarbb_QCMMPS(0),finalEvent_ttbarbb_scale05(0),finalEvent_ttbarbb_scale2(0),
+finalEvent_ttbarbb_CSS_kin(0),finalEvent_ttbarbb_R_Mbb(0),finalEvent_ttbarbb_NNPDF(0),
+finalEvent_ttbarbb_MSTW(0),finalEvent_ttbarbb_QCMMPS(0),finalEvent_ttbarbb_scale05(0),
+finalEvent_ttbarbb_scale2(0),
 
 finalEvent_noVpt_rw(0),
 

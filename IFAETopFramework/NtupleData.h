@@ -31,6 +31,9 @@ public:
     Int_t           eventNumber;
     Int_t           HFtype;
     
+    Int_t           finalEvent_VLQType;
+    
+    
     ///////////////////////////////////////////
     //
     // JET VARIABLES
