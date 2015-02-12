@@ -6,6 +6,10 @@ NtupleData::NtupleData():
 //Event variables
 mu(0),vxp_n(0),runNumber(0),eventNumber(0),HFtype(0),
 finalEvent_VLQType(0),
+tree_mc_pdf_id1(0),tree_mc_pdf_id2(0),
+tree_mc_pdf_x1(0),tree_mc_pdf_x2(0),
+tree_mc_pdf_scale(0),
+tree_truth_ttbar_pT(0),
 
 //Jet variables
 jet_n(0),

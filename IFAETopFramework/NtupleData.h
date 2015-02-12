@@ -33,6 +33,13 @@ public:
     
     Int_t           finalEvent_VLQType;
     
+    Int_t	    tree_mc_pdf_id1;
+    Int_t	    tree_mc_pdf_id2;
+    Float_t	    tree_mc_pdf_x1;
+    Float_t	    tree_mc_pdf_x2;
+    Float_t	    tree_mc_pdf_scale;
+    Float_t     tree_truth_ttbar_pT;
+
     
     ///////////////////////////////////////////
     //
