@@ -162,6 +162,7 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
             //SIGNALS
             else if ( value.find("VLQ") != std::string::npos) m_sampleName = SampleName::VLQ;
             else if ( value.find("GLUINO") != std::string::npos) m_sampleName = SampleName::GLUINO;
+            else if ( value.find("SGLUON") != std::string::npos) m_sampleName = SampleName::SGLUON;
             else{std::cout<<"Unknown sample name"<<std::endl;}
             m_str_sampleName = value;
         }

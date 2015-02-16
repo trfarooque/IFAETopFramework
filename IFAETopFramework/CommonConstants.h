@@ -22,7 +22,8 @@ namespace SampleName{
         TTV,
         QCD,
         VLQ,
-        GLUINO
+        GLUINO,
+        SGLUON
     };
 };
 namespace SysName{ enum sys{ NOMINAL=0, JES, JER, ELEID, MUID }; };
