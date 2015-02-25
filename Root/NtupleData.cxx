@@ -125,7 +125,68 @@ finalEvent_noVpt_rw(0),
 
 //Kinematic variables
 HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)
-{}
+{
+    jet_pt = new std::vector < float >;
+    
+    jet_pt  = new vector<float>;
+    jet_eta = new vector<float>;
+    jet_phi = new vector<float>;
+    jet_E   = new vector<float>;
+    jet_m   = new vector<float>;
+    jet_jvf = new vector<float>;
+    jet_btag_weight = new vector<float>;
+    jet_trueflav    = new vector<int>;
+    jet_tagged      = new vector<bool>;
+    jet_MV1         = new vector<float>;
+    jet_nTrk_pv0_1GeV = new vector<float>;
+    jet_trackWIDTH_pv0_1GeV = new vector<float>;
+    jet_constit_n   = new vector<int>;
+    
+    lep_E       = new vector<float>;
+    lep_pt      = new vector<float>;
+    lep_eta     = new vector<float>;
+    lep_phi     = new vector<float>;
+    lep_charge  = new vector<float>;
+    lep_d0      = new vector<float>;
+    lep_z0      = new vector<float>;
+    lep_d0sig   = new vector<float>;
+    lep_z0sig   = new vector<float>;
+    
+    el_E                 = new vector<float>;
+    el_Et                = new vector<float>;
+    el_pt                = new vector<float>;
+    el_eta               = new vector<float>;
+    el_phi               = new vector<float>;
+    el_charge            = new vector<float>;
+    el_author            = new vector<int>;
+    el_tightPP           = new vector<int>;
+    el_trackz0pvunbiased = new vector<float>;
+    el_tracketa          = new vector<float>;
+    el_trackphi          = new vector<float>;
+    el_cl_E              = new vector<float>;
+    el_cl_pt             = new vector<float>;
+    el_cl_eta            = new vector<float>;
+    el_cl_phi            = new vector<float>;
+    el_OQ                = new vector<unsigned int>;
+    el_etap              = new vector<float>;
+    el_etas2             = new vector<float>;
+    el_MI10_max40_ptsum  = new vector<float>;
+    
+    mu_E        = new vector<float>;
+    mu_pt       = new vector<float>;
+    mu_eta      = new vector<float>;
+    mu_phi      = new vector<float>;
+    mu_charge   = new vector<float>;
+    mu_author   = new vector<int>;
+    mu_tight    = new vector<int>;
+    
+    finalEvent_BTag_breakdown_up = new std::vector < double >;
+    finalEvent_BTag_breakdown_down = new std::vector < double >;
+    finalEvent_CTag_breakdown_up = new std::vector < double >;
+    finalEvent_CTag_breakdown_down = new std::vector < double >;
+    finalEvent_LTag_breakdown_up = new std::vector < double >;
+    finalEvent_LTag_breakdown_down = new std::vector < double >;
+}
 
 void NtupleData::ClearNtupleData(){
     
