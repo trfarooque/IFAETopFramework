@@ -27,7 +27,7 @@ def printGoodNews(text):
 
 #___________________________________________________________________
 #
-def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[]):
+def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[],splitWeightSyst=False):
     
     # Return a library containing the necessary informations
     if (UseList and ListFolder==""):
@@ -50,27 +50,46 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
             Systs += [iterator_sys['nameUp']]
             Systs += [iterator_sys['nameDown']]
 
+    if(splitWeightSyst):
+    	for iterator_wgt in sample['weightSyst']:
+        	if iterator_wgt['oneSided']:#one-sided systematics
+            		Systs += [iterator_wgt['nameUp']+"_WeightSys"]
+        	else:
+            		Systs += [iterator_wgt['nameUp']+"_WeightSys"]
+            		Systs += [iterator_wgt['nameDown']+"_WeightSys"]
+		
+
     # Loop over all the object systematics to be processed (including the nominal)
     for iSys in range(len(Systs)):
-        
         # Producing the list of all files corresponding to the expected ones
         ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
-        failed = produceList([sample['name'],Systs[iSys]],InputDir,ListName,exclusions)
-        if(failed):#in case there are no files, skip this systematic
-            continue
+
+        failed = 1
         
+        if(Systs[iSys].find("_WeightSys")==-1):
+            failed = produceList([sample['name'],Systs[iSys]],InputDir,ListName,exclusions)
+        else:
+            failed = produceList([sample['name'],"nominal"],InputDir,ListName,exclusions)
+		
+        if(failed):#in case there are no files, skip this systematic
+            printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. I continue with the next one.")
+            continue
+
         # Split the list according to the number of input files to be merged
         nListFiles = splitList(ListName,ListName+"_",NFiles)
 
-        # Get the weight systematicsin case we run over the nimnal object
+        # Get the weight systematics in case we run over the nimnal object
         listWeight=""
-        if(Systs[iSys]=="nominal"):
+        if(Systs[iSys]=="nominal" and splitWeightSyst==False):
             for iWS in sample['weightSyst']:
                 if iWS['oneSided']:
                     listWeight+=iWS['name']+","
                 else:
                     listWeight+=iWS['nameUp']+","
                     listWeight+=iWS['nameDown']+","
+
+        elif(splitWeightSyst and Systs[iSys].find("_WeightSys")>-1):
+            listWeight+=Systs[iSys].replace("_WeightSys","")
 
         # For each file/syst, creates a dictionnary
         for i in range(nListFiles):
