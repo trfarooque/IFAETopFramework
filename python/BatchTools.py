@@ -35,7 +35,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
         return
 
     SampleName = sample['name']
-    
+
     printGoodNews("--> Generating the object for '"+SampleName+"' sample")
 
     # Creates the file lists (always needed even when using list files in command line)
@@ -57,7 +57,6 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
         	else:
             		Systs += [iterator_wgt['nameUp']+"_WeightSys"]
             		Systs += [iterator_wgt['nameDown']+"_WeightSys"]
-		
 
     # Loop over all the object systematics to be processed (including the nominal)
     for iSys in range(len(Systs)):
@@ -66,13 +65,13 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
 
         failed = 1
         
-        if(Systs[iSys].find("_WeightSys")==-1):
+        if(Systs[iSys].find("_WeightSys")==-1):#if obj systs
             failed = produceList([sample['name'],Systs[iSys]],InputDir,ListName,exclusions)
-        else:
+        else:#if weight sys, take nom file
             failed = produceList([sample['name'],"nominal"],InputDir,ListName,exclusions)
-		
-        if(failed):#in case there are no files, skip this systematic
-            printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. I continue with the next one.")
+
+        if(failed>=1):#in case there are no files, skip this systematic
+            printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. Sure it's expected ? I continue with the next one.")
             continue
 
         # Split the list according to the number of input files to be merged
@@ -87,7 +86,6 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
                 else:
                     listWeight+=iWS['nameUp']+","
                     listWeight+=iWS['nameDown']+","
-
         elif(splitWeightSyst and Systs[iSys].find("_WeightSys")>-1):
             listWeight+=Systs[iSys].replace("_WeightSys","")
 
@@ -114,7 +112,6 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
                         'weightSyst':listWeight
                     }
             Result += [sample]
-                
     return Result
 
 #___________________________________________________________________
