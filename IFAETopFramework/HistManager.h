@@ -17,7 +17,7 @@ class HistManager{
  public:
   HistManager();
 
-  void BookTH1D(string key, string name, string title);
+  void BookTH1D(string name, string title, string key="" );
 
   void BookTH1D(string name, string title, double binsize, double xlow, double xup,
 		string key="", string xtitle="", string ytitle="", int lw=2, int lc=1);
