@@ -29,6 +29,7 @@ class TreeManager{
   vector<string> GetTreeKeyList();
 
   void ClearTree(string s_tree);
+  void FillTree(string name, string key="");
 
  protected:
   map<string, TTree*> m_tree;

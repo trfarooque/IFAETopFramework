@@ -29,11 +29,11 @@ int main() {
     
     //
     //
-    // Creation of the OutputManager class object
-    //     For now only histograms
+    // Creation of the OutputManager class objects
     //
     //
     OutputManager *outputMngrHist = new OutputManager(optBase,OutputManager::HISTOS);
+    OutputManager *outputMngrTree = new OutputManager(optBase,OutputManager::TREES);
     
     //
     //
@@ -55,6 +55,17 @@ int main() {
     outputMngrHist->addStandardTH1( "jet1_mv1", 0.05, -2, 2, "MV1", "VD", false, &jets_MV1,0);
     outputMngrHist->bookStandardTH1( "c0", false);
     outputMngrHist->bookStandardTH1( "c1", false);
+    
+    //
+    // Creating the output standard trees and branches
+    //
+    outputMngrTree->addStandardBranch( "jets_n", "Number of jets", "I", &Njets);
+    outputMngrTree->addStandardBranch( "jets_pt", "Jets pt", "F", &jets_pt);
+    outputMngrTree->addStandardBranch( "jets_isBtagged", "Jets btag", "I", &jets_isBtagged);
+    outputMngrTree->addStandardBranch( "jets_truthMatched_index", "Jets truth matched", "I", &jets_truthMatched_index);
+    outputMngrTree->addStandardBranch( "jets_MV1", "Jets MV1", "D", &jets_MV1);
+    outputMngrTree->bookStandardTree("tree0","NoSelection");
+    outputMngrTree->bookStandardTree("tree1","Selection");
     
     const unsigned int nentries = 1000;
     TRandom3 *rdm = new TRandom3();
@@ -94,10 +105,13 @@ int main() {
         // Filling the output
         //
         outputMngrHist->fillStandardTH1("c0");
+        outputMngrTree->fillStandardTree("tree0");
         if(Njets>=6){
             outputMngrHist->fillStandardTH1("c1");
+            outputMngrTree->fillStandardTree("tree1");
         }
     }
     outputMngrHist->saveStandardTH1("myNiceTest.root");
+    outputMngrTree->saveStandardTree("myTreeTest.root");
     return 0;
 }

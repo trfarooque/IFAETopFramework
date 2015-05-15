@@ -160,8 +160,6 @@ public:
             std::cout << "Adding variable: "<< name << std::endl;
             std::cout << "  title  = " << title << std::endl;
         }
-        
-        
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind);
@@ -177,8 +175,6 @@ public:
     bool bookStandardTree( const TString &pattern, const TString &title);
     bool fillStandardTree( const TString &name ); //probably do not need this one
     bool saveStandardTree( const TString& );
-    
-    
     
     
 private:

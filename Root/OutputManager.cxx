@@ -13,6 +13,7 @@
 
 //ROOT libraries
 #include "TString.h"
+#include "TSystem.h"
 
 //_________________________________________________________________
 //
@@ -394,6 +395,25 @@ bool OutputManager::bookStandardTree( const TString &pattern, const TString &tit
     return true;
 }
 
+bool OutputManager::fillStandardTree( const TString &pattern ){
+    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTrees" << std::endl;
+    m_treeMngr->FillTree((std::string)pattern);
+    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTrees" << std::endl;
+    return true;
+}
+
+bool OutputManager::saveStandardTree( const TString &outputName ){
+
+    TFile *f = new TFile(outputName,"recreate");
+    
+    vector<string> treeList = m_treeMngr->GetTreeKeyList();
+    for(vector<string>::iterator it = treeList.begin(); it != treeList.end(); it++){
+        f->cd();
+        m_treeMngr->GetTree(*it)->Write();
+    }
+    f -> Close();
+    return true;
+}
 
 
 
