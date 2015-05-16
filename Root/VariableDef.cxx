@@ -42,6 +42,9 @@ TString VariableDef::getVarTypeString(int varType){
     else if(varType == VariableType::VECINT){_varTypeString = "VI";}
     else if(varType == VariableType::VECFLOAT){_varTypeString = "VF";}
     else if(varType == VariableType::VECDOUBLE){_varTypeString = "VD";}
+    else if(varType == VariableType::VECVECINT){_varTypeString = "VVI";}
+    else if(varType == VariableType::VECVECFLOAT){_varTypeString = "VVF";}
+    else if(varType == VariableType::VECVECDOUBLE){_varTypeString = "VVD";}
     else { std::cout << "Unknown variable type" << std::endl; }
     
     return _varTypeString;
@@ -57,6 +60,9 @@ VariableDef::VariableType VariableDef::getVarType(TString varTypeString){
     else if(varTypeString == "VI"){_varType = VariableType::VECINT;}
     else if(varTypeString == "VF"){_varType = VariableType::VECFLOAT;}
     else if(varTypeString == "VD"){_varType = VariableType::VECDOUBLE;}
+    else if(varTypeString == "VVI"){_varType = VariableType::VECVECINT;}
+    else if(varTypeString == "VVF"){_varType = VariableType::VECVECFLOAT;}
+    else if(varTypeString == "VVD"){_varType = VariableType::VECVECDOUBLE;}
     
     return _varType;
 }

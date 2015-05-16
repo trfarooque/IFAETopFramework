@@ -65,6 +65,7 @@ OutputManager::~OutputManager()
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager destructor" << std::endl;
 }
 
+//-----------------------------TH1-SPECIFIC METHODS-------------------------------
 //_________________________________________________________________
 //
 bool OutputManager::addStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst){
@@ -366,8 +367,7 @@ bool OutputManager::saveStandardTH2( const TString &outputName ){
 
 
 
-
-//---------------TREE-SPECIFIC METHODS------------------------
+//-----------------------------TREE-SPECIFIC METHODS-------------------------------
 //_________________________________________________________________
 //
 bool OutputManager::bookStandardTree( const TString &pattern, const TString &title){

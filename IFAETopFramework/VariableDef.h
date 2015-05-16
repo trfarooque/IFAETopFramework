@@ -14,7 +14,10 @@ public:
         DOUBLE,
         VECINT,
         VECFLOAT,
-        VECDOUBLE
+        VECDOUBLE,
+        VECVECINT,
+        VECVECFLOAT,
+        VECVECDOUBLE
     };
     
     //

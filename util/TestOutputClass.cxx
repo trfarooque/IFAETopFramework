@@ -14,10 +14,10 @@ int main() {
     //
     //
     unsigned int Njets;
-    std::vector < float > jets_pt;
-    std::vector < int > jets_isBtagged;
-    std::vector < double > jets_MV1;
-    std::vector < std::vector < int > > jets_truthMatched_index;
+    std::vector < float > *jets_pt = new std::vector<float>();
+    std::vector < int > *jets_isBtagged = new std::vector<int>();
+    std::vector < double > *jets_MV1 = new std::vector < double >();
+    std::vector < std::vector < int > > *jets_truthMatched_index = new std::vector < std::vector < int > >();
     
     //
     //
@@ -61,9 +61,9 @@ int main() {
     //
     outputMngrTree->addStandardBranch( "jets_n", "Number of jets", "I", &Njets);
     outputMngrTree->addStandardBranch( "jets_pt", "Jets pt", "VF", &jets_pt);
-    /*outputMngrTree->addStandardBranch( "jets_isBtagged", "Jets btag", "VI", &jets_isBtagged);
-    outputMngrTree->addStandardBranch( "jets_truthMatched_index", "Jets truth matched", "VI", &jets_truthMatched_index);
-    outputMngrTree->addStandardBranch( "jets_MV1", "Jets MV1", "VD", &jets_MV1);*/
+    outputMngrTree->addStandardBranch( "jets_isBtagged", "Jets btag", "VI", &jets_isBtagged);
+    outputMngrTree->addStandardBranch( "jets_truthMatched_index", "Jets truth matched", "VVI", &jets_truthMatched_index);
+    outputMngrTree->addStandardBranch( "jets_MV1", "Jets MV1", "VD", &jets_MV1);
     outputMngrTree->bookStandardTree("tree0","NoSelection");
     outputMngrTree->bookStandardTree("tree1","Selection");
     
@@ -77,28 +77,28 @@ int main() {
     //
     for ( unsigned int iEntry = 0; iEntry < nentries; ++iEntry){
         
+        jets_pt -> clear();
+        jets_isBtagged -> clear();
+        jets_MV1 -> clear();
+        jets_truthMatched_index -> clear();
+        
         //
         // Filling the variables
         //
-        jets_pt.clear();
-        jets_isBtagged.clear();
-        jets_MV1.clear();
-        jets_truthMatched_index.clear();
-        
-        Njets = rdm->Poisson(5);
+        Njets = rdm -> Poisson(5);
         for(unsigned int iJet = 0; iJet < Njets; ++iJet){
-            jets_pt.push_back(rdm->Gaus(400.,100)/(iJet+1));
+            jets_pt->push_back(rdm->Gaus(400.,100)/(iJet+1));
             double MV1 = rdm->Uniform(0,1);
-            jets_MV1.push_back(MV1);
-            if(MV1>0.7) jets_isBtagged.push_back(1);
-            else jets_isBtagged.push_back(0);
+            jets_MV1->push_back(MV1);
+            if(MV1>0.7) jets_isBtagged->push_back(1);
+            else jets_isBtagged->push_back(0);
             
             unsigned int parton_matched = rdm->Poisson(1);
             std::vector < int > matched;
             for (unsigned int iMatch = 0; iMatch<parton_matched; ++iMatch) {
                 matched.push_back((int)rdm->Uniform(0,100));
             }
-            jets_truthMatched_index.push_back(matched);
+            jets_truthMatched_index->push_back(matched);
         }
         
         //

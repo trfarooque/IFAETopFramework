@@ -161,9 +161,7 @@ public:
             std::cout << "  title  = " << title << std::endl;
         }
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
-        
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind);
-        
         m_stdBranchDef -> insert( std::pair < TString, VariableDef* >( name, _var ) );
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;

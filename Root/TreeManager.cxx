@@ -36,7 +36,17 @@ void TreeManager::AddBranchToTree(string tname, VariableDef bVar){
         m_tree[tname]->Branch(bVar.name(), bVar.address(), bVar.name() + "/" + bVar.varTypeString());
     }
     else{
-        m_tree[tname]->Branch(bVar.name(), bVar.address());
+        TString typeVar = "";
+        if(bVar.varType()==VariableDef::VECINT) typeVar = "std::vector<int>";
+        else if(bVar.varType()==VariableDef::VECVECINT) typeVar = "std::vector<std::vector<int> >";
+        else if(bVar.varType()==VariableDef::VECFLOAT) typeVar = "std::vector<float>";
+        else if(bVar.varType()==VariableDef::VECVECFLOAT) typeVar = "std::vector<std::vector<float> >";
+        else if(bVar.varType()==VariableDef::VECDOUBLE) typeVar = "std::vector<double>";
+        else if(bVar.varType()==VariableDef::VECVECDOUBLE) typeVar = "std::vector<std::vector<double> >";
+        else{
+            std::cerr << "<!> Error in TreeManager::AddBranchToTree(): the variable type is not recognized !!" << std::endl;
+        }
+        m_tree[tname]->Branch(bVar.name(),typeVar, bVar.address());
     }
     return;
 }
