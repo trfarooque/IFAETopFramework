@@ -64,7 +64,7 @@ VariableDef::VariableType VariableDef::getVarType(TString varTypeString){
 
 //_____________________________________________________________________________________
 //
-bool VariableDef::isPrimitive(VariableType varType){
+bool VariableDef::isPrimitive(int varType){
     
     bool _isPrimitive = false;
     _isPrimitive = (varType == VariableType::INT || varType == VariableType::FLOAT || varType == VariableType::DOUBLE);

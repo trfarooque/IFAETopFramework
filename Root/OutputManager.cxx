@@ -4,10 +4,7 @@
 
 //IFAETopFrameowrk includes
 #include "IFAETopFramework/OutputManager.h"
-
 #include "IFAETopFramework/OutputData.h"
-//#include "IFAETopFramework/VariableDef.h"
-//#include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/HistManager.h"
 #include "IFAETopFramework/TreeManager.h"
 
@@ -93,8 +90,6 @@ bool OutputManager::addStandardTH1(const TString name, const double width, const
     
     return true;
 }
-
-//_________________________________________________________________
 
 //_________________________________________________________________
 //
@@ -245,8 +240,6 @@ bool OutputManager::addStandardTH2( const TString name, const double widthX, con
 }
 
 //_________________________________________________________________
-
-//_________________________________________________________________
 //
 bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst){
     
@@ -382,8 +375,8 @@ bool OutputManager::bookStandardTree( const TString &pattern, const TString &tit
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTree" << std::endl;
     
     //Book a tree with the given name
-    
     m_treeMngr->BookTree((std::string)pattern, (std::string)title);
+    
     //Loop over the list of standard branches and add those branches to the tree
     for ( std::map< TString, VariableDef* >::iterator it = m_stdBranchDef->begin(); it != m_stdBranchDef->end(); ++it){
         m_treeMngr->AddBranchToTree((std::string)pattern, *(it->second));
@@ -395,6 +388,8 @@ bool OutputManager::bookStandardTree( const TString &pattern, const TString &tit
     return true;
 }
 
+//_________________________________________________________________
+//
 bool OutputManager::fillStandardTree( const TString &pattern ){
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTrees" << std::endl;
     m_treeMngr->FillTree((std::string)pattern);
@@ -402,10 +397,11 @@ bool OutputManager::fillStandardTree( const TString &pattern ){
     return true;
 }
 
+//_________________________________________________________________
+//
 bool OutputManager::saveStandardTree( const TString &outputName ){
-
-    TFile *f = new TFile(outputName,"recreate");
     
+    TFile *f = new TFile(outputName,"recreate");
     vector<string> treeList = m_treeMngr->GetTreeKeyList();
     for(vector<string>::iterator it = treeList.begin(); it != treeList.end(); it++){
         f->cd();

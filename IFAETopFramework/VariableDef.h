@@ -29,7 +29,7 @@ public:
     //
     TString getVarTypeString(int varType);
     VariableType getVarType(TString varTypeString);
-    bool isPrimitive(VariableType varType);
+    bool isPrimitive(int varType);
     double GetDoubleValue();
     
     //
@@ -65,6 +65,7 @@ public:
     m_isPrimitive(true)
     {
         setAddress(t);
+        m_isPrimitive = isPrimitive(varType);
     }
     
     template<typename T> VariableDef(TString name, TString title, TString varTypeString, T *t, int vec_ind = -1):
@@ -77,6 +78,7 @@ public:
     m_isPrimitive(true)
     {
         setAddress(t);
+        m_isPrimitive = isPrimitive(getVarType(varTypeString));
     }
     
     

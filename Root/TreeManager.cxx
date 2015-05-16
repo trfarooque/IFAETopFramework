@@ -1,5 +1,7 @@
 #include "IFAETopFramework/TreeManager.h"
 
+//______________________________________________________________________
+//
 TreeManager::TreeManager(){
     
     m_tree.clear();
@@ -8,6 +10,8 @@ TreeManager::TreeManager(){
     
 }
 
+//______________________________________________________________________
+//
 void TreeManager::BookTree(string name, string title, string key){
     
     TTree* t1 = new TTree(name.c_str(), title.c_str());
@@ -23,18 +27,8 @@ void TreeManager::BookTree(string name, string title, string key){
     
 }
 
-/*
- 
- 
- if(variableType=="I") hist -> varType = VariableType::INT;
- else if(variableType=="D") hist -> varType = VariableType::DOUBLE;
- else if(variableType=="F") hist -> varType = VariableType::FLOAT;
- else if(variableType=="VI") hist -> varType = VariableType::VECINT;
- else if(variableType=="VF") hist -> varType = VariableType::VECFLOAT;
- else if(variableType=="VD") hist -> varType = VariableType::VECDOUBLE;
- 
- */
-
+//______________________________________________________________________
+//
 void TreeManager::AddBranchToTree(string tname, VariableDef bVar){
     if(!m_tree[tname]){cout<<"TREE "<<tname<<" was not found. Could not add branch"<<endl; return;}
     
@@ -44,11 +38,11 @@ void TreeManager::AddBranchToTree(string tname, VariableDef bVar){
     else{
         m_tree[tname]->Branch(bVar.name(), bVar.address());
     }
-    
     return;
-    
 }
 
+//______________________________________________________________________
+//
 int TreeManager::ReadTree(string name, TFile* f, string key){
     
     string s;
@@ -71,6 +65,8 @@ int TreeManager::ReadTree(string name, TFile* f, string key){
     
 }
 
+//______________________________________________________________________
+//
 void TreeManager::SetBranchToTree(string tname, VariableDef bVar, string inputVarName){
     
     if(!m_tree[tname]){cout<<"TREE "<<tname<<" was not found. Could not set branch"<<endl; return;}
@@ -83,22 +79,32 @@ void TreeManager::SetBranchToTree(string tname, VariableDef bVar, string inputVa
     return;
 }
 
+//______________________________________________________________________
+//
 void TreeManager::SetTree(string tkey, TTree* tree){
     //This one is tricky. How do branch addresses propagate
-    if(m_tree.find(tkey) != m_tree.end()){cout<<"Error: TTREE "<<tkey<<" already exists"<<endl;}
-    else{m_tree[tkey] = tree;}
-    
+    if(m_tree.find(tkey) != m_tree.end()){
+        cout<<"Error: TTREE "<<tkey<<" already exists"<<endl;
+    }
+    else{
+        m_tree[tkey] = tree;
+    }
     return;
 }
 
+//______________________________________________________________________
+//
 void TreeManager::ReplaceTree(string tkey, TTree* tree){
     //Need decision on branch address replacements
-    if(m_tree.find(tkey) != m_tree.end()){ delete m_tree[tkey]; }
+    if(m_tree.find(tkey) != m_tree.end()){
+        delete m_tree[tkey];
+    }
     m_tree[tkey] = tree;
-    
     return;
 }
 
+//______________________________________________________________________
+//
 vector<string> TreeManager::GetTreeKeyList(){
     vector<string> v_key; v_key.clear();
     for(map<string, TTree*>::iterator t_it = m_tree.begin(); t_it != m_tree.end(); ++t_it){
@@ -107,16 +113,22 @@ vector<string> TreeManager::GetTreeKeyList(){
     return v_key;
 }
 
-
+//______________________________________________________________________
+//
 void TreeManager::ClearTree(string s_tree){
+    if(m_tree.find(s_tree) == m_tree.end() ){
+        cout<<"Tree "<<s_tree<<" not found "<<endl;
+        return;
+    }
     
-    if(m_tree.find(s_tree) == m_tree.end() ){cout<<"Tree "<<s_tree<<" not found "<<endl; return;}
     //Remember to also clear the branch list if needed
     delete m_tree[s_tree];
     m_tree.erase(m_tree.find(s_tree));
     return;
 }
 
+//______________________________________________________________________
+//
 void TreeManager::FillTree(string name, string key){
     if(key=="") key = name;
     if(m_tree.find(key) != m_tree.end()){

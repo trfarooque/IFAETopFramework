@@ -13,7 +13,7 @@ int main() {
     // Creating dummy variables to illustrate
     //
     //
-    int Njets;
+    unsigned int Njets;
     std::vector < float > jets_pt;
     std::vector < int > jets_isBtagged;
     std::vector < double > jets_MV1;
@@ -60,10 +60,10 @@ int main() {
     // Creating the output standard trees and branches
     //
     outputMngrTree->addStandardBranch( "jets_n", "Number of jets", "I", &Njets);
-    outputMngrTree->addStandardBranch( "jets_pt", "Jets pt", "F", &jets_pt);
-    outputMngrTree->addStandardBranch( "jets_isBtagged", "Jets btag", "I", &jets_isBtagged);
-    outputMngrTree->addStandardBranch( "jets_truthMatched_index", "Jets truth matched", "I", &jets_truthMatched_index);
-    outputMngrTree->addStandardBranch( "jets_MV1", "Jets MV1", "D", &jets_MV1);
+    outputMngrTree->addStandardBranch( "jets_pt", "Jets pt", "VF", &jets_pt);
+    /*outputMngrTree->addStandardBranch( "jets_isBtagged", "Jets btag", "VI", &jets_isBtagged);
+    outputMngrTree->addStandardBranch( "jets_truthMatched_index", "Jets truth matched", "VI", &jets_truthMatched_index);
+    outputMngrTree->addStandardBranch( "jets_MV1", "Jets MV1", "VD", &jets_MV1);*/
     outputMngrTree->bookStandardTree("tree0","NoSelection");
     outputMngrTree->bookStandardTree("tree1","Selection");
     
@@ -93,7 +93,7 @@ int main() {
             if(MV1>0.7) jets_isBtagged.push_back(1);
             else jets_isBtagged.push_back(0);
             
-            int parton_matched = rdm->Poisson(1);
+            unsigned int parton_matched = rdm->Poisson(1);
             std::vector < int > matched;
             for (unsigned int iMatch = 0; iMatch<parton_matched; ++iMatch) {
                 matched.push_back((int)rdm->Uniform(0,100));
