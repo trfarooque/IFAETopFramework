@@ -47,6 +47,8 @@ int main() {
     
     //
     // Creating the output standard histograms and steps
+    //    Standard histograms are bunches of histograms that have to be declared in multiple steps in the code
+    //    (for instance at various steps of a selection)
     //
     outputMngrHist->addStandardTH1( "jets_n", 1, -0.5, 15.5, "Number of jets", "I", false, &Njets);
     outputMngrHist->addStandardTH1( "jet1_pt", 25, 0, 1000, "leading jet pt", "VF", false, &jets_pt,0);
@@ -55,6 +57,12 @@ int main() {
     outputMngrHist->addStandardTH1( "jet1_mv1", 0.05, -2, 2, "MV1", "VD", false, &jets_MV1,0);
     outputMngrHist->bookStandardTH1( "c0", false);
     outputMngrHist->bookStandardTH1( "c1", false);
+    
+    //
+    // Creating a single histogram
+    //
+    outputMngrHist->getHistManager()->BookTH1D("nEvents","Number of events",1,-0.5,0.5);
+
     
     //
     // Creating the output standard trees and branches
@@ -76,6 +84,8 @@ int main() {
     //
     //
     for ( unsigned int iEntry = 0; iEntry < nentries; ++iEntry){
+        
+        outputMngrHist -> getHistManager() -> FillTH1D("nEvents",0.);
         
         jets_pt -> clear();
         jets_isBtagged -> clear();

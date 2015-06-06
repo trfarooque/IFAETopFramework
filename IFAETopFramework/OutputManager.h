@@ -12,13 +12,10 @@
 #include "IFAETopFramework/SystManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/OptionsBase.h"
+#include "IFAETopFramework/HistManager.h"
 
-
-//class OptionsBase;
-class HistManager;
 class TreeManager;
 class OutputData;
-//class VariableDef;
 
 class OutputManager {
     
@@ -72,6 +69,7 @@ public:
     // Inline functions
     bool setSystVector( SystManager::SystVector *sysVector ){ m_sysVector = sysVector; return true;}
     bool setData( OutputData *data ){ m_data = data; return true;}
+    HistManager* getHistManager(){ return m_histMngr; }
     
     //
     //___________________________________________________________
@@ -145,8 +143,6 @@ public:
     bool saveStandardTH2( const TString& );
     
     
-    
-    //--------------------------------------------------------------
     //
     //___________________________________________________________
     // TREE-SPECIFIC FUNCTIONS
