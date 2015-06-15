@@ -24,14 +24,14 @@ public:
     //
     ///////////////////////////////////////////
     
-    Float_t         mu;
-    Int_t           vxp_n;
+    Float_t     mu;
+    Float_t     vxp_n;
     
-    Int_t           runNumber;
-    Int_t           eventNumber;
-    Int_t           HFtype;
+    Int_t       runNumber;
+    Int_t       eventNumber;
+    Int_t       HFtype;
     
-    Int_t           finalEvent_VLQType;
+    Int_t       finalEvent_VLQType;
     
     Int_t	    tree_mc_pdf_id1;
     Int_t	    tree_mc_pdf_id2;
@@ -40,6 +40,8 @@ public:
     Float_t	    tree_mc_pdf_scale;
     Float_t     tree_truth_ttbar_pT;
 
+    vector<bool>    *trigger;
+    
     
     ///////////////////////////////////////////
     //
@@ -62,6 +64,14 @@ public:
     vector<float>*         jet_trackWIDTH_pv0_1GeV;
     vector<int>*           jet_constit_n;
     vector<vector<int> >*  jet_constit_index;
+    vector<int>*           jet_passOR;
+    vector<int>*           jet_isBad;
+    vector<int>*           jet_nTracks;
+    vector<int>*           jet_truthLabel;
+    vector<double>*        jet_MV2c;
+    vector<int>*           jet_isb_60;
+    vector<int>*           jet_isb_70;
+    vector<int>*           jet_isb_85;
     
     
     
@@ -120,6 +130,14 @@ public:
     vector<float>   *el_etap;
     vector<float>   *el_etas2;
     vector<float>   *el_MI10_max40_ptsum;
+    vector<float>   *el_passOR;
+    vector<int>     *el_isSignal;
+    vector<float>   *el_ptvarcone20;
+    vector<float>   *el_ptvarcone30;
+    vector<float>   *el_topoetcone20;
+    vector<double>  *el_d0sig;
+    vector<double>  *el_z0;
+
     
     
     ///////////////////////////////////////////
@@ -136,6 +154,16 @@ public:
     vector<float>   *mu_charge;
     vector<int>     *mu_author;
     vector<int>     *mu_tight;
+    vector<int>     *mu_passOR;
+    vector<int>     *mu_isSignal;
+    vector<int>     *mu_isCosmic;
+    vector<int>     *mu_isBad;
+    vector<float>   *mu_ptvarcone20;
+    vector<float>   *mu_ptvarcone30;
+    vector<float>   *mu_topoetcone20;
+    vector<double>  *mu_d0sig;
+    vector<double>  *mu_z0;
+    
     
     ///////////////////////////////////////////
     //
@@ -145,7 +173,11 @@ public:
     
     Float_t MET_et;
     Float_t MET_phi;
-    
+    Float_t metcst;
+    Float_t metcst_phi;
+    Float_t mettst;
+    Float_t mettst_phi;
+
     
     ///////////////////////////////////////////
     //
@@ -170,7 +202,9 @@ public:
     Float_t tree_Weight, tree_BTagWeight,tree_LeptonSF;
     std::vector < double > *tree_TRFExBTagWeight, *tree_TRFInBTagWeight;
     Float_t tree_ToptTpTDataweight,tree_qcdWeight,tree_crossSection,tree_ttcc_rw,tree_ttbb_rw,tree_VpT_rw,tree_VpTHF_rw;
-    
+    Double_t         PUweight;
+    Double_t         BTagSFweight;
+    Double_t         weight_mc;
     
     std::vector< std::vector< float > > *tree_TRFDiscreteBTagWeight_ex, *tree_TRFDiscreteBTagWeight_in;
     std::vector< std::vector< bool > > *tree_TRFChosenTag_ex, *tree_TRFChosenTag_in;
@@ -246,6 +280,15 @@ public:
     double mT;//transverse mass of the leptonic W boson
     
     
+    
+    Float_t         Meff;
+    Float_t         ht;
+    Float_t         met_sig;
+    Float_t         mt;
+    Float_t         mt_min_bmet;
+    Float_t         mt_min_bmetW;
+
+    
     UInt_t          larError;
     UInt_t          tileError;
     UInt_t          coreFlags;
@@ -258,12 +301,10 @@ public:
     Bool_t          EF_e60_medium1;
     
     Int_t           OrigNumOfEventsInFile;
-    Float_t         PUweight;
     Float_t         ZVxpWeight;
     Float_t         XSection;
     Float_t         KFactor;
     Float_t         JVFSFweight;
-    Float_t         BTagSFweight;
     Float_t         totalScale;
     Float_t         elecScale;
     Float_t         muonScale;

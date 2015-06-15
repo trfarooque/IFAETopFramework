@@ -10,6 +10,7 @@ tree_mc_pdf_id1(0),tree_mc_pdf_id2(0),
 tree_mc_pdf_x1(0),tree_mc_pdf_x2(0),
 tree_mc_pdf_scale(0),
 tree_truth_ttbar_pT(0),
+trigger(0),
 
 //Jet variables
 jet_n(0),
@@ -17,6 +18,8 @@ jet_pt(0),jet_eta(0),jet_phi(0),jet_E(0),jet_m(0),jet_jvf(0),
 jet_btag_weight(0),jet_trueflav(0),jet_tagged(0),jet_MV1(0),
 jet_nTrk_pv0_1GeV(0),jet_trackWIDTH_pv0_1GeV(0),
 jet_constit_n(0),jet_constit_index(0),
+jet_passOR(0),jet_isBad(0),jet_nTracks(0),jet_truthLabel(0),
+jet_MV2c(0),jet_isb_60(0),jet_isb_70(0),jet_isb_85(0),
 
 //Bjets
 bjet_n(0),
@@ -35,18 +38,26 @@ el_trackz0pvunbiased(0),el_tracketa(0),el_trackphi(0),
 el_cl_E(0),el_cl_pt(0),el_cl_eta(0),el_cl_phi(0),
 el_OQ(0),el_etap(0),el_etas2(0),
 el_MI10_max40_ptsum(0),
+el_passOR(0),el_isSignal(0),el_ptvarcone20(0),
+el_ptvarcone30(0),el_topoetcone20(0),el_d0sig(0),el_z0(0),
 
 //Muon variables
 mu_n(0),
 mu_E(0),mu_pt(0),mu_eta(0),mu_phi(0),
 mu_charge(0),mu_author(0),mu_tight(0),
+mu_passOR(0),mu_isSignal(0),mu_isCosmic(0),
+mu_isBad(0),mu_ptvarcone20(0),mu_ptvarcone30(0),
+mu_topoetcone20(0),mu_d0sig(0),mu_z0(0),
 
+//MET
+metcst(0),metcst_phi(0),mettst(0),mettst_phi(0),
 //Weight variables
 tree_Weight(0),tree_BTagWeight(0),tree_LeptonSF(0),
 tree_TRFExBTagWeight(0),tree_TRFInBTagWeight(0),
 tree_ToptTpTDataweight(0),
 tree_qcdWeight(0),tree_crossSection(0),
 tree_ttcc_rw(0),tree_ttbb_rw(0),tree_VpT_rw(0),tree_VpTHF_rw(0),
+PUweight(0),BTagSFweight(0),weight_mc(0),
 
 tree_TRFDiscreteBTagWeight_ex(0),tree_TRFDiscreteBTagWeight_in(0),
 tree_TRFChosenTag_ex(0),tree_TRFChosenTag_in(0),
@@ -124,7 +135,8 @@ finalEvent_ttbarbb_scale2(0),
 finalEvent_noVpt_rw(0),
 
 //Kinematic variables
-HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0)
+HTalljets(0),LT(0),HTleptonsJets(0),meff(0),mT(0),
+Meff(0),ht(0),met_sig(0),mt(0),mt_min_bmet(0),mt_min_bmetW(0)
 {
     jet_pt = new std::vector < float >;
     
