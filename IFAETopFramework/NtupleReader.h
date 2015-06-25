@@ -1,20 +1,44 @@
+/*
+ 
+ NtupleReader class
+ ==================
+ Allows to do the interface between the input ntuples and the variables used in the users' analysis
+ code.
+ Most functions in the implementation file of this class are empty: they have to be implemented in the
+ inherited classes !!
+ 
+ Contacts
+ --------
+ Trisha Farooque <trisha.farooque@cern.ch>
+ Loic Valery <lvalery@cern.ch>
+ 
+*/
+
+
 #ifndef NTUPLEREADER_H
-#define NTUPLEREEADER_H
+#define NTUPLEREADER_H
 
 #include <string>
 #include <map>
-#include "TChain.h"
 
+class TChain;
 class OptionsBase;
 class NtupleData;
-class TBranch;
 
 class NtupleReader{
     
 public:
-    NtupleReader(NtupleData* ntupData, OptionsBase* opt);
-    virtual ~NtupleReader();
     
+    //
+    // Standard C++ classes
+    //
+    NtupleReader(NtupleData* ntupData, OptionsBase* opt);
+    NtupleReader(const NtupleReader &);
+    virtual ~NtupleReader();
+
+    //
+    // Class specific functions
+    //
     void Init();
     void Finalise();
     virtual void EmptyBranches();
@@ -32,9 +56,9 @@ public:
     
     virtual int setWeightBranchAddresses(const std::string &sj);
     
-    int getChainEntry(long entry){return m_chain->GetEntry(entry); }
-    int chainNEntries(){return m_chain->GetEntries();}
     
+    int getChainEntry(long entry) const ;
+    int chainNEntries() const;
     void ChainFromTextFile(TChain* ch, std::string infilename);
     void ChainFromStrList(TChain* ch, std::string infilelist);
     
@@ -47,7 +71,8 @@ protected:
     TChain* m_chain;    //!
     OptionsBase* m_opt;
     NtupleData* m_ntupData;
+    
 };
 
 
-#endif
+#endif //NTUPLEREADER_H
