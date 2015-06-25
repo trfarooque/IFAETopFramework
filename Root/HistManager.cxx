@@ -2,17 +2,24 @@
 
 using namespace std;
 
+//__________________________________________________________________
+//
 HistManager::HistManager(){
-
   m_h1d.clear();
   m_h2d.clear();
   m_h3d.clear();
-
-  return;
-
 }
 
+//__________________________________________________________________
+//
+HistManager::HistManager( const HistManager &q ){
+    m_h1d = q.m_h1d;
+    m_h1d = q.m_h2d;
+    m_h1d = q.m_h3d;
+}
 
+//__________________________________________________________________
+//
 vector<string> HistManager::GetTH1KeyList(){
 
   vector<string> v_key; v_key.clear();
@@ -23,6 +30,8 @@ vector<string> HistManager::GetTH1KeyList(){
   return v_key;
 }
 
+//__________________________________________________________________
+//
 vector<string> HistManager::GetTH2KeyList(){
 
   vector<string> v_key; v_key.clear();
@@ -33,6 +42,8 @@ vector<string> HistManager::GetTH2KeyList(){
   return v_key;
 }
 
+//__________________________________________________________________
+//
 vector<string> HistManager::GetTH3KeyList(){
 
   vector<string> v_key; v_key.clear();
@@ -43,7 +54,8 @@ vector<string> HistManager::GetTH3KeyList(){
   return v_key;
 }
 
-
+//__________________________________________________________________
+//
 void HistManager::FinaliseTH1Bins(string s_hist){
   if(m_h1d.find(s_hist) == m_h1d.end() ){cout<<"H1D "<<s_hist<<" not found "<<endl; return;}
   int nbins = m_h1d[s_hist]->GetNbinsX();
@@ -73,6 +85,8 @@ void HistManager::FinaliseTH1Bins(string s_hist){
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::ClearTH1(string s_hist){
 
   if(m_h1d.find(s_hist) == m_h1d.end() ){cout<<"H1D "<<s_hist<<" not found "<<endl; return;}
@@ -83,6 +97,8 @@ void HistManager::ClearTH1(string s_hist){
 
 }
 
+//__________________________________________________________________
+//
 void HistManager::ClearTH2(string s_hist){
 
   if(m_h2d.find(s_hist) == m_h2d.end() ){cout<<"H2D "<<s_hist<<" not found "<<endl;}
@@ -93,6 +109,8 @@ void HistManager::ClearTH2(string s_hist){
 
 }
 
+//__________________________________________________________________
+//
 void HistManager::ClearTH3(string s_hist){
 
   if(m_h3d.find(s_hist) == m_h3d.end() ){cout<<"H3D "<<s_hist<<" not found "<<endl;}
@@ -103,6 +121,8 @@ void HistManager::ClearTH3(string s_hist){
 
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH1D(string key, string name, string title){
   TH1D* h1 = new TH1D();
   h1->SetName(name.c_str());
@@ -116,6 +136,8 @@ void HistManager::BookTH1D(string key, string name, string title){
 
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH2D(string key, string name, string title){
   TH2D* h2 = new TH2D();
   h2->SetName(name.c_str());
@@ -129,6 +151,8 @@ void HistManager::BookTH2D(string key, string name, string title){
 
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH3D(string key, string name, string title){
   TH3D* h3 = new TH3D();
   h3->SetName(name.c_str());
@@ -142,7 +166,8 @@ void HistManager::BookTH3D(string key, string name, string title){
 
 }
 
-
+//__________________________________________________________________
+//
 void HistManager::BookTH1D(string name, string title, double binsize, double xlow, double xup, 
 			   string key, string xtitle, string ytitle, int lw, int lc){
 
@@ -162,6 +187,8 @@ void HistManager::BookTH1D(string name, string title, double binsize, double xlo
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH1D(string name, string title, int nbins, double* xedges, 
 	      string key, string xtitle, string ytitle, int lw, int lc){
   TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xedges);
@@ -177,6 +204,8 @@ void HistManager::BookTH1D(string name, string title, int nbins, double* xedges,
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH2D(string name, string title, double xbinsize, double xlow, double xup,
 	      double ybinsize, double ylow, double yup, 
 	      string key, string xtitle, string ytitle, int lw, int lc){
@@ -200,6 +229,8 @@ void HistManager::BookTH2D(string name, string title, double xbinsize, double xl
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH2D(string name, string title, 
 	      int nxbins, double* xedges, int nybins, double* yedges, 
 	      string key, string xtitle, string ytitle, int lw, int lc){
@@ -217,6 +248,8 @@ void HistManager::BookTH2D(string name, string title,
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH2D(string name, string title, double xbinsize, double xlow, double xup,
 	      int nybins, double* yedges, 
 	      string key, string xtitle, string ytitle, int lw, int lc){
@@ -238,19 +271,18 @@ void HistManager::BookTH2D(string name, string title, double xbinsize, double xl
 
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH3D(string name, string title, double xbinsize, double xlow, double xup,
-	      double ybinsize, double ylow, double yup, int nzbins, double* zedges, 
-	      string key, string xtitle, string ytitle, string ztitle, int lw, int lc){
+                           double ybinsize, double ylow, double yup, int nzbins, double* zedges,
+                           string key, string xtitle, string ytitle, string ztitle, int lw, int lc){
+    
   double dnxbins=(xup-xlow)/xbinsize +0.5;
   double dnybins=(yup-ylow)/ybinsize +0.5;
 
   int nxbins=(int)(dnxbins);
   int nybins=(int)(dnybins);
-  /*
-  cout<<"name="<<name<<"dnxbins="<<dnxbins<<" nxbins="<<nxbins<<" dnybins="<<dnybins<<" nybins="<<nybins<<endl;
-  cout<<" xlow="<<xlow<<" xup="<<xup<<endl;
-  cout<<" ylow="<<ylow<<" yup="<<yup<<endl;
-  */
+
   double xe[nxbins+1]; double ye[nybins+1];
   for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}// cout<<"i="<<"xe="<<xe[i]<<endl;}
   for(int i=0; i<=nybins; i++){ye[i]=ylow+i*ybinsize;}// cout<<"i="<<"ye="<<ye[i]<<endl;}
@@ -270,10 +302,12 @@ void HistManager::BookTH3D(string name, string title, double xbinsize, double xl
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH3D(string name, string title, double xbinsize, double xlow, double xup,
-	      double ybinsize, double ylow, double yup, 
-	      double zbinsize, double zlow, double zup, 
-	      string key, string xtitle, string ytitle, string ztitle, int lw, int lc){
+                           double ybinsize, double ylow, double yup,
+                           double zbinsize, double zlow, double zup,
+                           string key, string xtitle, string ytitle, string ztitle, int lw, int lc){
 
   double dnxbins=(xup-xlow)/xbinsize +0.5;
   double dnybins=(yup-ylow)/ybinsize +0.5;
@@ -297,9 +331,11 @@ void HistManager::BookTH3D(string name, string title, double xbinsize, double xl
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::BookTH3D(string name, string title, double xbinsize, double xlow, double xup,
-	      int nybins, double* yedges, int nzbins, double* zedges, 
-	      string key, string xtitle, string ytitle, string ztitle, int lw, int lc){
+                           int nybins, double* yedges, int nzbins, double* zedges,
+                           string key, string xtitle, string ytitle, string ztitle, int lw, int lc){
 
   double dnxbins=(xup-xlow)/xbinsize +0.5;
   int nxbins=(int)(dnxbins);
@@ -320,6 +356,8 @@ void HistManager::BookTH3D(string name, string title, double xbinsize, double xl
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::FillTH1D(string hkey, double val, double wgt){
 
   if(m_h1d.find(hkey) == m_h1d.end()){cout<<"Error: TH1D "<<hkey<<" not found to fill"<<endl;}
@@ -328,6 +366,9 @@ void HistManager::FillTH1D(string hkey, double val, double wgt){
 
   return;
 }
+
+//__________________________________________________________________
+//
 void HistManager::FillTH2D(string hkey, double val1, double val2, double wgt){
 
   if(m_h2d.find(hkey) == m_h2d.end()){cout<<"Error: TH2D "<<hkey<<" not found to fill"<<endl;}
@@ -337,6 +378,8 @@ void HistManager::FillTH2D(string hkey, double val1, double val2, double wgt){
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::FillTH3D(string hkey, double val1, double val2, double val3, double wgt){
 
   if(m_h3d.find(hkey) == m_h3d.end()){cout<<"Error: TH3D "<<hkey<<" not found to fill"<<endl;}
@@ -347,7 +390,8 @@ void HistManager::FillTH3D(string hkey, double val1, double val2, double val3, d
 
 }
 
-
+//__________________________________________________________________
+//
 void HistManager::SetTH1D(string hkey, TH1D* h1d){
 
   if(m_h1d.find(hkey) != m_h1d.end()){cout<<"Error: TH1D "<<hkey<<" already exists"<<endl;}
@@ -355,13 +399,18 @@ void HistManager::SetTH1D(string hkey, TH1D* h1d){
 
   return;
 }
+
+//__________________________________________________________________
+//
 void HistManager::SetTH2D(string hkey, TH2D* h2d){
 
   if(m_h2d.find(hkey) != m_h2d.end()){cout<<"Error: TH2D "<<hkey<<" already exists"<<endl;}
   else{m_h2d[hkey] = h2d;}
-
   return;
 }
+
+//__________________________________________________________________
+//
 void HistManager::SetTH3D(string hkey, TH3D* h3d){
 
   if(m_h3d.find(hkey) != m_h3d.end()){cout<<"Error: TH3D "<<hkey<<" already exists"<<endl;}
@@ -370,6 +419,8 @@ void HistManager::SetTH3D(string hkey, TH3D* h3d){
   return;
 }
 
+//__________________________________________________________________
+//
 void HistManager::ReplaceTH1D(string hkey, TH1D* h1d){
 
   if(m_h1d.find(hkey) != m_h1d.end()){ delete m_h1d[hkey]; }
@@ -377,6 +428,9 @@ void HistManager::ReplaceTH1D(string hkey, TH1D* h1d){
 
   return;
 }
+
+//__________________________________________________________________
+//
 void HistManager::ReplaceTH2D(string hkey, TH2D* h2d){
 
   if(m_h2d.find(hkey) != m_h2d.end()){ delete m_h2d[hkey]; }
@@ -384,6 +438,9 @@ void HistManager::ReplaceTH2D(string hkey, TH2D* h2d){
 
   return;
 }
+
+//__________________________________________________________________
+//
 void HistManager::ReplaceTH3D(string hkey, TH3D* h3d){
 
   if(m_h3d.find(hkey) != m_h3d.end()){ delete m_h3d[hkey]; }
@@ -392,7 +449,8 @@ void HistManager::ReplaceTH3D(string hkey, TH3D* h3d){
   return;
 }
 
-
+//__________________________________________________________________
+//
 int HistManager::ReadTH1D(string name, TFile* f, string key){
 
   string s;
@@ -414,7 +472,8 @@ int HistManager::ReadTH1D(string name, TFile* f, string key){
 
 }
 
-
+//__________________________________________________________________
+//
 int HistManager::ReadTH2D(string name, TFile* f, string key){
 
   string s;
@@ -436,6 +495,8 @@ int HistManager::ReadTH2D(string name, TFile* f, string key){
 
 }
 
+//__________________________________________________________________
+//
 int HistManager::ReadTH3D(string name, TFile* f, string key){
 
   string s;
@@ -454,7 +515,6 @@ int HistManager::ReadTH3D(string name, TFile* f, string key){
   if(m_h3d[s]->GetSumw2N()==0){m_h3d[s]->Sumw2();}
   
   return 0;
-
 }
 
 

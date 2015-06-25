@@ -1,9 +1,22 @@
-#include <iostream>
 #include "IFAETopFramework/OutputData.h"
 
-using namespace std;
-OutputData::OutputData():
 
-  finalEvent_weightNom(0.){ }
+//__________________________________________________________
+//
+OutputData::OutputData()
+{}
 
-void OutputData::EmptyOutputData(){ }
+//__________________________________________________________
+//
+OutputData::~OutputData()
+{}
+
+//__________________________________________________________
+//
+void OutputData::ClearOutputData()
+{}
+
+//__________________________________________________________
+//
+void OutputData::EmptyOutputData()
+{}

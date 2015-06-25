@@ -5,7 +5,6 @@
 
 #include "IFAETopFramework/OptionsBase.h"
 
-
 //_____________________________________________________________________________________________
 //
 OptionsBase::OptionsBase():
