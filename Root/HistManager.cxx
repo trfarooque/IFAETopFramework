@@ -14,8 +14,8 @@ HistManager::HistManager(){
 //
 HistManager::HistManager( const HistManager &q ){
     m_h1d = q.m_h1d;
-    m_h1d = q.m_h2d;
-    m_h1d = q.m_h3d;
+    m_h2d = q.m_h2d;
+    m_h3d = q.m_h3d;
 }
 
 //__________________________________________________________________

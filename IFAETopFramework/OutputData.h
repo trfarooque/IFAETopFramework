@@ -10,6 +10,8 @@ public:
     virtual void ClearOutputData();
     virtual void EmptyOutputData();
     
+public:
+    double finalEvent_weightNom;
 };
 
 #endif //OUTPUTDATA_H

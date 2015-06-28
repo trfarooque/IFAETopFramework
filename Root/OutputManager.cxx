@@ -100,34 +100,36 @@ bool OutputManager::bookStandardTH1( const TString &pattern, const bool hasSyst)
     
     m_mapHasSyst -> insert( std::pair <TString, bool>(pattern,hasSyst));
     
-    for ( std::map< TString, h1Def* >::iterator it = m_stdTH1Def->begin(); it != m_stdTH1Def->end(); ++it){
+    //
+    // Loop over the registered histograms (to be booked for nominal and weight systematics)
+    //
+    for ( const auto h1 : *m_stdTH1Def ){
         
         TString histName = pattern;
         histName += "_" ;
         
-        histName += it->second->var.name();
+        histName += h1.second->var.name();
         m_histMngr -> BookTH1D((std::string)histName,
-                               (std::string)(it->second->var.title()),
-                               it->second->width,
-                               it->second->min,
-                               it->second->max);
+                               (std::string)(h1.second->var.title()),
+                               h1.second->width,
+                               h1.second->min,
+                               h1.second->max);
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
-        if(hasSyst && it->second->hasSyst){
+        if(hasSyst && h1.second->hasSyst){
             if(!m_sysVector){
                 std::cerr << "<!> ERROR in OutputManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
             } else {
-                for (unsigned int iSys = 0; iSys < m_sysVector->size(); ++iSys) {
+                for (const auto &sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += m_sysVector->at(iSys)->name;
+                    systHistName += sys.second->name();
                     m_histMngr -> BookTH1D((std::string)systHistName,
-                                           (std::string)(it->second->var.title()),
-                                           it->second->width,
-                                           it->second->min,
-                                           it->second->max);
-                    
+                                           (std::string)(h1.second->var.title()),
+                                           h1.second->width,
+                                           h1.second->min,
+                                           h1.second->max);
                     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
             }
@@ -150,33 +152,30 @@ bool OutputManager::fillStandardTH1( const TString &pattern ){
         return false;
     }
     
-    for ( std::map< TString, h1Def* >::iterator it = m_stdTH1Def->begin(); it != m_stdTH1Def->end(); ++it){
+    for ( const auto h1 : *m_stdTH1Def ){
         
         //Nominal histogram filling
         TString histName = pattern;
         histName += "_";
-        histName += it->second->var.name();
+        histName += h1.second->var.name();
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Before filling histogram : " << histName << std::endl;
         
-        m_histMngr -> FillTH1D((std::string)histName, it->second->var.GetDoubleValue(), m_data->finalEvent_weightNom);
+        m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->finalEvent_weightNom);
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
         //Now checking systematics (if needed and if existing)
-        if(it->second->hasSyst && m_mapHasSyst->at(pattern)){
+        if(h1.second->hasSyst && m_mapHasSyst->at(pattern)){
             if(!m_sysVector){
                 std::cerr << "<!> ERROR in OutputManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
             } else {
-                for (unsigned int iSys = 0; iSys < m_sysVector->size(); ++iSys) {
+                
+                for (const auto sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += m_sysVector->at(iSys)->name;
-                    
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Before filling histogram : " << systHistName << std::endl;
-                    m_histMngr -> FillTH1D((std::string)histName, it->second->var.GetDoubleValue(), m_sysVector->at(iSys)->value);
-                    
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+                    systHistName += sys.second->name();
+                    m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
                 }
             }
         }
@@ -194,14 +193,13 @@ bool OutputManager::saveStandardTH1( const TString &outputName ){
     
     //Storing TH1 in the output file
     vector<string> h1list = m_histMngr->GetTH1KeyList();
-    for(vector<string>::iterator hit = h1list.begin(); hit != h1list.end(); hit++){
-        m_histMngr->FinaliseTH1Bins(*hit);
+    for( const auto it_h1 : h1list ){
+        m_histMngr->FinaliseTH1Bins(it_h1);
         f->cd();
-        m_histMngr->GetTH1D(*hit)->Write();
-        m_histMngr->ClearTH1(*hit);
+        m_histMngr->GetTH1D(it_h1)->Write();
+        m_histMngr->ClearTH1(it_h1);
     }
     f -> Close();
-    
     return true;
 }
 
@@ -248,44 +246,44 @@ bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst)
     
     m_mapHasSyst -> insert( std::pair <TString, bool>(pattern,hasSyst));
     
-    for ( std::map< TString, h2Def* >::iterator it = m_stdTH2Def->begin(); it != m_stdTH2Def->end(); ++it){
+    for ( const auto h2 : *m_stdTH2Def ){
         
         TString histName = pattern;
         histName += "_";
-        histName += it->second->varY.name();
+        histName += h2.second->varY.name();
         histName += "_vs_";
-        histName += it->second->varX.name();
-        TString histTitle = it->second->varY.title();
+        histName += h2.second->varX.name();
+        TString histTitle = h2.second->varY.title();
         histTitle += " vs ";
-        histTitle += it->second->varX.title();
+        histTitle += h2.second->varX.title();
         
         m_histMngr -> BookTH2D((std::string)histName,
                                (std::string)histTitle,
-                               it->second->widthX,
-                               it->second->minX,
-                               it->second->maxX,
-                               it->second->widthY,
-                               it->second->minY,
-                               it->second->maxY);
+                               h2.second->widthX,
+                               h2.second->minX,
+                               h2.second->maxX,
+                               h2.second->widthY,
+                               h2.second->minY,
+                               h2.second->maxY);
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
-        if(hasSyst && it->second->hasSyst){
+        if(hasSyst && h2.second->hasSyst){
             if(!m_sysVector){
                 std::cerr << "<!> ERROR in OutputManager::bookStandardTH2: You want to use systematics, but none is defined ... Please check !" << std::endl;
             } else {
-                for (unsigned int iSys = 0; iSys < m_sysVector->size(); ++iSys) {
+                for (const auto sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += m_sysVector->at(iSys)->name;
+                    systHistName += sys.second->name();
                     m_histMngr -> BookTH2D((std::string)systHistName,
                                            (std::string)histTitle,
-                                           it->second->widthX,
-                                           it->second->minX,
-                                           it->second->maxX,
-                                           it->second->widthY,
-                                           it->second->minY,
-                                           it->second->maxY);
+                                           h2.second->widthX,
+                                           h2.second->minX,
+                                           h2.second->maxX,
+                                           h2.second->widthY,
+                                           h2.second->minY,
+                                           h2.second->maxY);
                     
                     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
@@ -309,35 +307,31 @@ bool OutputManager::fillStandardTH2( const TString &pattern ){
         return false;
     }
     
-    for ( std::map< TString, h2Def* >::iterator it = m_stdTH2Def->begin(); it != m_stdTH2Def->end(); ++it){
+    for ( const auto h2 : *m_stdTH2Def ){
         
         //Nominal histogram filling
         TString histName = pattern;
         histName += "_";
-        histName += it->second->varY.name();
+        histName += h2.second->varY.name();
         histName += "_vs_";
-        histName += it->second->varX.name();
+        histName += h2.second->varX.name();
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Before filling histogram : " << histName << std::endl;
         
-        m_histMngr -> FillTH2D((std::string)histName, it->second->varX.GetDoubleValue(), it->second->varY.GetDoubleValue(), m_data->finalEvent_weightNom);
+        m_histMngr -> FillTH2D((std::string)histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), m_data->finalEvent_weightNom);
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
         //Now checking systematics (if needed and if existing)
-        if(it->second->hasSyst && m_mapHasSyst->at(pattern)){
+        if(h2.second->hasSyst && m_mapHasSyst->at(pattern)){
             if(!m_sysVector){
                 std::cerr << "<!> ERROR in OutputManager::bookStandardTH2: You want to use systematics, but none is defined ... Please check !" << std::endl;
             } else {
-                for (unsigned int iSys = 0; iSys < m_sysVector->size(); ++iSys) {
+                for(const auto sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += m_sysVector->at(iSys)->name;
-                    
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Before filling histogram : " << systHistName << std::endl;
-                    m_histMngr -> FillTH2D((std::string)histName, it->second->varX.GetDoubleValue(), it->second->varY.GetDoubleValue(), m_sysVector->at(iSys)->value);
-                    
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+                    systHistName += sys.second->name();
+                    m_histMngr -> FillTH2D((std::string)histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), sys.second->GetDoubleValue());
                 }
             }
         }
@@ -352,16 +346,17 @@ bool OutputManager::fillStandardTH2( const TString &pattern ){
 bool OutputManager::saveStandardTH2( const TString &outputName ){
     
     TFile *f = new TFile(outputName,"recreate");
-    
-    //Storing TH2 in the output file
+
+    //
+    // Storing TH2 in the output file
+    //
     vector<string> h2list = m_histMngr->GetTH2KeyList();
-    for(vector<string>::iterator hit = h2list.begin(); hit != h2list.end(); hit++){
+    for( const auto it_h2 : h2list ){
         f->cd();
-        m_histMngr->GetTH2D(*hit)->Write();
-        m_histMngr->ClearTH2(*hit);
+        m_histMngr->GetTH2D(it_h2)->Write();
+        m_histMngr->ClearTH2(it_h2);
     }
     f -> Close();
-    
     return true;
 }
 
@@ -378,22 +373,20 @@ bool OutputManager::bookStandardTree( const TString &pattern, const TString &tit
     m_treeMngr->BookTree((std::string)pattern, (std::string)title);
     
     //Loop over the list of standard branches and add those branches to the tree
-    for ( std::map< TString, VariableDef* >::iterator it = m_stdBranchDef->begin(); it != m_stdBranchDef->end(); ++it){
-        m_treeMngr->AddBranchToTree((std::string)pattern, *(it->second));
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Added branch : " << it->first << std::endl;
+    for ( const auto branch : *m_stdBranchDef ){
+        m_treeMngr->AddBranchToTree((std::string)pattern, *(branch.second));
+        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Added branch : " << branch.first << std::endl;
     }
-    
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTree" << std::endl;
-    
     return true;
 }
 
 //_________________________________________________________________
 //
 bool OutputManager::fillStandardTree( const TString &pattern ){
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTrees" << std::endl;
+    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTree" << std::endl;
     m_treeMngr->FillTree((std::string)pattern);
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTrees" << std::endl;
+    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTree" << std::endl;
     return true;
 }
 
@@ -403,9 +396,9 @@ bool OutputManager::saveStandardTree( const TString &outputName ){
     
     TFile *f = new TFile(outputName,"recreate");
     vector<string> treeList = m_treeMngr->GetTreeKeyList();
-    for(vector<string>::iterator it = treeList.begin(); it != treeList.end(); it++){
-        f->cd();
-        m_treeMngr->GetTree(*it)->Write();
+    for( const auto treeName : treeList ){
+        f -> cd();
+        m_treeMngr -> GetTree(treeName) -> Write();
     }
     f -> Close();
     return true;
