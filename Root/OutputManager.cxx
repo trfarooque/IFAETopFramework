@@ -161,7 +161,7 @@ bool OutputManager::fillStandardTH1( const TString &pattern ){
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Before filling histogram : " << histName << std::endl;
         
-        m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->finalEvent_weightNom);
+        m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
@@ -318,7 +318,7 @@ bool OutputManager::fillStandardTH2( const TString &pattern ){
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Before filling histogram : " << histName << std::endl;
         
-        m_histMngr -> FillTH2D((std::string)histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), m_data->finalEvent_weightNom);
+        m_histMngr -> FillTH2D((std::string)histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), m_data->o_eventWeight_Nom);
         
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         

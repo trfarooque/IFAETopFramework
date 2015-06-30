@@ -42,7 +42,7 @@ int main() {
     //
     //
     OutputData *data = new OutputData();
-    data -> finalEvent_weightNom = 1;//This is the variable used for filling the nominal histograms
+    data -> o_eventWeight_Nom = 1;//This is the variable used for filling the nominal histograms
     outputMngrHist -> setData(data);//Associates the "data" object to the OutputManager one
     
     //

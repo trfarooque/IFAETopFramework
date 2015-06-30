@@ -4,7 +4,7 @@
 //__________________________________________________________
 //
 OutputData::OutputData():
-finalEvent_weightNom(0.)
+o_eventWeight_Nom(0.)
 {}
 
 //__________________________________________________________
@@ -16,7 +16,7 @@ OutputData::~OutputData()
 //
 void OutputData::ClearOutputData()
 {
-    finalEvent_weightNom = 0;
+    o_eventWeight_Nom = 0;
 }
 
 //__________________________________________________________

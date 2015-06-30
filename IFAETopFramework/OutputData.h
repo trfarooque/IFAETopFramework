@@ -11,7 +11,7 @@ public:
     virtual void EmptyOutputData();
     
 public:
-    double finalEvent_weightNom;
+    double o_eventWeight_Nom;
 };
 
 #endif //OUTPUTDATA_H
