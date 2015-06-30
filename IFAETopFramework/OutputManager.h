@@ -28,9 +28,9 @@ public:
         TREES,
         ALL
     };
+    
     //________________________
     // Structs to make the code readable
-    
     struct h1Def{
         VariableDef var;
         double width;
@@ -51,13 +51,11 @@ public:
         bool hasSyst;
     };
     
-    //No additional structs for trees
-    
-    
+    //_________________________
+    // Typedefs
     typedef std::map < TString, h1Def* > StdTH1;
     typedef std::map < TString, h2Def* > StdTH2;
     typedef std::map < TString, VariableDef* > StdBranches;
-    
     
     //________________________
     // Member functions

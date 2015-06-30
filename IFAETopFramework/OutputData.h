@@ -6,6 +6,7 @@ class OutputData {
     
 public:
     OutputData();
+    OutputData( const OutputData & );
     virtual ~OutputData();
     virtual void ClearOutputData();
     virtual void EmptyOutputData();

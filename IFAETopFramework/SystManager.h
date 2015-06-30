@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include "TString.h"
 
 class OptionsBase;
 class VariableDef;
@@ -35,7 +36,7 @@ public:
     //
     void Print() const;
     
-    template< typename T > bool AddSystematic( const std::string &name, T *t, int type ) {
+    template< typename T > bool AddSystematic( const std::string &name, T *t, TString type ) {
         if(!t) std::cerr << "<!> ERROR in SystManager::AddSystematic(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         Systematic *sys = new Systematic(name, name, type, t);
         
@@ -51,7 +52,7 @@ public:
         return true;
     }
     
-    template< typename T > bool UpdateSystematic( const std::string &name, T *t, int type ) {
+    template< typename T > bool UpdateSystematic( const std::string &name, T *t, TString type ) {
         if(!t) std::cerr << "<!> ERROR in SystManager::AddSystematic(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         Systematic *sys = new Systematic(name, name, type, t);
         
