@@ -12,7 +12,7 @@
 #include "TString.h"
 #include "TSystem.h"
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 OutputManager::OutputManager( OptionsBase* opt, OutputType type ):
 m_opt(opt),
@@ -39,9 +39,10 @@ m_mapHasSyst(0)
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
 }
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
-OutputManager::OutputManager( const OutputManager &q ){
+OutputManager::OutputManager( const OutputManager &q )
+{
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager copy-constructor" << std::endl;
     
     m_opt = q.m_opt;
@@ -58,7 +59,7 @@ OutputManager::OutputManager( const OutputManager &q ){
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager copy-constructor" << std::endl;
 }
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 OutputManager::~OutputManager()
 {
@@ -66,7 +67,7 @@ OutputManager::~OutputManager()
 }
 
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::addStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst){
     
@@ -92,11 +93,19 @@ bool OutputManager::addStandardTH1(const TString name, const double width, const
     return true;
 }
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::bookStandardTH1( const TString &pattern, const bool hasSyst){
     
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTH1" << std::endl;
+    
+    //
+    // Check the mode is correct
+    //
+    if(m_type==TREES){
+        std::cout << "<!> ERROR in OutputManager::bookStandardTH1(): histogram booking has been requested in TREES mode. Please check." << std::endl;
+        return false;
+    }
     
     m_mapHasSyst -> insert( std::pair <TString, bool>(pattern,hasSyst));
     
@@ -138,6 +147,14 @@ bool OutputManager::fillStandardTH1( const TString &pattern ){
     
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager::fillStandardTH1("<<pattern<<")" << std::endl;
     
+    //
+    // Check the mode is correct
+    //
+    if(m_type==TREES){
+        std::cout << "<!> ERROR in OutputManager::fillStandardTH1(): histogram booking has been requested in TREES mode. Please check." << std::endl;
+        return false;
+    }
+    
     if(!m_data){
         std::cerr << "<!> ERROR in OutputManager::fillStandardTH1: We have big problems ... Please provide an OutputData object" << std::endl;
         return false;
@@ -152,10 +169,11 @@ bool OutputManager::fillStandardTH1( const TString &pattern ){
         histName += "_";
         histName += h1.second->var.name();
         m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
-        
         if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
-        //Now checking systematics (if needed and if existing)
+        //
+        // Now checking systematics (if needed and if existing)
+        //
         if(h1.second->hasSyst && m_mapHasSyst->at(pattern)){
             if(!m_sysVector){
                 std::cerr << "<!> ERROR in OutputManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
@@ -192,10 +210,18 @@ bool OutputManager::saveStandardTH1( const TString &outputName ){
 }
 
 //-----------------------------TH2-SPECIFIC METHODS-------------------------------
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::addStandardTH2( const TString name, const double widthX, const double minX, const double maxX,
                                    const double widthY, const double minY, const double maxY, const bool hasSyst){
+    
+    //
+    // Check the mode is correct
+    //
+    if(m_type==TREES){
+        std::cout << "<!> ERROR in OutputManager::addStandardTH2(): histogram booking has been requested in TREES mode. Please check." << std::endl;
+        return false;
+    }
     
     if(m_opt -> msgLevel() == Debug::DEBUG){
         std::cout << "In OutputManager::addStandardTH2" << std::endl;
@@ -225,11 +251,19 @@ bool OutputManager::addStandardTH2( const TString name, const double widthX, con
     return true;
 }
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst){
     
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTH2" << std::endl;
+    
+    //
+    // Check the mode is correct
+    //
+    if(m_type==TREES){
+        std::cout << "<!> ERROR in OutputManager::bookStandardTH2(): histogram booking has been requested in TREES mode. Please check." << std::endl;
+        return false;
+    }
     
     m_mapHasSyst -> insert( std::pair <TString, bool>(pattern,hasSyst));
     
@@ -274,6 +308,14 @@ bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst)
 bool OutputManager::fillStandardTH2( const TString &pattern ){
     
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager::fillStandardTH2("<<pattern<<")" << std::endl;
+    
+    //
+    // Check the mode is correct
+    //
+    if(m_type==TREES){
+        std::cout << "<!> ERROR in OutputManager::fillStandardTH2(): histogram booking has been requested in TREES mode. Please check." << std::endl;
+        return false;
+    }
     
     if(!m_data){
         std::cerr << "<!> ERROR in OutputManager::fillStandardTH2: We have big problems ... Please provide an OutputData object" << std::endl;
@@ -335,11 +377,19 @@ bool OutputManager::saveStandardTH2( const TString &outputName ){
 }
 
 //-----------------------------TREE-SPECIFIC METHODS-------------------------------
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::bookStandardTree( const TString &pattern, const TString &title){
     
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTree" << std::endl;
+    
+    //
+    // Check the mode is correct
+    //
+    if(m_type==HISTOS){
+        std::cout << "<!> ERROR in OutputManager::bookStandardTree(): tree booking has been requested in HISTOS mode. Please check." << std::endl;
+        return false;
+    }
     
     //Book a tree with the given name
     m_treeMngr->BookTree((std::string)pattern, (std::string)title);
@@ -353,16 +403,25 @@ bool OutputManager::bookStandardTree( const TString &pattern, const TString &tit
     return true;
 }
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::fillStandardTree( const TString &pattern ){
+    
+    //
+    // Check the mode is correct
+    //
+    if(m_type==HISTOS){
+        std::cout << "<!> ERROR in OutputManager::fillStandardTree(): tree booking has been requested in HISTOS mode. Please check." << std::endl;
+        return false;
+    }
+    
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTree" << std::endl;
     m_treeMngr->FillTree((std::string)pattern);
     if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTree" << std::endl;
     return true;
 }
 
-//_________________________________________________________________
+//______________________________________________________________________________________
 //
 bool OutputManager::saveStandardTree( const TString &outputName ){
     TFile *f = new TFile(outputName,"recreate");

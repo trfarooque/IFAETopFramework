@@ -78,6 +78,11 @@ public:
                                                const double max, const TString &title, const TString &variableType,
                                                const bool hasSyst, T *t, const int vec_ind = -1) {
         
+        if(m_type==TREES){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH1 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         
         bool added = addStandardTH1(name, width, min, max, hasSyst);
@@ -114,6 +119,11 @@ public:
                                                              const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
                                                              const bool hasSyst, TX *tX, TY *tY, const int vec_indX = -1, const int vec_indY = -1) {
         
+        if(m_type==TREES){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
         if(!tX ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tX << "). Please check !" << std::endl;
         if(!tY ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tY << "). Please check !" << std::endl;
         
@@ -148,6 +158,11 @@ public:
     //
     template< typename T > bool addStandardBranch( const TString &name,  const TString &title, const TString &variableType,
                                                   T *t, const int vec_ind = -1) {
+        
+        if(m_type==HISTOS){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a branch, but OutputManager is in HISTOS mode." << std::endl;
+            return false;
+        }
         
         if(m_opt -> msgLevel() == Debug::DEBUG){
             std::cout << "In OutputManager::addStandardBranch" << std::endl;
@@ -184,7 +199,6 @@ private:
     
     HistManager *m_histMngr;
     TreeManager *m_treeMngr;
-    
     
     SystManager::SystVector *m_sysVector;
     OutputData *m_data;
