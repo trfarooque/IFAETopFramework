@@ -98,17 +98,17 @@ double VariableDef::GetDoubleValue(){
         if(m_vec_ind < 0){std::cout<<"Error : Please provide vector index to obtain value from VariableDef" << std::endl; return value;}
         
         if(m_varType == VariableType::VECDOUBLE){
-            if( ((std::vector<double>*)m_address)->size() > m_vec_ind ){
+            if( (int)((std::vector<double>*)m_address)->size() > m_vec_ind ){
                 value = ((std::vector<double>*)m_address)->at(m_vec_ind);
             }
         }
         else if(m_varType == VariableType::VECFLOAT){
-            if( ((std::vector<float>*)m_address)->size() > m_vec_ind ){
+            if( (int)((std::vector<float>*)m_address)->size() > m_vec_ind ){
                 value = (double)( ((std::vector<float>*)m_address)->at(m_vec_ind) );
             }
         }
         else if(m_varType == VariableType::VECINT){
-            if( ((std::vector<int>*)m_address)->size() > m_vec_ind ){
+            if( (int)((std::vector<int>*)m_address)->size() > m_vec_ind ){
                 value = (double)( ((std::vector<int>*)m_address)->at(m_vec_ind) );
             }
         }
