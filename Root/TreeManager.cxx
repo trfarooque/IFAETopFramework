@@ -32,21 +32,21 @@ void TreeManager::BookTree(string name, string title, string key){
 void TreeManager::AddBranchToTree(string tname, VariableDef bVar){
     if(!m_tree[tname]){cout<<"TREE "<<tname<<" was not found. Could not add branch"<<endl; return;}
     
-    if(bVar.isPrimitive()){
-        m_tree[tname]->Branch(bVar.name(), bVar.address(), bVar.name() + "/" + bVar.varTypeString());
+    if(bVar.IsPrimitive()){
+        m_tree[tname]->Branch(bVar.Name(), bVar.Address(), bVar.Name() + "/" + bVar.VarTypeString());
     }
     else{
         TString typeVar = "";
-        if(bVar.varType()==VariableDef::VECINT) typeVar = "std::vector<int>";
-        else if(bVar.varType()==VariableDef::VECVECINT) typeVar = "std::vector<std::vector<int> >";
-        else if(bVar.varType()==VariableDef::VECFLOAT) typeVar = "std::vector<float>";
-        else if(bVar.varType()==VariableDef::VECVECFLOAT) typeVar = "std::vector<std::vector<float> >";
-        else if(bVar.varType()==VariableDef::VECDOUBLE) typeVar = "std::vector<double>";
-        else if(bVar.varType()==VariableDef::VECVECDOUBLE) typeVar = "std::vector<std::vector<double> >";
+        if(bVar.VarType()==VariableDef::VECINT) typeVar = "std::vector<int>";
+        else if(bVar.VarType()==VariableDef::VECVECINT) typeVar = "std::vector<std::vector<int> >";
+        else if(bVar.VarType()==VariableDef::VECFLOAT) typeVar = "std::vector<float>";
+        else if(bVar.VarType()==VariableDef::VECVECFLOAT) typeVar = "std::vector<std::vector<float> >";
+        else if(bVar.VarType()==VariableDef::VECDOUBLE) typeVar = "std::vector<double>";
+        else if(bVar.VarType()==VariableDef::VECVECDOUBLE) typeVar = "std::vector<std::vector<double> >";
         else{
             std::cerr << "<!> Error in TreeManager::AddBranchToTree(): the variable type is not recognized !!" << std::endl;
         }
-        m_tree[tname]->Branch(bVar.name(),typeVar, bVar.address());
+        m_tree[tname]->Branch(bVar.Name(),typeVar, bVar.Address());
     }
     return;
 }
@@ -81,10 +81,10 @@ void TreeManager::SetBranchToTree(string tname, VariableDef bVar, string inputVa
     
     if(!m_tree[tname]){cout<<"TREE "<<tname<<" was not found. Could not set branch"<<endl; return;}
     
-    string _branchName = (inputVarName == "") ? inputVarName : (string)bVar.name();
+    string _branchName = (inputVarName == "") ? inputVarName : (string)bVar.Name();
     _branchName = "b_" + _branchName;
     m_branches[tname][_branchName] = NULL;
-    m_tree[tname]->SetBranchAddress( _branchName.c_str(), bVar.address(), &(m_branches[tname][_branchName])  );
+    m_tree[tname]->SetBranchAddress( _branchName.c_str(), bVar.Address(), &(m_branches[tname][_branchName])  );
     
     return;
 }
@@ -115,7 +115,7 @@ void TreeManager::ReplaceTree(string tkey, TTree* tree){
 
 //______________________________________________________________________
 //
-vector<string> TreeManager::GetTreeKeyList(){
+vector<string> TreeManager::TreeKeyList(){
     vector<string> v_key; v_key.clear();
     for(map<string, TTree*>::iterator t_it = m_tree.begin(); t_it != m_tree.end(); ++t_it){
         v_key.push_back(t_it->first);

@@ -4,13 +4,13 @@
 //_____________________________________________________________________________________
 //
 VariableDef::VariableDef():
-m_name(""),
-m_title(""),
-m_varTypeString(""),
-m_varType(VariableType::DOUBLE),
-m_vec_ind(-1),
-m_address(NULL),
-m_isPrimitive(true)
+  m_name(""),
+  m_title(""),
+  m_varTypeString(""),
+  m_varType(VariableType::DOUBLE),
+  m_vec_ind(-1),
+  m_address(NULL),
+  m_isPrimitive(true)
 {}
 
 //_____________________________________________________________________________________
@@ -32,7 +32,7 @@ VariableDef::VariableDef( VariableDef &q ){
 
 //_____________________________________________________________________________________
 //
-TString VariableDef::getVarTypeString(int varType){
+TString VariableDef::GetVarTypeString(int varType){
     
     TString _varTypeString = "";
     
@@ -52,7 +52,7 @@ TString VariableDef::getVarTypeString(int varType){
 
 //_____________________________________________________________________________________
 //
-VariableDef::VariableType VariableDef::getVarType(TString varTypeString){
+VariableDef::VariableType VariableDef::GetVarType(TString varTypeString){
     VariableType _varType;
     if(varTypeString == "I"){_varType = VariableType::INT;}
     else if(varTypeString == "F"){_varType = VariableType::FLOAT;}
@@ -70,7 +70,7 @@ VariableDef::VariableType VariableDef::getVarType(TString varTypeString){
 
 //_____________________________________________________________________________________
 //
-bool VariableDef::isPrimitive(int varType){
+bool VariableDef::IsPrimitive(int varType){
     
     bool _isPrimitive = false;
     _isPrimitive = (varType == VariableType::INT || varType == VariableType::FLOAT || varType == VariableType::DOUBLE);

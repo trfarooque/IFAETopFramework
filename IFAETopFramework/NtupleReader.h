@@ -43,22 +43,22 @@ public:
     void Finalise();
     virtual void EmptyBranches();
     
-    virtual int setEventBranchAddresses();
+    virtual int SetEventBranchAddresses();
     
-    virtual int setJetBranchAddresses(const std::string &sj);
-    virtual int setFatJetBranchAddresses(int sfj_key, const std::string &sfj);
+    virtual int SetJetBranchAddresses(const std::string &sj);
+    virtual int SetFatJetBranchAddresses(int sfj_key, const std::string &sfj);
     
-    virtual int setLeptonBranchAddresses(const std::string &sj);
-    virtual int setElectronBranchAddresses(const std::string &sj);
-    virtual int setMuonBranchAddresses(const std::string &sj);
+    virtual int SetLeptonBranchAddresses(const std::string &sj);
+    virtual int SetElectronBranchAddresses(const std::string &sj);
+    virtual int SetMuonBranchAddresses(const std::string &sj);
     
-    virtual int setMETBranchAddresses(const std::string &sj);
+    virtual int SetMETBranchAddresses(const std::string &sj);
     
-    virtual int setWeightBranchAddresses(const std::string &sj);
+    virtual int SetWeightBranchAddresses(const std::string &sj);
     
     
-    int getChainEntry(long entry) const ;
-    int chainNEntries() const;
+    int GetChainEntry(long entry) const ;
+    int ChainNEntries() const;
     void ChainFromTextFile(TChain* ch, std::string infilename);
     void ChainFromStrList(TChain* ch, std::string infilelist);
     

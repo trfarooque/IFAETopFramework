@@ -8,29 +8,29 @@
 //_____________________________________________________________________________________________
 //
 OptionsBase::OptionsBase():
-m_msgLevel(Debug::STANDARD),
+  m_msgLevel(Debug::STANDARD),
 
-m_isData(false),
-m_computeWeightSys(false),//do you want to run the weight systematics
-m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
-m_useTRF(false),
-m_recomputeBtag(false),
-m_usePDFRW(false),
+  m_isData(false),
+  m_computeWeightSys(false),//do you want to run the weight systematics
+  m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
+  m_useTRF(false),
+  m_recomputeBtag(false),
+  m_usePDFRW(false),
 
-m_sampleName(SampleName::TTH),//enum
-m_sysName(SysName::NOMINAL),//enum
-m_anaType(AnaType::HSG8),//enum
-m_leptonChannel(LeptonChannel::ELEC),//enum
+  m_sampleName(SampleName::TTH),//enum
+  m_sysName(SysName::NOMINAL),//enum
+  m_anaType(AnaType::HSG8),//enum
+  m_leptonChannel(LeptonChannel::ELEC),//enum
 
-m_str_sampleName(""),//used to define the enum
-m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
-m_str_anaType(""),
-m_str_leptonChannel(""),
-m_inputTree(""),
-m_outputTree(""),
-m_inputFile(""),
-m_outputFile(""),
-m_outputFolder("")
+  m_str_sampleName(""),//used to define the enum
+  m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
+  m_str_anaType(""),
+  m_str_leptonChannel(""),
+  m_inputTree(""),
+  m_outputTree(""),
+  m_inputFile(""),
+  m_outputFile(""),
+  m_outputFolder("")
 {}
 
 //_____________________________________________________________________________________________
@@ -72,7 +72,7 @@ OptionsBase::~OptionsBase()
 
 //_____________________________________________________________________________________________
 //
-void OptionsBase::parseUserOpts(int argc, char** argv){
+void OptionsBase::ParseUserOpts(int argc, char** argv){
     
     m_argc = argc;
     m_argv = argv;
@@ -209,13 +209,13 @@ void OptionsBase::parseUserOpts(int argc, char** argv){
     //
     //If necessary, prints out the value of the data members
     //
-    if(m_msgLevel>Debug::SILENT) this -> printOptions();
+    if(m_msgLevel>Debug::SILENT) this -> PrintOptions();
     
 }
 
 //_____________________________________________________________________________________________
 //
-void OptionsBase::printOptions()
+void OptionsBase::PrintOptions()
 {
     std::cout << "============== OptionsBase =================" << std::endl;
     std::cout << " m_msgLevel           = " << m_msgLevel << std::endl;

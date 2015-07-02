@@ -30,36 +30,36 @@ public:
     
     //_____________________________________________________________
     // Informations about options
-    void parseUserOpts(int argc, char** argv);
-    void printOptions();
+    void ParseUserOpts(int argc, char** argv);
+    void PrintOptions();
     
     //_____________________________________________________________
     // Data access and modification
-    inline Debug::debug msgLevel() const { return m_msgLevel; }
+    inline Debug::debug MsgLevel() const { return m_msgLevel; }
     
-    inline bool isData() const { return m_isData; }
-    inline bool computeWeightSys() const { return m_computeWeightSys; }
-    inline bool textFileList() const { return m_textFileList; }
-    inline bool useTRF() const { return m_useTRF; }
-    inline bool recomputeBtag() const { return m_recomputeBtag; }
-    inline bool usePDFRW() const { return m_usePDFRW; }
+    inline bool IsData() const { return m_isData; }
+    inline bool ComputeWeightSys() const { return m_computeWeightSys; }
+    inline bool TextFileList() const { return m_textFileList; }
+    inline bool UseTRF() const { return m_useTRF; }
+    inline bool RecomputeBtag() const { return m_recomputeBtag; }
+    inline bool UsePDFRW() const { return m_usePDFRW; }
     
-    inline std::string sampleNameStr() const { return m_str_sampleName; }
-    inline std::string sysNameStr() const { return m_str_sysName; }
-    inline std::string anaTypeStr() const { return m_str_anaType; }
+    inline std::string StrSampleName() const { return m_str_sampleName; }
+    inline std::string StrSysName() const { return m_str_sysName; }
+    inline std::string StrAnaType() const { return m_str_anaType; }
 
-    inline SampleName::sample sampleName() const { return m_sampleName; }
-    inline SysName::sys sysName() const { return m_sysName; }
-    inline AnaType::ana anaType() const { return m_anaType; }
-    inline LeptonChannel::lepch leptonChannel() const { return m_leptonChannel; }
+    inline SampleName::sample SampleName() const { return m_sampleName; }
+    inline SysName::sys SysName() const { return m_sysName; }
+    inline AnaType::ana AnaType() const { return m_anaType; }
+    inline LeptonChannel::lepch LeptonChannel() const { return m_leptonChannel; }
     
-    inline std::string inputTree() const { return m_inputTree; }
-    inline std::string outputTree() const { return m_outputTree; }
+    inline std::string InputTree() const { return m_inputTree; }
+    inline std::string OutputTree() const { return m_outputTree; }
     
-    inline std::string inputFile() const { return m_inputFile; }
-    inline std::string outputFile() const { return m_outputFile; }
+    inline std::string InputFile() const { return m_inputFile; }
+    inline std::string OutputFile() const { return m_outputFile; }
     
-    inline std::string outputFolder() const { return m_outputFolder; }
+    inline std::string OutputFolder() const { return m_outputFolder; }
     
 private:
     int m_argc;

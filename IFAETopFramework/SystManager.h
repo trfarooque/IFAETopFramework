@@ -29,7 +29,7 @@ public:
     //
     // Inline functions
     //
-    inline SystVector* GetSystVector() { return m_systVector; }
+    inline SystVector* SystVec() { return m_systVec; }
     
     //
     // Specific functions
@@ -40,14 +40,14 @@ public:
         if(!t) std::cerr << "<!> ERROR in SystManager::AddSystematic(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         Systematic *sys = new Systematic(name, name, type, t);
         
-        std::map< std::string , Systematic*>::iterator it = m_systVector -> find(name);
-        if(it != m_systVector->end()){
+        std::map< std::string , Systematic*>::iterator it = m_systVec -> find(name);
+        if(it != m_systVec->end()){
             std::cerr << "<!> WARNING in SystManager::AddSystematic(template): I will replace an existing systematic (" << name << "). Please check !!" << std::endl;
             std::cerr << "    Please use the function SystManager::UpdateSystematic(template) to do so !" << std::endl;
-            m_systVector -> at(name) = sys;
+            m_systVec -> at(name) = sys;
         }
         else {
-            m_systVector -> insert ( std::pair < std::string, Systematic* > ( name, sys ) );
+            m_systVec -> insert ( std::pair < std::string, Systematic* > ( name, sys ) );
         }
         return true;
     }
@@ -56,20 +56,20 @@ public:
         if(!t) std::cerr << "<!> ERROR in SystManager::AddSystematic(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         Systematic *sys = new Systematic(name, name, type, t);
         
-        std::map< std::string , Systematic*>::iterator it = m_systVector -> find(name);
-        if(it != m_systVector->end()){
+        std::map< std::string , Systematic*>::iterator it = m_systVec -> find(name);
+        if(it != m_systVec->end()){
             std::cerr << "<!> WARNING in SystManager::AddSystematic(template): I will replace an existing systematic (" << name << "). Please check !!" << std::endl;
             std::cerr << "    Please use the function SystManager::UpdateSystematic(template) to do so !" << std::endl;
-            m_systVector -> at(name) = sys;
+            m_systVec -> at(name) = sys;
         }
         else {
-            m_systVector -> insert ( std::pair < std::string, Systematic* > ( name, sys ) );
+            m_systVec -> insert ( std::pair < std::string, Systematic* > ( name, sys ) );
         }
         return true;
     }
     
 private:
-    SystVector* m_systVector;
+    SystVector* m_systVec;
     OptionsBase* m_opt;
     
 };

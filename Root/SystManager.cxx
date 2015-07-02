@@ -4,25 +4,25 @@
 //________________________________________________________________________
 //
 SystManager::SystManager( OptionsBase *opt ):
-m_systVector(0),
+m_systVec(0),
 m_opt(opt)
 {
-    if(!m_systVector){
-        m_systVector = new SystVector();
+    if(!m_systVec){
+        m_systVec = new SystVector();
     }
 }
 
 //________________________________________________________________________
 //
 SystManager::SystManager( const SystManager &q ){
-    m_systVector = q.m_systVector;
+    m_systVec = q.m_systVec;
     m_opt = q.m_opt;
 }
 
 //________________________________________________________________________
 //
 SystManager::~SystManager(){
-    m_systVector -> clear();
+    m_systVec -> clear();
 }
 
 
@@ -30,7 +30,7 @@ SystManager::~SystManager(){
 //
 void SystManager::Print() const {
     
-    if(!m_systVector) {
+    if(!m_systVec) {
         std::cerr << "<!> ERROR in SystManager::PrintSystematics(): the systematics pointer is NULL: please check." << std::endl;
         return;
     }
@@ -39,7 +39,7 @@ void SystManager::Print() const {
     std::cout << "Systematics list" << std::endl;
     std::cout << "=====================================================" << std::endl;
     std::cout << std::endl;
-    for ( const auto sys : *m_systVector ){
+    for ( const auto sys : *m_systVec ){
         std::cout << sys.first << std::endl;
     }
 }

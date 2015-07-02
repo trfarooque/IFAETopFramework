@@ -15,18 +15,18 @@
 //______________________________________________________________________________________
 //
 OutputManager::OutputManager( OptionsBase* opt, OutputType type ):
-m_opt(opt),
-m_type(type),
-m_stdTH1Def(0),
-m_stdTH2Def(0),
-m_stdBranchDef(0),
-m_histMngr(0),
-m_treeMngr(0),
-m_sysVector(0),
-m_data(0),
-m_mapHasSyst(0)
+  m_opt(opt),
+  m_type(type),
+  m_stdTH1Def(0),
+  m_stdTH2Def(0),
+  m_stdBranchDef(0),
+  m_histMngr(0),
+  m_treeMngr(0),
+  m_sysVector(0),
+  m_data(0),
+  m_mapHasSyst(0)
 {
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
     
     m_stdTH1Def = new StdTH1();
     m_stdTH2Def = new StdTH2();
@@ -36,14 +36,14 @@ m_mapHasSyst(0)
     m_mapHasSyst = new std::map <TString,bool>();
     m_mapHasSyst->clear();
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
 }
 
 //______________________________________________________________________________________
 //
 OutputManager::OutputManager( const OutputManager &q )
 {
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager copy-constructor" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager copy-constructor" << std::endl;
     
     m_opt = q.m_opt;
     m_type = q.m_type;
@@ -56,22 +56,22 @@ OutputManager::OutputManager( const OutputManager &q )
     m_data = q.m_data;
     m_mapHasSyst = q.m_mapHasSyst;
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager copy-constructor" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager copy-constructor" << std::endl;
 }
 
 //______________________________________________________________________________________
 //
 OutputManager::~OutputManager()
 {
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager destructor" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager destructor" << std::endl;
 }
 
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
 //______________________________________________________________________________________
 //
-bool OutputManager::addStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst){
+bool OutputManager::AddStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst){
     
-    if(m_opt -> msgLevel() == Debug::DEBUG){
+    if(m_opt -> MsgLevel() == Debug::DEBUG){
         std::cout << "In OutputManager::addStandardTH1" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
         std::cout << "  width  = " << width << std::endl;
@@ -88,16 +88,16 @@ bool OutputManager::addStandardTH1(const TString name, const double width, const
     
     m_stdTH1Def -> insert( std::pair < TString, h1Def* >( name, hist ) );
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
     
     return true;
 }
 
 //______________________________________________________________________________________
 //
-bool OutputManager::bookStandardTH1( const TString &pattern, const bool hasSyst){
+bool OutputManager::BookStandardTH1( const TString &pattern, const bool hasSyst){
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTH1" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTH1" << std::endl;
     
     //
     // Check the mode is correct
@@ -116,11 +116,11 @@ bool OutputManager::bookStandardTH1( const TString &pattern, const bool hasSyst)
         
         TString histName = pattern;
         histName += "_" ;
-        histName += h1.second->var.name();
+        histName += h1.second->var.Name();
         
-        m_histMngr -> BookTH1D( (std::string)histName, (std::string)(h1.second->var.title()), h1.second->width, h1.second->min, h1.second->max);
+        m_histMngr -> BookTH1D( (std::string)histName, (std::string)(h1.second->var.Title()), h1.second->width, h1.second->min, h1.second->max);
         
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
         if(hasSyst && h1.second->hasSyst){
             if(!m_sysVector){
@@ -129,23 +129,23 @@ bool OutputManager::bookStandardTH1( const TString &pattern, const bool hasSyst)
                 for (const auto &sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += sys.second->name();
-                    m_histMngr -> BookTH1D((std::string)systHistName, (std::string)(h1.second->var.title()), h1.second->width, h1.second->min, h1.second->max);
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+                    systHistName += sys.second->Name();
+                    m_histMngr -> BookTH1D((std::string)systHistName, (std::string)(h1.second->var.Title()), h1.second->width, h1.second->min, h1.second->max);
+                    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
             }
         }
     }
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTH1" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTH1" << std::endl;
     return true;
 }
 
 //________________________________________________________________________________________
 //
-bool OutputManager::fillStandardTH1( const TString &pattern ){
+bool OutputManager::FillStandardTH1( const TString &pattern ){
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager::fillStandardTH1("<<pattern<<")" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager::fillStandardTH1("<<pattern<<")" << std::endl;
     
     //
     // Check the mode is correct
@@ -167,9 +167,9 @@ bool OutputManager::fillStandardTH1( const TString &pattern ){
         //
         TString histName = pattern;
         histName += "_";
-        histName += h1.second->var.name();
+        histName += h1.second->var.Name();
         m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
         //
         // Now checking systematics (if needed and if existing)
@@ -181,20 +181,20 @@ bool OutputManager::fillStandardTH1( const TString &pattern ){
                 for (const auto sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += sys.second->name();
+                    systHistName += sys.second->Name();
                     m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
+                    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }
             }
         }
     }
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTH1("<<pattern<<")" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTH1("<<pattern<<")" << std::endl;
     return true;
 }
 
 //________________________________________________________________________________________
 //
-bool OutputManager::saveStandardTH1( const TString &outputName ){
+bool OutputManager::SaveStandardTH1( const TString &outputName ){
     
     TFile *f = new TFile(outputName,"recreate");
     //Storing TH1 in the output file
@@ -212,7 +212,7 @@ bool OutputManager::saveStandardTH1( const TString &outputName ){
 //-----------------------------TH2-SPECIFIC METHODS-------------------------------
 //______________________________________________________________________________________
 //
-bool OutputManager::addStandardTH2( const TString name, const double widthX, const double minX, const double maxX,
+bool OutputManager::AddStandardTH2( const TString name, const double widthX, const double minX, const double maxX,
                                    const double widthY, const double minY, const double maxY, const bool hasSyst){
     
     //
@@ -223,7 +223,7 @@ bool OutputManager::addStandardTH2( const TString name, const double widthX, con
         return false;
     }
     
-    if(m_opt -> msgLevel() == Debug::DEBUG){
+    if(m_opt -> MsgLevel() == Debug::DEBUG){
         std::cout << "In OutputManager::addStandardTH2" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
         std::cout << "  widthX  = " << widthX << std::endl;
@@ -246,16 +246,16 @@ bool OutputManager::addStandardTH2( const TString name, const double widthX, con
     
     m_stdTH2Def -> insert( std::pair < TString, h2Def* >( name, hist ) );
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH2" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH2" << std::endl;
     
     return true;
 }
 
 //______________________________________________________________________________________
 //
-bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst){
+bool OutputManager::BookStandardTH2( const TString &pattern, const bool hasSyst){
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTH2" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTH2" << std::endl;
     
     //
     // Check the mode is correct
@@ -271,16 +271,16 @@ bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst)
         
         TString histName = pattern;
         histName += "_";
-        histName += h2.second->varY.name();
+        histName += h2.second->varY.Name();
         histName += "_vs_";
-        histName += h2.second->varX.name();
-        TString histTitle = h2.second->varY.title();
+        histName += h2.second->varX.Name();
+        TString histTitle = h2.second->varY.Title();
         histTitle += " vs ";
-        histTitle += h2.second->varX.title();
+        histTitle += h2.second->varX.Title();
         m_histMngr -> BookTH2D( (std::string)histName, (std::string)histTitle,
                                 h2.second->widthX, h2.second->minX, h2.second->maxX,
                                 h2.second->widthY, h2.second->minY, h2.second->maxY);
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
         if(hasSyst && h2.second->hasSyst){
             if(!m_sysVector){
@@ -289,25 +289,25 @@ bool OutputManager::bookStandardTH2( const TString &pattern, const bool hasSyst)
                 for (const auto sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += sys.second->name();
+                    systHistName += sys.second->Name();
                     m_histMngr -> BookTH2D((std::string)systHistName,
                                            (std::string)histTitle,
                                            h2.second->widthX, h2.second->minX, h2.second->maxX,
                                            h2.second->widthY, h2.second->minY, h2.second->maxY);
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+                    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
             }
         }
     }
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTH2" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTH2" << std::endl;
     return true;
 }
 
 //________________________________________________________________________________________
 //
-bool OutputManager::fillStandardTH2( const TString &pattern ){
+bool OutputManager::FillStandardTH2( const TString &pattern ){
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager::fillStandardTH2("<<pattern<<")" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager::fillStandardTH2("<<pattern<<")" << std::endl;
     
     //
     // Check the mode is correct
@@ -329,13 +329,13 @@ bool OutputManager::fillStandardTH2( const TString &pattern ){
         //
         TString histName = pattern;
         histName += "_";
-        histName += h2.second->varY.name();
+        histName += h2.second->varY.Name();
         histName += "_vs_";
-        histName += h2.second->varX.name();
+        histName += h2.second->varX.Name();
         
         m_histMngr -> FillTH2D((std::string)histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), m_data->o_eventWeight_Nom);
         
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
         //
         // Now checking systematics (if needed and if existing)
@@ -347,20 +347,20 @@ bool OutputManager::fillStandardTH2( const TString &pattern ){
                 for(const auto sys : *m_sysVector) {
                     TString systHistName = histName;
                     systHistName += "_";
-                    systHistName += sys.second->name();
+                    systHistName += sys.second->Name();
                     m_histMngr -> FillTH2D((std::string)systHistName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), sys.second->GetDoubleValue());
-                    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
+                    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }
             }
         }
     }
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTH2("<<pattern<<")" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTH2("<<pattern<<")" << std::endl;
     return true;
 }
 
 //________________________________________________________________________________________
 //
-bool OutputManager::saveStandardTH2( const TString &outputName ){
+bool OutputManager::SaveStandardTH2( const TString &outputName ){
     
     TFile *f = new TFile(outputName,"recreate");
     //
@@ -379,9 +379,9 @@ bool OutputManager::saveStandardTH2( const TString &outputName ){
 //-----------------------------TREE-SPECIFIC METHODS-------------------------------
 //______________________________________________________________________________________
 //
-bool OutputManager::bookStandardTree( const TString &pattern, const TString &title){
+bool OutputManager::BookStandardTree( const TString &pattern, const TString &title){
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTree" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::bookStandardTree" << std::endl;
     
     //
     // Check the mode is correct
@@ -397,15 +397,15 @@ bool OutputManager::bookStandardTree( const TString &pattern, const TString &tit
     //Loop over the list of standard branches and add those branches to the tree
     for ( const auto branch : *m_stdBranchDef ){
         m_treeMngr->AddBranchToTree((std::string)pattern, *(branch.second));
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "  -> Added branch : " << branch.first << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Added branch : " << branch.first << std::endl;
     }
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTree" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTree" << std::endl;
     return true;
 }
 
 //______________________________________________________________________________________
 //
-bool OutputManager::fillStandardTree( const TString &pattern ){
+bool OutputManager::FillStandardTree( const TString &pattern ){
     
     //
     // Check the mode is correct
@@ -415,20 +415,20 @@ bool OutputManager::fillStandardTree( const TString &pattern ){
         return false;
     }
     
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTree" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTree" << std::endl;
     m_treeMngr->FillTree((std::string)pattern);
-    if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTree" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTree" << std::endl;
     return true;
 }
 
 //______________________________________________________________________________________
 //
-bool OutputManager::saveStandardTree( const TString &outputName ){
+bool OutputManager::SaveStandardTree( const TString &outputName ){
     TFile *f = new TFile(outputName,"recreate");
-    vector<string> treeList = m_treeMngr->GetTreeKeyList();
+    vector<string> treeList = m_treeMngr->TreeKeyList();
     for( const auto treeName : treeList ){
         f -> cd();
-        m_treeMngr -> GetTree(treeName) -> Write();
+        m_treeMngr -> Tree(treeName) -> Write();
     }
     f -> Close();
     return true;
