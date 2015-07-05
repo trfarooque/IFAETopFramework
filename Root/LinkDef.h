@@ -3,7 +3,6 @@
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/NtupleData.h"
 #include "IFAETopFramework/NtupleReader.h"
-#include "IFAETopFramework/CommonConstants.h"
 
 #pragma link off all globals;
 #pragma link off all classes;

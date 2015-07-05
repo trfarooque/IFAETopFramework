@@ -28,9 +28,9 @@ public:
         TREES,
         ALL
     };
+    
     //________________________
     // Structs to make the code readable
-    
     struct h1Def{
         VariableDef var;
         double width;
@@ -51,13 +51,11 @@ public:
         bool hasSyst;
     };
     
-    //No additional structs for trees
-    
-    
+    //_________________________
+    // Typedefs
     typedef std::map < TString, h1Def* > StdTH1;
     typedef std::map < TString, h2Def* > StdTH2;
     typedef std::map < TString, VariableDef* > StdBranches;
-    
     
     //________________________
     // Member functions
@@ -67,22 +65,27 @@ public:
     
     //________________________
     // Inline functions
-    bool setSystVector( SystManager::SystVector *sysVector ){ m_sysVector = sysVector; return true;}
-    bool setData( OutputData *data ){ m_data = data; return true;}
-    HistManager* getHistManager(){ return m_histMngr; }
+    bool SetSystVector( SystManager::SystVector *sysVector ){ m_sysVector = sysVector; return true;}
+    bool SetData( OutputData *data ){ m_data = data; return true;}
+    HistManager* HistMngr(){ return m_histMngr; }
     
     //
     //___________________________________________________________
     // TH1-SPECIFIC FUNCTIONS
     //
     //
-    template< typename T > bool addStandardTH1( const TString &name, const double width, const double min,
+    template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min,
                                                const double max, const TString &title, const TString &variableType,
                                                const bool hasSyst, T *t, const int vec_ind = -1) {
         
+        if(m_type==TREES){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH1 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         
-        bool added = addStandardTH1(name, width, min, max, hasSyst);
+        bool added = AddStandardTH1(name, width, min, max, hasSyst);
         if(!added) {
             std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): could not add the variable !! Please check." << std::endl;
             return false;
@@ -100,9 +103,9 @@ public:
         
         return true;
     }
-    bool bookStandardTH1( const TString &pattern, const bool hasSyst = false);
-    bool fillStandardTH1( const TString &name );
-    bool saveStandardTH1( const TString& );
+    bool BookStandardTH1( const TString &pattern, const bool hasSyst = false);
+    bool FillStandardTH1( const TString &name );
+    bool SaveStandardTH1( const TString& );
     
     
     //
@@ -110,17 +113,22 @@ public:
     // TH2-SPECIFIC FUNCTIONS
     //
     //
-    template< typename TX, typename TY > bool addStandardTH2( const TString &nameX, const TString &nameY,
+    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
                                                              const double widthX, const double minX, const double maxX,
                                                              const double widthY, const double minY, const double maxY,
                                                              const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
                                                              const bool hasSyst, TX *tX, TY *tY, const int vec_indX = -1, const int vec_indY = -1) {
         
+        if(m_type==TREES){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
         if(!tX ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tX << "). Please check !" << std::endl;
         if(!tY ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tY << "). Please check !" << std::endl;
         
         TString name = nameY + "_vs_" + nameX;
-        bool added = addStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, hasSyst);
+        bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, hasSyst);
         if(!added) {
             std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::endl;
             return false;
@@ -138,9 +146,9 @@ public:
         else std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): The searched variable has not been booked previously. Please check !" << std::endl;
         return true;
     }
-    bool bookStandardTH2( const TString &pattern, const bool hasSyst = false);
-    bool fillStandardTH2( const TString &name );
-    bool saveStandardTH2( const TString& );
+    bool BookStandardTH2( const TString &pattern, const bool hasSyst = false);
+    bool FillStandardTH2( const TString &name );
+    bool SaveStandardTH2( const TString& );
     
     
     //
@@ -148,10 +156,15 @@ public:
     // TREE-SPECIFIC FUNCTIONS
     //
     //
-    template< typename T > bool addStandardBranch( const TString &name,  const TString &title, const TString &variableType,
+    template< typename T > bool AddStandardBranch( const TString &name,  const TString &title, const TString &variableType,
                                                   T *t, const int vec_ind = -1) {
         
-        if(m_opt -> msgLevel() == Debug::DEBUG){
+        if(m_type==HISTOS){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a branch, but OutputManager is in HISTOS mode." << std::endl;
+            return false;
+        }
+        
+        if(m_opt -> MsgLevel() == Debug::DEBUG){
             std::cout << "In OutputManager::addStandardBranch" << std::endl;
             std::cout << "Adding variable: "<< name << std::endl;
             std::cout << "  title  = " << title << std::endl;
@@ -160,21 +173,21 @@ public:
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind);
         m_stdBranchDef -> insert( std::pair < TString, VariableDef* >( name, _var ) );
         
-        if(m_opt -> msgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
         
         return true;
         
         
     }
-    bool bookStandardTree( const TString &pattern, const TString &title);
-    bool fillStandardTree( const TString &name ); //probably do not need this one
-    bool saveStandardTree( const TString& );
+    bool BookStandardTree( const TString &pattern, const TString &title);
+    bool FillStandardTree( const TString &name ); //probably do not need this one
+    bool SaveStandardTree( const TString& );
     
     
 private:
-    bool addStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst);
+    bool AddStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst);
     
-    bool addStandardTH2(const TString name, const double widthX, const double minX, const double maxX,
+    bool AddStandardTH2(const TString name, const double widthX, const double minX, const double maxX,
                         const double widthY, const double minY, const double maxY, const bool hasSyst);
     
 private:
@@ -186,7 +199,6 @@ private:
     
     HistManager *m_histMngr;
     TreeManager *m_treeMngr;
-    
     
     SystManager::SystVector *m_sysVector;
     OutputData *m_data;

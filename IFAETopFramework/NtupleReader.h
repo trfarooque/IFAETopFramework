@@ -1,40 +1,64 @@
+/*
+ 
+ NtupleReader class
+ ==================
+ Allows to do the interface between the input ntuples and the variables used in the users' analysis
+ code.
+ Most functions in the implementation file of this class are empty: they have to be implemented in the
+ inherited classes !!
+ 
+ Contacts
+ --------
+ Trisha Farooque <trisha.farooque@cern.ch>
+ Loic Valery <lvalery@cern.ch>
+ 
+*/
+
+
 #ifndef NTUPLEREADER_H
-#define NTUPLEREEADER_H
+#define NTUPLEREADER_H
 
 #include <string>
 #include <map>
-#include "TChain.h"
 
+class TChain;
 class OptionsBase;
 class NtupleData;
-class TBranch;
 
 class NtupleReader{
     
 public:
-    NtupleReader(NtupleData* ntupData, OptionsBase* opt);
-    virtual ~NtupleReader();
     
+    //
+    // Standard C++ classes
+    //
+    NtupleReader(NtupleData* ntupData, OptionsBase* opt);
+    NtupleReader(const NtupleReader &);
+    virtual ~NtupleReader();
+
+    //
+    // Class specific functions
+    //
     void Init();
     void Finalise();
     virtual void EmptyBranches();
     
-    virtual int setEventBranchAddresses();
+    virtual int SetEventBranchAddresses();
     
-    virtual int setJetBranchAddresses(const std::string &sj);
-    virtual int setFatJetBranchAddresses(int sfj_key, const std::string &sfj);
+    virtual int SetJetBranchAddresses(const std::string &sj);
+    virtual int SetFatJetBranchAddresses(int sfj_key, const std::string &sfj);
     
-    virtual int setLeptonBranchAddresses(const std::string &sj);
-    virtual int setElectronBranchAddresses(const std::string &sj);
-    virtual int setMuonBranchAddresses(const std::string &sj);
+    virtual int SetLeptonBranchAddresses(const std::string &sj);
+    virtual int SetElectronBranchAddresses(const std::string &sj);
+    virtual int SetMuonBranchAddresses(const std::string &sj);
     
-    virtual int setMETBranchAddresses(const std::string &sj);
+    virtual int SetMETBranchAddresses(const std::string &sj);
     
-    virtual int setWeightBranchAddresses(const std::string &sj);
+    virtual int SetWeightBranchAddresses(const std::string &sj);
     
-    int getChainEntry(long entry){return m_chain->GetEntry(entry); }
-    int chainNEntries(){return m_chain->GetEntries();}
     
+    int GetChainEntry(long entry) const ;
+    int ChainNEntries() const;
     void ChainFromTextFile(TChain* ch, std::string infilename);
     void ChainFromStrList(TChain* ch, std::string infilelist);
     
@@ -47,7 +71,8 @@ protected:
     TChain* m_chain;    //!
     OptionsBase* m_opt;
     NtupleData* m_ntupData;
+    
 };
 
 
-#endif
+#endif //NTUPLEREADER_H

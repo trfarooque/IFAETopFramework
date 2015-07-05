@@ -21,12 +21,12 @@ public:
     int ReadTree(string name, TFile* f, string key);
     void SetBranchToTree(string tname, VariableDef bVar, string inputVarName = "");
     
-    TTree* GetTree(string tname){ return m_tree[tname]; }
+    TTree* Tree(string tname){ return m_tree[tname]; }
     
     void SetTree(string tkey, TTree* tree);
     void ReplaceTree(string tkey, TTree* tree);
     
-    vector<string> GetTreeKeyList();
+    vector<string> TreeKeyList();
     
     void ClearTree(string s_tree);
     void FillTree(string name, string key="");

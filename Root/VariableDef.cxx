@@ -4,13 +4,13 @@
 //_____________________________________________________________________________________
 //
 VariableDef::VariableDef():
-m_name(""),
-m_title(""),
-m_varTypeString(""),
-m_varType(VariableType::DOUBLE),
-m_vec_ind(-1),
-m_address(NULL),
-m_isPrimitive(true)
+  m_name(""),
+  m_title(""),
+  m_varTypeString(""),
+  m_varType(VariableType::DOUBLE),
+  m_vec_ind(-1),
+  m_address(NULL),
+  m_isPrimitive(true)
 {}
 
 //_____________________________________________________________________________________
@@ -32,7 +32,7 @@ VariableDef::VariableDef( VariableDef &q ){
 
 //_____________________________________________________________________________________
 //
-TString VariableDef::getVarTypeString(int varType){
+TString VariableDef::GetVarTypeString(int varType){
     
     TString _varTypeString = "";
     
@@ -52,7 +52,7 @@ TString VariableDef::getVarTypeString(int varType){
 
 //_____________________________________________________________________________________
 //
-VariableDef::VariableType VariableDef::getVarType(TString varTypeString){
+VariableDef::VariableType VariableDef::GetVarType(TString varTypeString){
     VariableType _varType;
     if(varTypeString == "I"){_varType = VariableType::INT;}
     else if(varTypeString == "F"){_varType = VariableType::FLOAT;}
@@ -70,7 +70,7 @@ VariableDef::VariableType VariableDef::getVarType(TString varTypeString){
 
 //_____________________________________________________________________________________
 //
-bool VariableDef::isPrimitive(int varType){
+bool VariableDef::IsPrimitive(int varType){
     
     bool _isPrimitive = false;
     _isPrimitive = (varType == VariableType::INT || varType == VariableType::FLOAT || varType == VariableType::DOUBLE);
@@ -98,17 +98,17 @@ double VariableDef::GetDoubleValue(){
         if(m_vec_ind < 0){std::cout<<"Error : Please provide vector index to obtain value from VariableDef" << std::endl; return value;}
         
         if(m_varType == VariableType::VECDOUBLE){
-            if( ((std::vector<double>*)m_address)->size() > m_vec_ind ){
+            if( (int)((std::vector<double>*)m_address)->size() > m_vec_ind ){
                 value = ((std::vector<double>*)m_address)->at(m_vec_ind);
             }
         }
         else if(m_varType == VariableType::VECFLOAT){
-            if( ((std::vector<float>*)m_address)->size() > m_vec_ind ){
+            if( (int)((std::vector<float>*)m_address)->size() > m_vec_ind ){
                 value = (double)( ((std::vector<float>*)m_address)->at(m_vec_ind) );
             }
         }
         else if(m_varType == VariableType::VECINT){
-            if( ((std::vector<int>*)m_address)->size() > m_vec_ind ){
+            if( (int)((std::vector<int>*)m_address)->size() > m_vec_ind ){
                 value = (double)( ((std::vector<int>*)m_address)->at(m_vec_ind) );
             }
         }
