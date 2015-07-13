@@ -12,10 +12,39 @@ HistManager::HistManager(){
 
 //__________________________________________________________________
 //
-HistManager::HistManager( const HistManager &q ){
+HistManager::HistManager( const HistManager &q, bool make_new){
+  m_h1d.clear();
+  m_h2d.clear();
+  m_h3d.clear();
+
+  if(make_new){
+    //Loop over old HistManager, clone each histogram, and add it to the new HistManager
+    map<string, TH1D*>::const_iterator h1_it = (q.m_h1d).begin();
+    for(; h1_it != q.m_h1d.end(); ++h1_it){
+      TH1D* h1copy = (TH1D*)( (h1_it->second)->Clone() );
+      m_h1d[h1_it->first] = h1copy;
+    }
+
+    map<string, TH2D*>::const_iterator h2_it = q.m_h2d.begin();
+    for(; h2_it != q.m_h2d.end(); ++h2_it){
+      TH2D* h2copy = (TH2D*)( (h2_it->second)->Clone() );
+      m_h2d[h2_it->first] = h2copy;
+    }
+
+    map<string, TH3D*>::const_iterator h3_it = q.m_h3d.begin();
+    for(; h3_it != q.m_h3d.end(); ++h3_it){
+      TH3D* h3copy = (TH3D*)( (h3_it->second)->Clone() );
+      m_h3d[h3_it->first] = h3copy;
+    }
+  }
+  else{
     m_h1d = q.m_h1d;
     m_h2d = q.m_h2d;
     m_h3d = q.m_h3d;
+  } 
+
+  return;
+
 }
 
 //__________________________________________________________________
@@ -390,6 +419,20 @@ void HistManager::FillTH3D(string hkey, double val1, double val2, double val3, d
 
 }
 
+TH1D* HistManager::GetTH1D(string hname){
+  if(m_h1d.find(hname) == m_h1d.end()){std::cout<<"Error: TH1D "<<hname<<" not found"<<std::endl; return NULL;} 
+  return m_h1d[hname];
+}
+
+TH2D* HistManager::GetTH2D(string hname){
+  if(m_h2d.find(hname) == m_h2d.end()){std::cout<<"Error: TH2D "<<hname<<" not found"<<std::endl; return NULL;} 
+  return m_h2d[hname];
+}
+
+TH3D* HistManager::GetTH3D(string hname){
+  if(m_h3d.find(hname) == m_h3d.end()){std::cout<<"Error: TH3D "<<hname<<" not found"<<std::endl; return NULL;} 
+  return m_h3d[hname];
+}
 //__________________________________________________________________
 //
 void HistManager::SetTH1D(string hkey, TH1D* h1d){

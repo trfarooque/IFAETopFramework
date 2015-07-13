@@ -21,8 +21,8 @@ public:
     // Standard C++ functions
     //
     HistManager();
-    HistManager( const HistManager &q );
-    
+    //HistManager( const HistManager &q );
+    HistManager( const HistManager &q, bool make_new=false );
     
     //
     // Class-specific functions
@@ -69,9 +69,9 @@ public:
     void FillTH2D(string hname, double val1, double val2, double wgt=1.);
     void FillTH3D(string hname, double val1, double val2, double val3, double wgt=1.);
     
-    TH1D* GetTH1D(string hname){ return m_h1d[hname]; }
-    TH2D* GetTH2D(string hname){ return m_h2d[hname]; }
-    TH3D* GetTH3D(string hname){ return m_h3d[hname]; }
+    TH1D* GetTH1D(string hname);
+    TH2D* GetTH2D(string hname);
+    TH3D* GetTH3D(string hname);
     
     void SetTH1D(string hkey, TH1D* h1d);
     void SetTH2D(string hkey, TH2D* h2d);
