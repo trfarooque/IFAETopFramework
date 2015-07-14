@@ -176,17 +176,17 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
             // histogram is filled with all the components of the vector
             const VariableDef::VariableType type = h1.second->var.VarType();
             if(type == VariableDef::VECDOUBLE){
-                for ( const double value : *( (std::vector<double>*)h1.second->var.Address()) ){
-                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
+                for ( const double value : *( (std::vector<double>*)h1.second->var.Address() ) ){
+                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);\
                 }
             }
             else if(type == VariableDef::VECFLOAT){
-                for ( const double value : *( (std::vector<float>*)h1.second->var.Address()) ){
+                for ( const double value : *( (std::vector<float>*)h1.second->var.Address() ) ){
                     m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
                 }
             }
             else if(type == VariableDef::VECINT){
-                for ( const double value : *( (std::vector<int>*)h1.second->var.Address()) ){
+                for ( const double value : *( (std::vector<int>*)h1.second->var.Address() ) ){
                     m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
                 }
             }
@@ -209,17 +209,17 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
                     } else if(h1.second->var.VecInd() == -1) {
                         const VariableDef::VariableType type = h1.second->var.VarType();
                         if(type == VariableDef::VECDOUBLE){
-                            for ( const double value : *( (std::vector<double>*)h1.second->var.Address()) ){
+                            for ( const double value : *( (std::vector<double>*)h1.second->var.Address() ) ){
                                 m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
                             }
                         }
                         else if(type == VariableDef::VECFLOAT){
-                            for ( const double value : *( (std::vector<float>*)h1.second->var.Address()) ){
+                            for ( const double value : *( (std::vector<float>*)h1.second->var.Address() ) ){
                                 m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
                             }
                         }
                         else if(type == VariableDef::VECINT){
-                            for ( const double value : *( (std::vector<int>*)h1.second->var.Address()) ){
+                            for ( const double value : *( (std::vector<int>*)h1.second->var.Address() ) ){
                                 m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
                             }
                         }
