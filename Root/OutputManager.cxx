@@ -15,25 +15,25 @@
 //______________________________________________________________________________________
 //
 OutputManager::OutputManager( OptionsBase* opt, OutputType type ):
-  m_opt(opt),
-  m_type(type),
-  m_stdTH1Def(0),
-  m_stdTH2Def(0),
-  m_stdBranchDef(0),
-  m_histMngr(0),
-  m_treeMngr(0),
-  m_sysVector(0),
-  m_data(0),
-  m_mapHasSyst(0)
+m_opt(opt),
+m_type(type),
+m_stdTH1Def(0),
+m_stdTH2Def(0),
+m_stdBranchDef(0),
+m_histMngr(0),
+m_treeMngr(0),
+m_sysVector(0),
+m_data(0),
+m_mapHasSyst(0)
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
     
-    m_stdTH1Def = new StdTH1();
-    m_stdTH2Def = new StdTH2();
-    m_stdBranchDef = new StdBranches();
-    m_histMngr = new HistManager();
-    m_treeMngr = new TreeManager();
-    m_mapHasSyst = new std::map <TString,bool>();
+    m_stdTH1Def     = new StdTH1();
+    m_stdTH2Def     = new StdTH2();
+    m_stdBranchDef  = new StdBranches();
+    m_histMngr      = new HistManager();
+    m_treeMngr      = new TreeManager();
+    m_mapHasSyst    = new std::map <TString,bool>();
     m_mapHasSyst->clear();
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
@@ -45,16 +45,16 @@ OutputManager::OutputManager( const OutputManager &q )
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager copy-constructor" << std::endl;
     
-    m_opt = q.m_opt;
-    m_type = q.m_type;
-    m_stdTH1Def = q.m_stdTH1Def;
-    m_stdTH2Def = q.m_stdTH2Def;
-    m_stdBranchDef = q.m_stdBranchDef;
-    m_histMngr = q.m_histMngr;
-    m_treeMngr = q.m_treeMngr;
-    m_sysVector = q.m_sysVector;
-    m_data = q.m_data;
-    m_mapHasSyst = q.m_mapHasSyst;
+    m_opt           = q.m_opt;
+    m_type          = q.m_type;
+    m_stdTH1Def     = q.m_stdTH1Def;
+    m_stdTH2Def     = q.m_stdTH2Def;
+    m_stdBranchDef  = q.m_stdBranchDef;
+    m_histMngr      = q.m_histMngr;
+    m_treeMngr      = q.m_treeMngr;
+    m_sysVector     = q.m_sysVector;
+    m_data          = q.m_data;
+    m_mapHasSyst    = q.m_mapHasSyst;
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager copy-constructor" << std::endl;
 }
@@ -160,7 +160,7 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
         return false;
     }
     
-    for ( const auto h1 : *m_stdTH1Def ){
+    for ( const std::pair < TString, OutputManager::h1Def* > h1 : *m_stdTH1Def ){
         
         //
         // Nominal histogram filling
@@ -168,7 +168,29 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
         TString histName = pattern;
         histName += "_";
         histName += h1.second->var.Name();
-        m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
+        
+        if( h1.second->var.IsPrimitive() || h1.second->var.VecInd()>=0 ){
+            m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
+        } else if(h1.second->var.VecInd() == -1) {
+            // If the index provided when declaring the standard histogram is -1, the
+            // histogram is filled with all the components of the vector
+            const VariableDef::VariableType type = h1.second->var.VarType();
+            if(type == VariableDef::VECDOUBLE){
+                for ( const double value : *( (std::vector<double>*)h1.second->var.Address()) ){
+                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
+                }
+            }
+            else if(type == VariableDef::VECFLOAT){
+                for ( const double value : *( (std::vector<float>*)h1.second->var.Address()) ){
+                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
+                }
+            }
+            else if(type == VariableDef::VECINT){
+                for ( const double value : *( (std::vector<int>*)h1.second->var.Address()) ){
+                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
+                }
+            }
+        }
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
         //
@@ -182,7 +204,26 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
                     TString systHistName = histName;
                     systHistName += "_";
                     systHistName += sys.second->Name();
-                    m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
+                    if( h1.second->var.IsPrimitive() || h1.second->var.VecInd()>=0 ){
+                        m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
+                    } else if(h1.second->var.VecInd() == -1) {
+                        const VariableDef::VariableType type = h1.second->var.VarType();
+                        if(type == VariableDef::VECDOUBLE){
+                            for ( const double value : *( (std::vector<double>*)h1.second->var.Address()) ){
+                                m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
+                            }
+                        }
+                        else if(type == VariableDef::VECFLOAT){
+                            for ( const double value : *( (std::vector<float>*)h1.second->var.Address()) ){
+                                m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
+                            }
+                        }
+                        else if(type == VariableDef::VECINT){
+                            for ( const double value : *( (std::vector<int>*)h1.second->var.Address()) ){
+                                m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
+                            }
+                        }
+                    }
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }
             }
@@ -278,8 +319,8 @@ bool OutputManager::BookStandardTH2( const TString &pattern, const bool hasSyst)
         histTitle += " vs ";
         histTitle += h2.second->varX.Title();
         m_histMngr -> BookTH2D( (std::string)histName, (std::string)histTitle,
-                                h2.second->widthX, h2.second->minX, h2.second->maxX,
-                                h2.second->widthY, h2.second->minY, h2.second->maxY);
+                               h2.second->widthX, h2.second->minX, h2.second->maxX,
+                               h2.second->widthY, h2.second->minY, h2.second->maxY);
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
         if(hasSyst && h2.second->hasSyst){
@@ -323,7 +364,7 @@ bool OutputManager::FillStandardTH2( const TString &pattern ){
     }
     
     for ( const auto h2 : *m_stdTH2Def ){
-
+        
         //
         // Nominal histogram filling
         //

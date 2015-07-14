@@ -95,7 +95,10 @@ double VariableDef::GetDoubleValue(){
         value = (double)(*(int*)(m_address));
     }
     else{
-        if(m_vec_ind < 0){std::cout<<"Error : Please provide vector index to obtain value from VariableDef" << std::endl; return value;}
+        if(m_vec_ind < 0){
+            std::cout<<"Error : Please provide vector index to obtain value from VariableDef" << std::endl;
+            return value;
+        }
         
         if(m_varType == VariableType::VECDOUBLE){
             if( (int)((std::vector<double>*)m_address)->size() > m_vec_ind ){
@@ -112,7 +115,6 @@ double VariableDef::GetDoubleValue(){
                 value = (double)( ((std::vector<int>*)m_address)->at(m_vec_ind) );
             }
         }
-        
     }//Vector variables
     return value;
 }
