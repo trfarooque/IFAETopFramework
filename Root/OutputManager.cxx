@@ -34,7 +34,7 @@ m_mapHasSyst(0)
     m_histMngr      = new HistManager();
     m_treeMngr      = new TreeManager();
     m_mapHasSyst    = new std::map <TString,bool>();
-    m_mapHasSyst->clear();
+    m_mapHasSyst    -> clear();
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
 }
@@ -169,27 +169,15 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
         histName += "_";
         histName += h1.second->var.Name();
         
-        if( h1.second->var.IsPrimitive() || h1.second->var.VecInd()>=0 ){
+        if( h1.second->var.IsPrimitive() ){
             m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
-        } else if(h1.second->var.VecInd() == -1) {
+        } else {
             // If the index provided when declaring the standard histogram is -1, the
             // histogram is filled with all the components of the vector
-            const VariableDef::VariableType type = h1.second->var.VarType();
-            if(type == VariableDef::VECDOUBLE){
-                for ( const double value : *( (std::vector<double>*)h1.second->var.Address() ) ){
-                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);\
-                }
-            }
-            else if(type == VariableDef::VECFLOAT){
-                for ( const double value : *( (std::vector<float>*)h1.second->var.Address() ) ){
-                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
-                }
-            }
-            else if(type == VariableDef::VECINT){
-                for ( const double value : *( (std::vector<int>*)h1.second->var.Address() ) ){
-                    m_histMngr -> FillTH1D((std::string)histName, value, m_data->o_eventWeight_Nom);
-                }
-            }
+            // Otherwise, just fills the histogram with the given component
+            FillTH1FromVector( (std::vector<double>*)h1.second->var.Address(),
+                               h1.second->var.VarType(), histName, m_data->o_eventWeight_Nom,
+                               h1.second->var.VecInd() );
         }
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
@@ -204,25 +192,12 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
                     TString systHistName = histName;
                     systHistName += "_";
                     systHistName += sys.second->Name();
-                    if( h1.second->var.IsPrimitive() || h1.second->var.VecInd()>=0 ){
+                    if( h1.second->var.IsPrimitive() ){
                         m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
-                    } else if(h1.second->var.VecInd() == -1) {
-                        const VariableDef::VariableType type = h1.second->var.VarType();
-                        if(type == VariableDef::VECDOUBLE){
-                            for ( const double value : *( (std::vector<double>*)h1.second->var.Address() ) ){
-                                m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
-                            }
-                        }
-                        else if(type == VariableDef::VECFLOAT){
-                            for ( const double value : *( (std::vector<float>*)h1.second->var.Address() ) ){
-                                m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
-                            }
-                        }
-                        else if(type == VariableDef::VECINT){
-                            for ( const double value : *( (std::vector<int>*)h1.second->var.Address() ) ){
-                                m_histMngr -> FillTH1D((std::string)histName, value, sys.second->GetDoubleValue());
-                            }
-                        }
+                    } else {
+                        FillTH1FromVector( (std::vector<double>*)h1.second->var.Address(),
+                                          h1.second->var.VarType(), histName, sys.second->GetDoubleValue(),
+                                          h1.second->var.VecInd() );
                     }
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }
