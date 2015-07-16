@@ -71,6 +71,10 @@ OutputManager::~OutputManager()
 //
 bool OutputManager::AddStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst){
     
+    //
+    // INTERNAL FUNCTION
+    //
+    
     if(m_opt -> MsgLevel() == Debug::DEBUG){
         std::cout << "In OutputManager::addStandardTH1" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
@@ -175,7 +179,7 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
             // If the index provided when declaring the standard histogram is -1, the
             // histogram is filled with all the components of the vector
             // Otherwise, just fills the histogram with the given component
-            FillTH1FromVector( (std::vector<double>*)h1.second->var.Address(),
+            FillTH1FromVector( h1.second->var.Address(),
                                h1.second->var.VarType(), histName, m_data->o_eventWeight_Nom,
                                h1.second->var.VecInd() );
         }
@@ -195,9 +199,9 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
                     if( h1.second->var.IsPrimitive() ){
                         m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
                     } else {
-                        FillTH1FromVector( (std::vector<double>*)h1.second->var.Address(),
-                                          h1.second->var.VarType(), histName, sys.second->GetDoubleValue(),
-                                          h1.second->var.VecInd() );
+                        FillTH1FromVector( h1.second->var.Address(),
+                                           h1.second->var.VarType(), histName, sys.second->GetDoubleValue(),
+                                           h1.second->var.VecInd() );
                     }
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }
@@ -207,6 +211,50 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTH1("<<pattern<<")" << std::endl;
     return true;
 }
+
+//________________________________________________________________________________________
+//
+bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const int index ) {
+    
+    //
+    // INTERNAL FUNCTION
+    //   Used to fill a TH1 histogram based on an input vector. It checks the size of the vector
+    //   before filling the histogram.
+    //
+    
+    if(type == VariableDef::VECDOUBLE){
+        std::vector < double >* vec = (std::vector<double>*)t;
+        if(index!=-1 && vec->size()>index){
+            m_histMngr -> FillTH1D((std::string)histName, vec->at(index), weight);
+        } else if (index==-1){
+            for ( double value : *vec ){
+                m_histMngr -> FillTH1D((std::string)histName, value, weight);
+            }
+        }
+    }
+    if(type == VariableDef::VECFLOAT){
+        std::vector < float >* vec = (std::vector< float >*)t;
+        if(index!=-1 && vec->size()>index){
+            m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
+        } else if (index==-1){
+            for ( double value : *vec ){
+                m_histMngr -> FillTH1D((std::string)histName, value, weight);
+            }
+        }
+    }
+    if(type == VariableDef::VECINT){
+        std::vector < int >* vec = (std::vector< int >*)t;
+        if(index!=-1 && vec->size()>index){
+            m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
+        } else if (index==-1){
+            for ( double value : *vec ){
+                m_histMngr -> FillTH1D((std::string)histName, value, weight);
+            }
+        }
+    }
+    return true;
+}
+
 
 //________________________________________________________________________________________
 //
@@ -230,6 +278,10 @@ bool OutputManager::SaveStandardTH1( const TString &outputName ){
 //
 bool OutputManager::AddStandardTH2( const TString name, const double widthX, const double minX, const double maxX,
                                    const double widthY, const double minY, const double maxY, const bool hasSyst){
+    
+    //
+    // INTERNAL FUNCTION
+    //
     
     //
     // Check the mode is correct
