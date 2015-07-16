@@ -114,7 +114,32 @@ void HistManager::FinaliseTH1Bins(string s_hist){
   return;
 }
 
-//__________________________________________________________________
+//_____________________
+void HistManager::ClearAllTH1(){
+
+  for(map<string, TH1D*>::iterator h1_it = m_h1d.begin(); h1_it != m_h1d.end(); ++h1_it){
+    delete h1_it->second;
+    m_h1d.erase(h1_it);
+  }
+}
+
+void HistManager::ClearAllTH2(){
+
+  for(map<string, TH2D*>::iterator h2_it = m_h2d.begin(); h2_it != m_h2d.end(); ++h2_it){
+    delete h2_it->second;
+    m_h2d.erase(h2_it);
+  }
+}
+
+void HistManager::ClearAllTH3(){
+
+  for(map<string, TH3D*>::iterator h3_it = m_h3d.begin(); h3_it != m_h3d.end(); ++h3_it){
+    delete h3_it->second;
+    m_h3d.erase(h3_it);
+  }
+}
+
+//_____________________________________________
 //
 void HistManager::ClearTH1(string s_hist){
 

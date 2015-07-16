@@ -94,6 +94,10 @@ public:
     void ClearTH1(string s_hist);
     void ClearTH2(string s_hist);
     void ClearTH3(string s_hist);
+
+    void ClearAllTH1();
+    void ClearAllTH2();
+    void ClearAllTH3();
     
 protected:
     map<string, TH1D*> m_h1d;
