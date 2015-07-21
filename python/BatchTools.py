@@ -117,13 +117,15 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
 #___________________________________________________________________
 #
 def produceList(Patterns, InputDirectory, listName,exclusions=[]):
-    com = "ls "+InputDirectory+"*.root*"
+    com = "ls "+InputDirectory+"{*,*/*}.root*"
     for iPattern in range(len(Patterns)):
+	if Patterns[iPattern]=="": continue
         com += " | grep "+Patterns[iPattern]
     for iExclusion in range(len(exclusions)):
         com += " | grep -v "+exclusions[iExclusion]
-    com += " > "+listName
 
+    com += " | grep -v \":\""
+    com += " > "+listName
     result = os.system(com)
     return result
 
