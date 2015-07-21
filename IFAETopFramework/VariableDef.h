@@ -58,7 +58,7 @@ public:
     //
     // Template constructors
     //
-    template<typename T> VariableDef(TString name, TString title, int varType, T *t, int vec_ind = -1):
+    template<typename T> VariableDef(TString name, TString title, VariableType varType, T *t, int vec_ind = -1):
     m_name(name),
     m_title(title),
     m_varTypeString(GetVarTypeString(varType)),
