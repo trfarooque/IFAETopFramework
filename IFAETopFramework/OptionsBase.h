@@ -31,7 +31,7 @@ public:
     //_____________________________________________________________
     // Informations about options
     void ParseUserOpts(int argc, char** argv);
-    void PrintOptions();
+    virtual void PrintOptions();
     
     //_____________________________________________________________
     // Data access and modification
@@ -40,9 +40,6 @@ public:
     inline bool IsData() const { return m_isData; }
     inline bool ComputeWeightSys() const { return m_computeWeightSys; }
     inline bool TextFileList() const { return m_textFileList; }
-    inline bool UseTRF() const { return m_useTRF; }
-    inline bool RecomputeBtag() const { return m_recomputeBtag; }
-    inline bool UsePDFRW() const { return m_usePDFRW; }
     
     inline std::string StrSampleName() const { return m_str_sampleName; }
     inline std::string StrSysName() const { return m_str_sysName; }
@@ -61,12 +58,19 @@ public:
     
     inline std::string OutputFolder() const { return m_outputFolder; }
     
-private:
+    inline int SkipEvents() const { return m_skipEvents; }
+    inline int NEvents() const { return m_nEvents; }
+    inline int PickEvent() const { return m_pickEvent; }
+    
+protected:
+    virtual bool IdentifyOption ( const std::string &, const std::string & );
+    
+protected:
     int m_argc;
     char** m_argv;
     
     Debug::debug m_msgLevel;
-    bool m_isData,m_computeWeightSys,m_textFileList,m_useTRF,m_recomputeBtag,m_usePDFRW;
+    bool m_isData,m_computeWeightSys,m_textFileList;
     SampleName::sample m_sampleName;
     SysName::sys m_sysName;
     AnaType::ana m_anaType;
@@ -74,6 +78,8 @@ private:
 
     std::string m_str_sampleName,m_str_sysName,m_str_anaType,m_str_leptonChannel;
     std::string m_inputTree,m_outputTree,m_inputFile,m_outputFile,m_outputFolder;
+    
+    int m_skipEvents, m_nEvents, m_pickEvent;
     
 };
 

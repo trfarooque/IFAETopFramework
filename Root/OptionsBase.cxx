@@ -8,29 +8,29 @@
 //_____________________________________________________________________________________________
 //
 OptionsBase::OptionsBase():
-  m_msgLevel(Debug::STANDARD),
+m_msgLevel(Debug::STANDARD),
+m_isData(false),
+m_computeWeightSys(false),//do you want to run the weight systematics
+m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
 
-  m_isData(false),
-  m_computeWeightSys(false),//do you want to run the weight systematics
-  m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
-  m_useTRF(false),
-  m_recomputeBtag(false),
-  m_usePDFRW(false),
+m_sampleName(SampleName::TTH),//enum
+m_sysName(SysName::NOMINAL),//enum
+m_anaType(AnaType::HSG8),//enum
+m_leptonChannel(LeptonChannel::ELEC),//enum
 
-  m_sampleName(SampleName::TTH),//enum
-  m_sysName(SysName::NOMINAL),//enum
-  m_anaType(AnaType::HSG8),//enum
-  m_leptonChannel(LeptonChannel::ELEC),//enum
+m_str_sampleName(""),//used to define the enum
+m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
+m_str_anaType(""),
+m_str_leptonChannel(""),
+m_inputTree(""),
+m_outputTree(""),
+m_inputFile(""),
+m_outputFile(""),
+m_outputFolder(""),
 
-  m_str_sampleName(""),//used to define the enum
-  m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
-  m_str_anaType(""),
-  m_str_leptonChannel(""),
-  m_inputTree(""),
-  m_outputTree(""),
-  m_inputFile(""),
-  m_outputFile(""),
-  m_outputFolder("")
+m_skipEvents(-1),
+m_nEvents(-1),
+m_pickEvent(-1)
 {}
 
 //_____________________________________________________________________________________________
@@ -42,9 +42,6 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_isData            = q.m_isData;
     m_computeWeightSys  = q.m_computeWeightSys;
     m_textFileList      = q.m_textFileList;
-    m_useTRF            = q.m_useTRF;
-    m_recomputeBtag     = q.m_recomputeBtag;
-    m_usePDFRW          = q.m_usePDFRW;
     
     m_sampleName        = q.m_sampleName;
     m_sysName           = q.m_sysName;
@@ -63,6 +60,10 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     
     m_outputFolder      = q.m_outputFolder;
     
+    m_skipEvents        = q.m_skipEvents;
+    m_nEvents           = q.m_nEvents;
+    m_pickEvent         = q.m_pickEvent;
+    
 }
 
 //_____________________________________________________________________________________________
@@ -77,7 +78,7 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
     m_argc = argc;
     m_argv = argv;
     
-    for (int i=0; i< argc; i++){// the 0 component is the name of the executable
+    for (int i=1; i< argc; i++){// the 0th component is the name of the executable
         
         //
         //Converting the argument to string format
@@ -96,113 +97,8 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
         //
         //Search for know argument names
         //
-        if( argument.find("--MSGLEVEL") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("SILENT") != std::string::npos) 	m_msgLevel = Debug::SILENT;
-            else if ( value.find("STANDARD") != std::string::npos) 	m_msgLevel = Debug::STANDARD;
-            else if ( value.find("VERBOSE") != std::string::npos) 	m_msgLevel = Debug::VERBOSE;
-            else if ( value.find("DEBUG") != std::string::npos)      m_msgLevel = Debug::DEBUG;
-            else{std::cout<<"Unknown debug option"<<std::endl;}
-        }
-        else if( argument.find("--ISDATA") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("TRUE") != std::string::npos) 	m_isData = true;
-            else if ( value.find("FALSE") != std::string::npos) 	m_isData = false;
-            else{std::cout<<"Unknown ISDATA option"<<std::endl;}
-        }
-        else if( argument.find("--COMPUTEWEIGHTSYS") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("TRUE") != std::string::npos) 	m_computeWeightSys = true;
-            else if ( value.find("FALSE") != std::string::npos) 	m_computeWeightSys = false;
-            else{std::cout<<"Unknown COMPUTEWEIGHTSYS option"<<std::endl;}
-        }
-        else if( argument.find("--TEXTFILELIST") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("TRUE") != std::string::npos) 	m_textFileList = true;
-            else if ( value.find("FALSE") != std::string::npos) 	m_textFileList = false;
-            else{std::cout<<"Unknown TEXTFILELIST option"<<std::endl;}
-        }
-        else if( argument.find("--USETRF") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("TRUE") != std::string::npos) 	m_useTRF = true;
-            else if ( value.find("FALSE") != std::string::npos) 	m_useTRF = false;
-            else{std::cout<<"Unknown USETRF option"<<std::endl;}
-        }
-        else if( argument.find("--RECOMPUTEBTAG") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("TRUE") != std::string::npos) 	m_recomputeBtag = true;
-            else if ( value.find("FALSE") != std::string::npos) 	m_recomputeBtag = false;
-            else{std::cout<<"Unknown RECOMPUTETRF option"<<std::endl;}
-        }
-        else if( argument.find("--USEPDFRW") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("TRUE") != std::string::npos) 	m_usePDFRW = true;
-            else if ( value.find("FALSE") != std::string::npos) 	m_usePDFRW = false;
-            else{std::cout<<"Unknown USEPDFRW option"<<std::endl;}
-        }
-        else if( argument.find("--SAMPLENAME") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            //DATA
-            if ( value.find("DATA") != std::string::npos) 	m_sampleName = SampleName::DATA;
-            //BACKAGROUNDS
-            else if ( value.find("TTBARBB") != std::string::npos) m_sampleName = SampleName::TTBARBB;
-            else if ( value.find("TTBARCC") != std::string::npos) m_sampleName = SampleName::TTBARCC;
-            else if ( value.find("TTBARLIGHT") != std::string::npos) m_sampleName = SampleName::TTBARLIGHT;
-            else if ( value.find("TTBAR") != std::string::npos) m_sampleName = SampleName::TTBAR;
-            else if ( value.find("DIBOSONS") != std::string::npos) m_sampleName = SampleName::DIBOSONS;
-            else if ( value.find("SINGLETOP") != std::string::npos) m_sampleName = SampleName::SINGLETOP;
-            else if ( value.find("WJETS") != std::string::npos) m_sampleName = SampleName::WJETS;
-            else if ( value.find("ZJETS") != std::string::npos) m_sampleName = SampleName::ZJETS;
-            else if ( value.find("TTH") != std::string::npos) 	m_sampleName = SampleName::TTH;
-            else if ( value.find("TTZ") != std::string::npos) 	m_sampleName = SampleName::TTZ;
-            else if ( value.find("TTW") != std::string::npos) 	m_sampleName = SampleName::TTW;
-            else if ( value.find("TTV") != std::string::npos) m_sampleName = SampleName::TTV;
-            else if ( value.find("QCD") != std::string::npos) m_sampleName = SampleName::QCD;
-            //SIGNALS
-            else if ( value.find("VLQ") != std::string::npos) m_sampleName = SampleName::VLQ;
-            else if ( value.find("GLUINO") != std::string::npos) m_sampleName = SampleName::GLUINO;
-            else if ( value.find("SGLUON") != std::string::npos) m_sampleName = SampleName::SGLUON;
-            else{std::cout<<"Unknown sample name"<<std::endl;}
-            m_str_sampleName = value;
-        }
-        else if( argument.find("--SYSNAME") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("NOMINAL") != std::string::npos) 	m_sysName = SysName::NOMINAL;
-            else { std::cout<<"Unknown systematics name"<<std::endl; }
-            m_str_sysName = value;
-        }
-        else if( argument.find("--ANATYPE") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
-            else if ( value.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
-            else if ( value.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
-            else{ std::cout<<"Unknown analysis type"<<std::endl; }
-            m_str_anaType = value;
-        }
-        else if( argument.find("--LEPTONCHANNEL") != std::string::npos ){
-            std::transform(value.begin(), value.end(), value.begin(), toupper);
-            if ( value.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
-            else if ( value.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
-            else{ std::cout<<"Unknown lepton type"<<std::endl; }
-            m_str_leptonChannel = value;
-        }
-        else if( argument.find("--INPUTTREE") != std::string::npos ){
-            m_inputTree = value;
-        }
-        else if( argument.find("--OUTPUTTREE") != std::string::npos ){
-            m_outputTree = value;
-        }
-        else if( argument.find("--INPUTFILE") != std::string::npos ){
-            m_inputFile = value;
-        }
-        else if( argument.find("--OUTPUTFILE") != std::string::npos ){
-            m_outputFile = value;
-        }
-        else if( argument.find("--OUTPUTFOLDER") != std::string::npos ){
-            m_outputFolder = value;
-        }
-        else {
-            std::cerr << "<!> The argument '" << argument << "' is not known ... Please check." << std::endl;
+        if(!IdentifyOption(argument, value)){
+            std::cout << "<!> Problem identifying the option : " << value << std::endl;
         }
     }
     
@@ -215,6 +111,124 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
 
 //_____________________________________________________________________________________________
 //
+bool OptionsBase::IdentifyOption ( const std::string &argument, const std::string &value )
+{
+    std::string temp_arg = argument;
+    std::string temp_val = value;
+    
+    if( temp_arg.find("--MSGLEVEL") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("SILENT") != std::string::npos) 	m_msgLevel = Debug::SILENT;
+        else if ( temp_val.find("STANDARD") != std::string::npos) 	m_msgLevel = Debug::STANDARD;
+        else if ( temp_val.find("VERBOSE") != std::string::npos) 	m_msgLevel = Debug::VERBOSE;
+        else if ( temp_val.find("DEBUG") != std::string::npos)      m_msgLevel = Debug::DEBUG;
+        else{std::cout<<"Unknown debug option"<<std::endl;}
+    }
+    else if( temp_arg.find("--ISDATA") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("TRUE") != std::string::npos) 	m_isData = true;
+        else if ( temp_val.find("FALSE") != std::string::npos) 	m_isData = false;
+        else{std::cout<<"Unknown ISDATA option"<<std::endl;}
+    }
+    else if( temp_arg.find("--COMPUTEWEIGHTSYS") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("TRUE") != std::string::npos) 	m_computeWeightSys = true;
+        else if ( temp_val.find("FALSE") != std::string::npos) 	m_computeWeightSys = false;
+        else{std::cout<<"Unknown COMPUTEWEIGHTSYS option"<<std::endl;}
+    }
+    else if( temp_arg.find("--TEXTFILELIST") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("TRUE") != std::string::npos) {
+            m_textFileList = true;
+        } else if ( temp_val.find("FALSE") != std::string::npos){
+            m_textFileList = false;
+        } else {
+            std::cout<<"Unknown TEXTFILELIST option"<<std::endl;
+        }
+    }
+    else if( temp_arg.find("--SAMPLENAME") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        //DATA
+        if ( temp_val.find("DATA") != std::string::npos){              m_sampleName = SampleName::DATA;        }
+        //BACKAGROUNDS
+        else if ( temp_val.find("TTBARBB") != std::string::npos){      m_sampleName = SampleName::TTBARBB;     }
+        else if ( temp_val.find("TTBARCC") != std::string::npos){      m_sampleName = SampleName::TTBARCC;     }
+        else if ( temp_val.find("TTBARLIGHT") != std::string::npos){   m_sampleName = SampleName::TTBARLIGHT;  }
+        else if ( temp_val.find("TTBAR") != std::string::npos){        m_sampleName = SampleName::TTBAR;       }
+        else if ( temp_val.find("DIBOSONS") != std::string::npos){     m_sampleName = SampleName::DIBOSONS;    }
+        else if ( temp_val.find("SINGLETOP") != std::string::npos){    m_sampleName = SampleName::SINGLETOP;   }
+        else if ( temp_val.find("WJETS") != std::string::npos){        m_sampleName = SampleName::WJETS;       }
+        else if ( temp_val.find("ZJETS") != std::string::npos){        m_sampleName = SampleName::ZJETS;       }
+        else if ( temp_val.find("TTH") != std::string::npos){          m_sampleName = SampleName::TTH;         }
+        else if ( temp_val.find("TTZ") != std::string::npos){          m_sampleName = SampleName::TTZ;         }
+        else if ( temp_val.find("TTW") != std::string::npos){          m_sampleName = SampleName::TTW;         }
+        else if ( temp_val.find("TTV") != std::string::npos){          m_sampleName = SampleName::TTV;         }
+        else if ( temp_val.find("QCD") != std::string::npos){          m_sampleName = SampleName::QCD;         }
+        //SIGNALS
+        else if ( temp_val.find("VLQ") != std::string::npos){          m_sampleName = SampleName::VLQ;         }
+        else if ( temp_val.find("GLUINO") != std::string::npos){       m_sampleName = SampleName::GLUINO;      }
+        else if ( temp_val.find("SGLUON") != std::string::npos){       m_sampleName = SampleName::SGLUON;      }
+        else {
+            std::cout<<"Unknown sample name"<<std::endl;
+        }
+        m_str_sampleName = temp_val;
+    }
+    else if( temp_arg.find("--SYSNAME") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("NOMINAL") != std::string::npos){
+            m_sysName = SysName::NOMINAL;
+        } else {
+            std::cout<<"Unknown systematics name"<<std::endl;
+        }
+        m_str_sysName = temp_val;
+    }
+    else if( temp_arg.find("--ANATYPE") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
+        else if ( temp_val.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
+        else if ( temp_val.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
+        else{ std::cout<<"Unknown analysis type"<<std::endl; }
+        m_str_anaType = temp_val;
+    }
+    else if( temp_arg.find("--LEPTONCHANNEL") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
+        else if ( temp_val.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
+        else{ std::cout<<"Unknown lepton type"<<std::endl; }
+        m_str_leptonChannel = temp_val;
+    }
+    else if( temp_arg.find("--INPUTTREE") != std::string::npos ){
+        m_inputTree = temp_val;
+    }
+    else if( temp_arg.find("--OUTPUTTREE") != std::string::npos ){
+        m_outputTree = temp_val;
+    }
+    else if( temp_arg.find("--INPUTFILE") != std::string::npos ){
+        m_inputFile = temp_val;
+    }
+    else if( temp_arg.find("--OUTPUTFILE") != std::string::npos ){
+        m_outputFile = temp_val;
+    }
+    else if( temp_arg.find("--OUTPUTFOLDER") != std::string::npos ){
+        m_outputFolder = temp_val;
+    }
+    else if( temp_arg.find("--NEVENTS") != std::string::npos ){
+        m_nEvents = atoi(temp_val.c_str());
+    }
+    else if( temp_arg.find("--SKIPEVENTS") != std::string::npos ){
+        m_skipEvents = atoi(temp_val.c_str());
+    }
+    else if( temp_arg.find("--PICKEVENT") != std::string::npos ){
+        m_pickEvent = atoi(temp_val.c_str());
+    }
+    else {
+        return false;
+    }
+    return true;
+}
+
+//_____________________________________________________________________________________________
+//
 void OptionsBase::PrintOptions()
 {
     std::cout << "============== OptionsBase =================" << std::endl;
@@ -223,9 +237,6 @@ void OptionsBase::PrintOptions()
     std::cout << " m_isData             = " << m_isData << std::endl;
     std::cout << " m_computeWeightSys   = " << m_computeWeightSys << std::endl;
     std::cout << " m_textFileList       = " << m_textFileList << std::endl;
-    std::cout << " m_useTRF             = " << m_useTRF << std::endl;
-    std::cout << " m_recomputeBtag      = " << m_recomputeBtag << std::endl;
-    std::cout << " m_usePDFRW           = " << m_usePDFRW << std::endl;
     
     std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
@@ -241,5 +252,33 @@ void OptionsBase::PrintOptions()
     std::cout << " m_inputFile          = " << m_inputFile << std::endl;
     std::cout << " m_outputFile         = " << m_outputFile << std::endl;
     std::cout << " m_outputFolder       = " << m_outputFolder << std::endl;
-    std::cout << "===========================================" << std::endl;
+    
+    std::cout << " m_skipEvents         = " << m_skipEvents << std::endl;
+    std::cout << " m_nEvents            = " << m_nEvents << std::endl;
+    std::cout << " m_pickEvent          = " << m_pickEvent << std::endl;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
