@@ -191,8 +191,8 @@ private:
     bool AddStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst);
     bool AddStandardTH2(const TString name, const double widthX, const double minX, const double maxX,
                         const double widthY, const double minY, const double maxY, const bool hasSyst);
-
-    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const int index = -1 );
+    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight,
+                            const int index = -1 );
     
 private:
     OptionsBase *m_opt;

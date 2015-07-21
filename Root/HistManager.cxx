@@ -228,7 +228,7 @@ void HistManager::BookTH1D(string name, string title, double binsize, double xlo
   double dnbins=(xup-xlow)/binsize +0.5;
   int nbins=(int)(dnbins);
   TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xlow,xup);
-  h1->GetXaxis()->SetTitle(xtitle.c_str());
+  if(xtitle!=""){h1->GetXaxis()->SetTitle(xtitle.c_str());}
   if(ytitle!=""){h1->GetYaxis()->SetTitle(ytitle.c_str());}
   //else{h1->GetYaxis()->SetTitle("Events/");}
   h1->SetLineWidth(lw);
@@ -246,8 +246,8 @@ void HistManager::BookTH1D(string name, string title, double binsize, double xlo
 void HistManager::BookTH1D(string name, string title, int nbins, double* xedges, 
 	      string key, string xtitle, string ytitle, int lw, int lc){
   TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xedges);
-  h1->GetXaxis()->SetTitle(xtitle.c_str());
-  h1->GetYaxis()->SetTitle(ytitle.c_str());
+  if(xtitle!="")h1->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h1->GetYaxis()->SetTitle(ytitle.c_str());
   h1->SetLineWidth(lw);
   h1->SetLineColor(lc);
   h1->Sumw2();
@@ -271,8 +271,8 @@ void HistManager::BookTH2D(string name, string title, double xbinsize, double xl
   int nybins=(int)(dnybins);
 
   TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,ylow,yup);
-  h2->GetXaxis()->SetTitle(xtitle.c_str());
-  h2->GetYaxis()->SetTitle(ytitle.c_str());
+  if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
   h2->SetLineWidth(lw);
   h2->SetLineColor(lc);
   h2->Sumw2();
@@ -290,8 +290,8 @@ void HistManager::BookTH2D(string name, string title,
 	      string key, string xtitle, string ytitle, int lw, int lc){
 
   TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges);
-  h2->GetXaxis()->SetTitle(xtitle.c_str());
-  h2->GetYaxis()->SetTitle(ytitle.c_str());
+  if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
   h2->SetLineWidth(lw);
   h2->SetLineColor(lc);
   h2->Sumw2();
@@ -312,8 +312,8 @@ void HistManager::BookTH2D(string name, string title, double xbinsize, double xl
   int nxbins=(int)(dnxbins);
 
   TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,yedges);
-  h2->GetXaxis()->SetTitle(xtitle.c_str());
-  h2->GetYaxis()->SetTitle(ytitle.c_str());
+  if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
   h2->SetLineWidth(lw);
   h2->SetLineColor(lc);
   h2->Sumw2();
@@ -343,9 +343,9 @@ void HistManager::BookTH3D(string name, string title, double xbinsize, double xl
   //cout<<endl<<endl;
   double* xedges=&xe[0]; double* yedges=&ye[0];
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
-  h3->GetXaxis()->SetTitle(xtitle.c_str());
-  h3->GetYaxis()->SetTitle(ytitle.c_str());
-  h3->GetZaxis()->SetTitle(ztitle.c_str());
+  if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
+  if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
   h3->SetLineWidth(lw);
   h3->SetLineColor(lc);
   h3->Sumw2();
@@ -372,9 +372,9 @@ void HistManager::BookTH3D(string name, string title, double xbinsize, double xl
   int nzbins=(int)(dnzbins);
 
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,ylow,yup, nzbins,zlow,zup);
-  h3->GetXaxis()->SetTitle(xtitle.c_str());
-  h3->GetYaxis()->SetTitle(ytitle.c_str());
-  h3->GetZaxis()->SetTitle(ztitle.c_str());
+  if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
+  if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
   h3->SetLineWidth(lw);
   h3->SetLineColor(lc);
   h3->Sumw2();
@@ -398,9 +398,9 @@ void HistManager::BookTH3D(string name, string title, double xbinsize, double xl
   for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}
   double* xedges=&xe[0];
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
-  h3->GetXaxis()->SetTitle(xtitle.c_str());
-  h3->GetYaxis()->SetTitle(ytitle.c_str());
-  h3->GetZaxis()->SetTitle(ztitle.c_str());
+  if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
+  if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
   h3->SetLineWidth(lw); h3->SetLineColor(lc);
   h3->Sumw2();
 

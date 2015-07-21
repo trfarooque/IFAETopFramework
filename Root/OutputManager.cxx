@@ -232,7 +232,7 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
             }
         }
     }
-    if(type == VariableDef::VECFLOAT){
+    else if(type == VariableDef::VECFLOAT){
         std::vector < float >* vec = (std::vector< float >*)t;
         if(index!=-1 && vec->size()>index){
             m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
@@ -242,7 +242,7 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
             }
         }
     }
-    if(type == VariableDef::VECINT){
+    else if(type == VariableDef::VECINT){
         std::vector < int >* vec = (std::vector< int >*)t;
         if(index!=-1 && vec->size()>index){
             m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
@@ -251,6 +251,8 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
                 m_histMngr -> FillTH1D((std::string)histName, value, weight);
             }
         }
+    } else {
+        std::cerr << "<!> ERROR in OutputManager::FillTH1FromVector: the object type is unknown. Please check." << std::endl;
     }
     return true;
 }
