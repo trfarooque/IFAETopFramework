@@ -26,7 +26,6 @@ public:
     //
     // Class-specific functions
     //
-    
     vector<string> GetTH1KeyList();
     vector<string> GetTH2KeyList();
     vector<string> GetTH3KeyList();
