@@ -224,7 +224,7 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
     
     if(type == VariableDef::VECDOUBLE){
         std::vector < double >* vec = (std::vector<double>*)t;
-        if(index!=-1 && vec->size()>index){
+        if(index!=-1 && (int)vec->size()>index){
             m_histMngr -> FillTH1D((std::string)histName, vec->at(index), weight);
         } else if (index==-1){
             for ( double value : *vec ){
@@ -234,7 +234,7 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
     }
     else if(type == VariableDef::VECFLOAT){
         std::vector < float >* vec = (std::vector< float >*)t;
-        if(index!=-1 && vec->size()>index){
+        if(index!=-1 && (int)vec->size()>index){
             m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
         } else if (index==-1){
             for ( double value : *vec ){
@@ -244,7 +244,7 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
     }
     else if(type == VariableDef::VECINT){
         std::vector < int >* vec = (std::vector< int >*)t;
-        if(index!=-1 && vec->size()>index){
+        if(index!=-1 && (int)vec->size()>index){
             m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
         } else if (index==-1){
             for ( double value : *vec ){

@@ -50,6 +50,6 @@ PACKAGE_NOCC     = 0
 # whether we build a reflex dictionary:
 PACKAGE_REFLEX   = 0
 
-
+PACKAGE_PEDANTIC = 1
 
 include $(ROOTCOREDIR)/Makefile-common

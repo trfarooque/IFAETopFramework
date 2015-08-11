@@ -22,7 +22,6 @@ m_opt(opt),
 m_ntupData(ntupData)
 {
     m_chain = NULL;
-    EmptyBranches();
     return;
 }
 
@@ -82,7 +81,6 @@ void NtupleReader::Finalise(){
     
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::Finalize()" << std::endl;
     
-    EmptyBranches();
     delete m_chain;
     delete m_opt;
     m_ntupData->EmptyNtupleData();
@@ -91,14 +89,6 @@ void NtupleReader::Finalise(){
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::Finalize()" << std::endl;
     return;
 }
-
-//_________________________________________________________________________________
-//
-void NtupleReader::EmptyBranches(){
-    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "In NtupleReader::EmptyBranches(): this is empty" << std::endl;
-    return;
-}
-
 
 //_________________________________________________________________________________
 //
@@ -146,21 +136,21 @@ int NtupleReader::SetEventBranchAddresses(){
 
 //_________________________________________________________________________________
 //
-int NtupleReader::SetJetBranchAddresses(const string &sj){
+int NtupleReader::SetJetBranchAddresses(const string &){
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "In NtupleReader::setJetBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
 //_________________________________________________________________________________
 //
-int NtupleReader::SetFatJetBranchAddresses(int sfj_key, const string &sfj){
+int NtupleReader::SetFatJetBranchAddresses(int , const string &){
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setFatJetBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
 //_________________________________________________________________________________
 //
-int NtupleReader::SetElectronBranchAddresses(const string &sfj){
+int NtupleReader::SetElectronBranchAddresses(const string &){
     
     if(m_opt->MsgLevel()==Debug::DEBUG)std::cout << "Entering in NtupleReader::setElectronBranchAddresses(): this is empty" << std::endl;
     return -1;
@@ -168,29 +158,28 @@ int NtupleReader::SetElectronBranchAddresses(const string &sfj){
 
 //_________________________________________________________________________________
 //
-int NtupleReader::SetMuonBranchAddresses(const string &sfj){
+int NtupleReader::SetMuonBranchAddresses(const string &){
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setMuonBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
 //_________________________________________________________________________________
 //
-int NtupleReader::SetLeptonBranchAddresses(const string &sfj){
+int NtupleReader::SetLeptonBranchAddresses(const string &){
     if(m_opt->MsgLevel()==Debug::DEBUG)std::cout << "Entering in NtupleReader::setLeptonBranchAddresses(): this is empty" << std::endl;
     return -1;
 }
 
-
 //_________________________________________________________________________________
 //
-int NtupleReader::SetMETBranchAddresses(const string &sfj){
+int NtupleReader::SetMETBranchAddresses(const string &){
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setMETBranchAddresses(): this is empty"<< std::endl;
     return -1;
 }
 
 //_________________________________________________________________________________
 //
-int NtupleReader::SetWeightBranchAddresses(const string &sfj){
+int NtupleReader::SetWeightBranchAddresses(const string &){
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::setWeightBranchAddresses(): this is empty" << std::endl;
     return -1;
 }

@@ -356,16 +356,18 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
                            double ybinsize, double ylow, double yup, int nzbins, double* zedges,
                            const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
     
-  double dnxbins=(xup-xlow)/xbinsize +0.5;
-  double dnybins=(yup-ylow)/ybinsize +0.5;
-
-  int nxbins=(int)(dnxbins);
-  int nybins=(int)(dnybins);
-
-  double xe[nxbins+1]; double ye[nybins+1];
-  for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}// cout<<"i="<<"xe="<<xe[i]<<endl;}
-  for(int i=0; i<=nybins; i++){ye[i]=ylow+i*ybinsize;}// cout<<"i="<<"ye="<<ye[i]<<endl;}
-  //cout<<endl<<endl;
+  double dnxbins=(xup-xlow)/xbinsize + 0.5;
+  double dnybins=(yup-ylow)/ybinsize + 0.5;
+    
+  const int nxbins = (int)(dnxbins);
+  const int nybins = (int)(dnybins);
+    
+  double *xe = new double[nxbins+1];
+  double *ye = new double[nybins+1];
+    
+  for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}
+  for(int i=0; i<=nybins; i++){ye[i]=ylow+i*ybinsize;}
+    
   double* xedges=&xe[0]; double* yedges=&ye[0];
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
   if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
@@ -381,6 +383,9 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
       cout<<"Warning: Replacing existing H3D "<<name<<endl;
   }
   m_h3d[in_key]=h3;
+    
+  delete[] xe;
+  delete[] ye;
   return;
 }
 
@@ -425,7 +430,8 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
   double dnxbins=(xup-xlow)/xbinsize +0.5;
   int nxbins=(int)(dnxbins);
 
-  double xe[nxbins+1]; 
+  double *xe = new double[nxbins+1];
+    
   for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}
   double* xedges=&xe[0];
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
@@ -441,6 +447,8 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
       cout<<"Warning: Replacing existing H3D "<<name<<endl;
   }
   m_h3d[in_key]=h3;
+    
+  delete[] xe;
   return;
 }
 

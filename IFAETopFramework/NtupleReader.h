@@ -41,7 +41,6 @@ public:
     //
     void Init();
     void Finalise();
-    virtual void EmptyBranches();
     
     virtual int SetEventBranchAddresses();
     
