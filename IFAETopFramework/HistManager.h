@@ -40,35 +40,35 @@ public:
     void ClearTH2( const string &s_hist);
     void ClearTH3( const string &s_hist);
     
-    void BookTH1D( const string &, const string &, const string &title = ""  );
-    void BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
+    TH1D* BookTH1D( const string &, const string &, const string &title = ""  );
+    TH1D* BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
                    const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
-    void BookTH1D( const string &name, const string &title, int nbins, double* xedges,
+    TH1D* BookTH1D( const string &name, const string &title, int nbins, double* xedges,
                    const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
     
-    void BookTH2D( const string &key, const string &name, const string &title);
-    void BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+    TH2D* BookTH2D( const string &key, const string &name, const string &title);
+    TH2D* BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                    double ybinsize, double ylow, double yup, const string &key="", const string &xtitle="",
                    const string &ytitle="", int lw=2, int lc=1);
-    void BookTH2D( const string &name, const string &title,
+    TH2D* BookTH2D( const string &name, const string &title,
                    int nxbins, double* xedges, int nybins, double* yedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    int lw=2, int lc=1);
-    void BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+    TH2D* BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                   int nybins, double* yedges,
                   const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
     
-    void BookTH3D( const string &key, const string &name, const string &title);
-    void BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+    TH3D* BookTH3D( const string &key, const string &name, const string &title);
+    TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                    double ybinsize, double ylow, double yup,
                    int nzbins, double* zedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    const string &ztitle="", int lw=2, int lc=1);
-    void BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+    TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                    int nybins, double* yedges, int nzbins, double* zedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    const string &ztitle="", int lw=2, int lc=1);
-    void BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+    TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                    double ybinsize, double ylow, double yup,
                    double zbinsize, double zlow, double zup,
                    const string &key="", const string &xtitle="", const string &ytitle="", const string &ztitle="",
@@ -81,6 +81,16 @@ public:
     TH1D* GetTH1D( const string &hname);
     TH2D* GetTH2D( const string &hname);
     TH3D* GetTH3D( const string &hname);
+
+
+    TH1D* CloneTH1D( const string &hkey, const string &origkey, bool reset = false);
+    TH2D* CloneTH2D( const string &hkey, const string &origkey, bool reset = false);
+    TH3D* CloneTH3D( const string &hkey, const string &origkey, bool reset = false);
+
+    TH1D* CloneTH1D( const string &hkey, TH1D* h1d, bool reset = false);
+    TH2D* CloneTH2D( const string &hkey, TH2D* h2d, bool reset = false);
+    TH3D* CloneTH3D( const string &hkey, TH3D* h3d, bool reset = false);
+
     
     void SetTH1D( const string &hkey, TH1D* h1d);
     void SetTH2D( const string &hkey, TH2D* h2d);
@@ -90,9 +100,9 @@ public:
     void ReplaceTH2D( const string &hkey, TH2D* h2d);
     void ReplaceTH3D( const string &hkey, TH3D* h3d);
     
-    int ReadTH1D( const string &name, TFile* f, const string &key);
-    int ReadTH2D( const string &name, TFile* f, const string &key);
-    int ReadTH3D( const string &name, TFile* f, const string &key);
+    TH1D* ReadTH1D( const string &name, TFile* f, const string &key);
+    TH2D* ReadTH2D( const string &name, TFile* f, const string &key);
+    TH3D* ReadTH3D( const string &name, TFile* f, const string &key);
     
 protected:
     map<string, TH1D*> m_h1d;

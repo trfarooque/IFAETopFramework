@@ -20,22 +20,14 @@ HistManager::HistManager( const HistManager &q, bool make_new){
   if(make_new){
     //Loop over old HistManager, clone each histogram, and add it to the new HistManager
     map<string, TH1D*>::const_iterator h1_it = (q.m_h1d).begin();
-    for(; h1_it != q.m_h1d.end(); ++h1_it){
-      TH1D* h1copy = (TH1D*)( (h1_it->second)->Clone() );
-      m_h1d[h1_it->first] = h1copy;
-    }
+    for(; h1_it != q.m_h1d.end(); ++h1_it){ CloneTH1D(h1_it->first, h1_it->second); }
 
-    map<string, TH2D*>::const_iterator h2_it = q.m_h2d.begin();
-    for(; h2_it != q.m_h2d.end(); ++h2_it){
-      TH2D* h2copy = (TH2D*)( (h2_it->second)->Clone() );
-      m_h2d[h2_it->first] = h2copy;
-    }
+    map<string, TH2D*>::const_iterator h2_it = (q.m_h2d).begin();
+    for(; h2_it != q.m_h2d.end(); ++h2_it){ CloneTH2D(h2_it->first, h2_it->second); }
 
-    map<string, TH3D*>::const_iterator h3_it = q.m_h3d.begin();
-    for(; h3_it != q.m_h3d.end(); ++h3_it){
-      TH3D* h3copy = (TH3D*)( (h3_it->second)->Clone() );
-      m_h3d[h3_it->first] = h3copy;
-    }
+    map<string, TH3D*>::const_iterator h3_it = (q.m_h3d).begin();
+    for(; h3_it != q.m_h3d.end(); ++h3_it){ CloneTH3D(h3_it->first, h3_it->second); }
+
   }
   else{
     m_h1d = q.m_h1d;
@@ -183,83 +175,83 @@ void HistManager::ClearTH3(const string &s_hist){
 
 //__________________________________________________________________
 //
-void HistManager::BookTH1D( const string &key, const string &name, const string &title){
+TH1D* HistManager::BookTH1D( const string &key, const string &name, const string &title){
   TH1D* h1 = new TH1D();
+  h1->SetDirectory(0);
   h1->SetName(name.c_str());
   h1->SetTitle(title.c_str());
-  h1->SetDirectory(0);
   const string &in_key = (key=="") ? name : key;
   if(m_h1d.find(in_key) != m_h1d.end()){
     cout<<"Warning: Replacing existing H1D "<<name<<endl;
   }
   m_h1d[in_key]=h1;
     
-  return;
+  return h1;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
+TH1D* HistManager::BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
                             const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
     double dnbins=(xup-xlow)/binsize +0.5;
     int nbins=(int)(dnbins);
     TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xlow,xup);
+    h1->SetDirectory(0);
     if(xtitle!=""){h1->GetXaxis()->SetTitle(xtitle.c_str());}
     if(ytitle!=""){h1->GetYaxis()->SetTitle(ytitle.c_str());}
     h1->SetLineWidth(lw);
     h1->SetLineColor(lc);
     h1->Sumw2();
-    h1->SetDirectory(0);
     
     const string &in_key = (key=="") ? name : key;
     if(m_h1d.find(in_key) != m_h1d.end()){
         cout<<"Warning: Replacing existing H1D "<<name<<endl;
     }
     m_h1d[in_key]=h1;
-    return;
+    return h1;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH1D( const string &name, const string &title, int nbins, double* xedges,
+TH1D* HistManager::BookTH1D( const string &name, const string &title, int nbins, double* xedges,
                             const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
     TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xedges);
+    h1->SetDirectory(0);
     if(xtitle!="")h1->GetXaxis()->SetTitle(xtitle.c_str());
     if(ytitle!="")h1->GetYaxis()->SetTitle(ytitle.c_str());
     h1->SetLineWidth(lw);
     h1->SetLineColor(lc);
     h1->Sumw2();
-    h1->SetDirectory(0);
     
     const string &in_key = (key=="") ? name : key;
     if(m_h1d.find(in_key) != m_h1d.end()){
         cout<<"Warning: Replacing existing H1D "<<name<<endl;
     }
     m_h1d[in_key]=h1;
-    return;
+    return h1;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH2D( const string &key, const string &name, const string &title ){
+TH2D* HistManager::BookTH2D( const string &key, const string &name, const string &title ){
   TH2D* h2 = new TH2D();
+  h2->SetDirectory(0);
   h2->SetName(name.c_str());
   h2->SetTitle(title.c_str());
-  h2->SetDirectory(0);
     
   const string &in_key = (key=="") ? name : key;
   if(m_h2d.find(in_key) != m_h2d.end()){
       cout<<"Warning: Replacing existing H2D "<<name<<endl;
   }
   m_h2d[in_key]=h2;
-  return;
+  return h2;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+TH2D* HistManager::BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                             double ybinsize, double ylow, double yup, const string &key, const string &xtitle,
                             const string &ytitle, int lw, int lc){
     
@@ -270,47 +262,47 @@ void HistManager::BookTH2D( const string &name, const string &title, double xbin
     int nybins=(int)(dnybins);
     
     TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,ylow,yup);
+    h2->SetDirectory(0);
     if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
     if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
     h2->SetLineWidth(lw);
     h2->SetLineColor(lc);
     h2->Sumw2();
-    h2->SetDirectory(0);
     
     const string &in_key = (key=="") ? name : key;
     if(m_h2d.find(in_key) != m_h2d.end()){
         cout<<"Warning: Replacing existing H2D "<<name<<endl;
     }
     m_h2d[in_key]=h2;
-    return;
+    return h2;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH2D(const string &name, const string &title,
+TH2D* HistManager::BookTH2D(const string &name, const string &title,
                            int nxbins, double* xedges, int nybins, double* yedges,
                            const string &key, const string &xtitle, const string &ytitle,
                            int lw, int lc){
     
     TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges);
+    h2->SetDirectory(0);
     if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
     if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
     h2->SetLineWidth(lw);
     h2->SetLineColor(lc);
     h2->Sumw2();
-    h2->SetDirectory(0);
     
     const string &in_key = (key=="") ? name : key;
     if(m_h2d.find(in_key) != m_h2d.end()){
         cout<<"Warning: Replacing existing H2D "<<name<<endl;
     }
     m_h2d[in_key]=h2;
-    return;
+    return h2;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+TH2D* HistManager::BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                             int nybins, double* yedges,
                             const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
@@ -318,41 +310,42 @@ void HistManager::BookTH2D( const string &name, const string &title, double xbin
     int nxbins=(int)(dnxbins);
     
     TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,yedges);
+    h2->SetDirectory(0);
     if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
     if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
     h2->SetLineWidth(lw);
     h2->SetLineColor(lc);
     h2->Sumw2();
-    h2->SetDirectory(0);
     
     const string &in_key = (key=="") ? name : key;
     if(m_h2d.find(in_key) != m_h2d.end()){
         cout<<"Warning: Replacing existing H2D "<<name<<endl;
     }
     m_h2d[in_key]=h2;
-    return;
+    return h2;
     
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH3D(const string &key, const string &name, const string &title){
+TH3D* HistManager::BookTH3D(const string &key, const string &name, const string &title){
   TH3D* h3 = new TH3D();
+  h3->SetDirectory(0);
   h3->SetName(name.c_str());
   h3->SetTitle(title.c_str());
-  h3->SetDirectory(0);
+  h3->Sumw2();
 
   const string &in_key = (key=="") ? name : key;
   if(m_h3d.find(in_key) != m_h3d.end()){
       cout<<"Warning: Replacing existing H3D "<<name<<endl;
   }
   m_h3d[in_key]=h3;
-  return;
+  return h3;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH3D(const string &name, const string &title, double xbinsize, double xlow, double xup,
+TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbinsize, double xlow, double xup,
                            double ybinsize, double ylow, double yup, int nzbins, double* zedges,
                            const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
     
@@ -370,13 +363,13 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
     
   double* xedges=&xe[0]; double* yedges=&ye[0];
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
+  h3->SetDirectory(0);
   if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
   if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
   if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
   h3->SetLineWidth(lw);
   h3->SetLineColor(lc);
   h3->Sumw2();
-  h3->SetDirectory(0);
     
   const string &in_key = (key=="") ? name : key;
   if(m_h3d.find(in_key) != m_h3d.end()){
@@ -386,12 +379,12 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
     
   delete[] xe;
   delete[] ye;
-  return;
+  return h3;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+TH3D* HistManager::BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                             double ybinsize, double ylow, double yup,
                             double zbinsize, double zlow, double zup,
                             const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
@@ -405,25 +398,25 @@ void HistManager::BookTH3D( const string &name, const string &title, double xbin
   int nzbins=(int)(dnzbins);
 
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,ylow,yup, nzbins,zlow,zup);
+  h3->SetDirectory(0);
   if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
   if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
   if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
   h3->SetLineWidth(lw);
   h3->SetLineColor(lc);
   h3->Sumw2();
-  h3->SetDirectory(0);
     
   const string &in_key = (key=="") ? name : key;
   if(m_h3d.find(in_key) != m_h3d.end()){
       cout<<"Warning: Replacing existing H3D "<<name<<endl;
   }
   m_h3d[in_key]=h3;
-  return;
+  return h3;
 }
 
 //__________________________________________________________________
 //
-void HistManager::BookTH3D(const string &name, const string &title, double xbinsize, double xlow, double xup,
+TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbinsize, double xlow, double xup,
                            int nybins, double* yedges, int nzbins, double* zedges,
                            const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
 
@@ -435,12 +428,12 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
   for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}
   double* xedges=&xe[0];
   TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
+  h3->SetDirectory(0);
   if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
   if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
   if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
   h3->SetLineWidth(lw); h3->SetLineColor(lc);
   h3->Sumw2();
-  h3->SetDirectory(0);
     
   const string &in_key = (key=="") ? name : key;
   if(m_h3d.find(in_key) != m_h3d.end()){
@@ -449,7 +442,7 @@ void HistManager::BookTH3D(const string &name, const string &title, double xbins
   m_h3d[in_key]=h3;
     
   delete[] xe;
-  return;
+  return h3;
 }
 
 //__________________________________________________________________
@@ -529,6 +522,84 @@ TH3D* HistManager::GetTH3D( const string &hname){
 
 //__________________________________________________________________
 //
+TH1D* HistManager::CloneTH1D( const string &hkey, const string &origkey, bool reset){
+  if(m_h1d.find(origkey) == m_h1d.end()){
+      std::cout<<"Error: TH1D "<<origkey<<" not found to clone"<<std::endl;
+      return NULL;
+  }
+
+  TH1D* hret = CloneTH1D(hkey, m_h1d[origkey], reset);
+
+  return hret;
+
+
+}
+//__________________________________________________________________
+//
+TH2D* HistManager::CloneTH2D( const string &hkey, const string &origkey, bool reset){
+  if(m_h2d.find(origkey) == m_h2d.end()){
+      std::cout<<"Error: TH2D "<<origkey<<" not found to clone"<<std::endl;
+      return NULL;
+  }
+
+  TH2D* hret = CloneTH2D(hkey, m_h2d[origkey], reset);
+
+  return hret;
+
+}
+//__________________________________________________________________
+//
+TH3D* HistManager::CloneTH3D( const string &hkey, const string &origkey, bool reset){
+  if(m_h3d.find(origkey) == m_h3d.end()){
+      std::cout<<"Error: TH3D "<<origkey<<" not found to clone"<<std::endl;
+      return NULL;
+  }
+
+  TH3D* hret = CloneTH3D(hkey, m_h3d[origkey], reset);
+
+  return hret;
+
+}
+//__________________________________________________________________
+//
+TH1D* HistManager::CloneTH1D( const string &hkey, TH1D* h1d, bool reset){
+
+  TH1D* hclone = (TH1D*)(h1d->Clone(hkey.c_str()));
+  hclone->SetDirectory(0);
+  if(reset){hclone->Reset();}
+  if(hclone->GetSumw2N()==0){hclone->Sumw2();}
+
+  m_h1d[hkey] = hclone;
+  return hclone;
+}
+
+//__________________________________________________________________
+//
+TH2D* HistManager::CloneTH2D( const string &hkey, TH2D* h2d, bool reset){
+
+  TH2D* hclone = (TH2D*)(h2d->Clone(hkey.c_str()));
+  hclone->SetDirectory(0);
+  if(reset){hclone->Reset();}
+  if(hclone->GetSumw2N()==0){hclone->Sumw2();}
+  m_h2d[hkey] = hclone;
+  return hclone;
+}
+
+//__________________________________________________________________
+//
+TH3D* HistManager::CloneTH3D( const string &hkey, TH3D* h3d, bool reset){
+
+  TH3D* hclone = (TH3D*)(h3d->Clone(hkey.c_str()));
+  hclone->SetDirectory(0);
+  if(reset){hclone->Reset();}
+  if(hclone->GetSumw2N()==0){hclone->Sumw2();}
+  m_h3d[hkey] = hclone;
+  return hclone;
+}
+
+//__________________________________________________________________
+//
+
 void HistManager::SetTH1D( const string &hkey, TH1D* h1d){
   if(m_h1d.find(hkey) != m_h1d.end()){cout<<"Error: TH1D "<<hkey<<" already exists"<<endl;}
   else{m_h1d[hkey] = h1d;}
@@ -583,7 +654,7 @@ void HistManager::ReplaceTH3D(const string &hkey, TH3D* h3d){
 
 //__________________________________________________________________
 //
-int HistManager::ReadTH1D( const string &name, TFile* f, const string &key){
+TH1D* HistManager::ReadTH1D( const string &name, TFile* f, const string &key){
 
   string s;
   if(key!=""){s=key;}
@@ -591,22 +662,19 @@ int HistManager::ReadTH1D( const string &name, TFile* f, const string &key){
 
   if(m_h1d.find(s)!= m_h1d.end()){
     cout<<"TH1D "<<s.c_str()<<" already exists"<<endl;
-    return 1;
+    return NULL;
   } //if hist already exists, do nothing
-  m_h1d[s]=(TH1D*)(f->Get(name.c_str()));
-  if(m_h1d[s]==0){cout<<name.c_str()<<" not found in file"<<endl; return -1;}
-  //h1d[s]->Sumw2();
-  m_h1d[s]->SetDirectory(0);
-  m_h1d[s]->SetName(s.c_str());
-  if(m_h1d[s]->GetSumw2N()==0){m_h1d[s]->Sumw2();}
-  
-  return 0;
+  TH1D* forig = (TH1D*)(f->Get(name.c_str()));
+  if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
+  TH1D* hret = CloneTH1D(s, forig);
+
+  return hret;
 
 }
 
 //__________________________________________________________________
 //
-int HistManager::ReadTH2D(const string &name, TFile* f, const string &key){
+TH2D* HistManager::ReadTH2D(const string &name, TFile* f, const string &key){
 
   string s;
   if(key!=""){s=key;}
@@ -614,22 +682,20 @@ int HistManager::ReadTH2D(const string &name, TFile* f, const string &key){
 
   if(m_h2d.find(s)!= m_h2d.end()){
     cout<<"TH2D "<<s.c_str()<<" already exists"<<endl;
-    return 1;
+    return NULL;
   } //if hist already exists, do nothing
-  m_h2d[s]=(TH2D*)(f->Get(name.c_str()));
-  if(m_h2d[s]==0){cout<<name.c_str()<<" not found in file"<<endl; return -1;}
-  //h2d[s]->Sumw2();
-  m_h2d[s]->SetDirectory(0);
-  m_h2d[s]->SetName(s.c_str());
-  if(m_h2d[s]->GetSumw2N()==0){m_h2d[s]->Sumw2();}
+
+  TH2D* forig = (TH2D*)(f->Get(name.c_str()));
+  if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
+  TH2D* hret = CloneTH2D(s, forig);
   
-  return 0;
+  return hret;
 
 }
 
 //__________________________________________________________________
 //
-int HistManager::ReadTH3D(const string &name, TFile* f, const string &key){
+TH3D* HistManager::ReadTH3D(const string &name, TFile* f, const string &key){
 
   string s;
   if(key!=""){s=key;}
@@ -637,16 +703,14 @@ int HistManager::ReadTH3D(const string &name, TFile* f, const string &key){
 
   if(m_h3d.find(s)!= m_h3d.end()){
     cout<<"TH3D "<<s.c_str()<<" already exists"<<endl;
-    return 1;
+    return NULL;
   } //if hist already exists, do nothing
-  m_h3d[s]=(TH3D*)(f->Get(name.c_str()));
-  if(m_h3d[s]==0){cout<<name.c_str()<<" not found in file"<<endl; return -1;}
-  //h3d[s]->Sumw2();
-  m_h3d[s]->SetDirectory(0);
-  m_h3d[s]->SetName(s.c_str());
-  if(m_h3d[s]->GetSumw2N()==0){m_h3d[s]->Sumw2();}
+
+  TH3D* forig = (TH3D*)(f->Get(name.c_str()));
+  if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
+  TH3D* hret = CloneTH3D(s, forig);
   
-  return 0;
+  return hret;
 }
 
 
