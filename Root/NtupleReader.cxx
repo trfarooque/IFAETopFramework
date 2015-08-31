@@ -184,3 +184,10 @@ int NtupleReader::SetWeightBranchAddresses(const string &){
     return -1;
 }
 
+//_________________________________________________________________________________
+//
+int NtupleReader::SetTruthParticleBranchAddresses(const string &){
+    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::SetTruthParticleBranchAddresses(): this is empty" << std::endl;
+    return -1;
+}
+

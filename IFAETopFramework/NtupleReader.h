@@ -54,6 +54,7 @@ public:
     virtual int SetMETBranchAddresses(const std::string &sj);
     
     virtual int SetWeightBranchAddresses(const std::string &sj);
+    virtual int SetTruthParticleBranchAddresses(const std::string &sj);
     
     
     int GetChainEntry(long entry) const ;
