@@ -41,22 +41,22 @@ public:
     inline bool ComputeWeightSys() const { return m_computeWeightSys; }
     inline bool TextFileList() const { return m_textFileList; }
     
-    inline std::string StrSampleName() const { return m_str_sampleName; }
-    inline std::string StrSysName() const { return m_str_sysName; }
-    inline std::string StrAnaType() const { return m_str_anaType; }
+    inline const std::string& StrSampleName() const { return m_str_sampleName; }
+    inline const std::string& StrSysName() const { return m_str_sysName; }
+    inline const std::string& StrAnaType() const { return m_str_anaType; }
 
     inline SampleName::sample SampleName() const { return m_sampleName; }
     inline SysName::sys SysName() const { return m_sysName; }
     inline AnaType::ana AnaType() const { return m_anaType; }
     inline LeptonChannel::lepch LeptonChannel() const { return m_leptonChannel; }
     
-    inline std::string InputTree() const { return m_inputTree; }
-    inline std::string OutputTree() const { return m_outputTree; }
+    inline const std::string& InputTree() const { return m_inputTree; }
+    inline const std::string& OutputTree() const { return m_outputTree; }
     
-    inline std::string InputFile() const { return m_inputFile; }
-    inline std::string OutputFile() const { return m_outputFile; }
+    inline const std::string& InputFile() const { return m_inputFile; }
+    inline const std::string& OutputFile() const { return m_outputFile; }
     
-    inline std::string OutputFolder() const { return m_outputFolder; }
+    inline const std::string& OutputFolder() const { return m_outputFolder; }
     
     inline int SkipEvents() const { return m_skipEvents; }
     inline int NEvents() const { return m_nEvents; }

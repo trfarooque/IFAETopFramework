@@ -492,7 +492,6 @@ void HistManager::FillTH3D( const string &hkey, double val1, double val2, double
 TH1D* HistManager::GetTH1D( const string &hname){
     map<string, TH1D*>::const_iterator h1_it = m_h1d.find(hname);
     if(h1_it == m_h1d.end()){
-        std::cout<<"Error: TH1D "<<hname<<" not found"<<std::endl;
         return 0;
     }
     return h1_it->second;
@@ -503,7 +502,6 @@ TH1D* HistManager::GetTH1D( const string &hname){
 TH2D* HistManager::GetTH2D( const string &hname){
   map<string, TH2D*>::const_iterator h2_it = m_h2d.find(hname);
   if(h2_it == m_h2d.end()){
-      std::cout<<"Error: TH2D "<<hname<<" not found"<<std::endl;
       return 0;
   }
   return h2_it->second;
@@ -514,7 +512,6 @@ TH2D* HistManager::GetTH2D( const string &hname){
 TH3D* HistManager::GetTH3D( const string &hname){
   map<string, TH3D*>::const_iterator h3_it = m_h3d.find(hname);
   if(h3_it == m_h3d.end()){
-      std::cout<<"Error: TH3D "<<hname<<" not found"<<std::endl;
       return 0;
   }
   return h3_it->second;
