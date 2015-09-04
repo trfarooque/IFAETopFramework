@@ -1,0 +1,12 @@
+ ANALYSETREE.C
+ ==============
+ Dumps information about the trees contained in a ROOT file.
+ 
+ To run it:
+      root -l -b -q 'AnalyseTree.C+("myRootFile.root")'
+ 
+ It creates categories based on the presence of an "_" sign in the name of the branches.
+ 
+ The outputs are .eps file, as well as printed values of the results on the screen.
+ 
+ Contact: Loic Valery <lvalery@cern.ch>
