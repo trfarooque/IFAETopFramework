@@ -108,7 +108,7 @@ long GetTreeSizeStudy( TTree* tree ){
     
     std::cout << "===============================================================" << std::endl;
     std::cout << "Information about tree: " << tree -> GetName() << std::endl;
-    std::cout << "    Size: " << std::setw(5) << totalSize / (1024*1024) << " Mo" << std::endl;
+    std::cout << "    Size: " << std::setw(5) << totalSize / (1024.*1024.) << " Mo" << std::endl;
     std::cout << "===============================================================" << std::endl;
     
     for ( std::pair < std::string, long > Pair : map_categories ) {
