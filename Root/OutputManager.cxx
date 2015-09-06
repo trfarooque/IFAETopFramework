@@ -18,23 +18,28 @@ OutputManager::OutputManager( OptionsBase* opt, OutputType type ):
 m_opt(opt),
 m_type(type),
 m_stdTH1Def(0),
+m_stdTProfileDef(0),
 m_stdTH2Def(0),
 m_stdBranchDef(0),
 m_histMngr(0),
 m_treeMngr(0),
 m_sysVector(0),
 m_data(0),
-m_mapHasSyst(0)
+m_mapHasSyst(0),
+m_vecH2ToProfile(0)
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
     
     m_stdTH1Def     = new StdTH1();
+    m_stdTProfileDef   = new StdTH1();
     m_stdTH2Def     = new StdTH2();
     m_stdBranchDef  = new StdBranches();
     m_histMngr      = new HistManager();
     m_treeMngr      = new TreeManager();
     m_mapHasSyst    = new std::map <TString,bool>();
     m_mapHasSyst    -> clear();
+    m_vecH2ToProfile= new std::set < TString >;
+    m_vecH2ToProfile->clear();
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
 }
@@ -48,6 +53,7 @@ OutputManager::OutputManager( const OutputManager &q )
     m_opt           = q.m_opt;
     m_type          = q.m_type;
     m_stdTH1Def     = q.m_stdTH1Def;
+    m_stdTProfileDef   = q.m_stdTProfileDef;
     m_stdTH2Def     = q.m_stdTH2Def;
     m_stdBranchDef  = q.m_stdBranchDef;
     m_histMngr      = q.m_histMngr;
@@ -55,6 +61,7 @@ OutputManager::OutputManager( const OutputManager &q )
     m_sysVector     = q.m_sysVector;
     m_data          = q.m_data;
     m_mapHasSyst    = q.m_mapHasSyst;
+    m_vecH2ToProfile= q.m_vecH2ToProfile;
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager copy-constructor" << std::endl;
 }
@@ -257,12 +264,11 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
     return true;
 }
 
-
 //________________________________________________________________________________________
 //
-bool OutputManager::SaveStandardTH1( const TString &outputName ){
+bool OutputManager::SaveStandardTH1( const TString &outputName, const bool newFile ){
     
-    TFile *f = new TFile(outputName,"recreate");
+    TFile *f = new TFile( outputName, ( newFile ? "recreate" : "update" ) );
     //Storing TH1 in the output file
     vector<string> h1list = m_histMngr->GetTH1KeyList();
     for( const auto it_h1 : h1list ){
@@ -430,20 +436,55 @@ bool OutputManager::FillStandardTH2( const TString &pattern ){
 
 //________________________________________________________________________________________
 //
-bool OutputManager::SaveStandardTH2( const TString &outputName ){
+bool OutputManager::SaveStandardTH2( const TString &outputName, const bool newFile ){
     
-    TFile *f = new TFile(outputName,"recreate");
+    TFile *f = new TFile( outputName, ( newFile ? "recreate" : "update" ) );
     //
     // Storing TH2 in the output file
     //
     vector<string> h2list = m_histMngr->GetTH2KeyList();
     for( const auto it_h2 : h2list ){
         f->cd();
-        m_histMngr->GetTH2D(it_h2)->Write();
+        TH2D* h_temp = m_histMngr->GetTH2D(it_h2);
+        h_temp -> Write();
+        
+        //Need to profile this TH2 ?
+        bool toProfile = false;
+        const TString h_tempName = it_h2;
+        for( const TString prof_name : *m_vecH2ToProfile ){
+            if(h_tempName.Contains(prof_name)){
+                toProfile = true;
+                break;
+            }
+        }
+        if(toProfile){
+            TProfile* temp_profile = (TProfile*) h_temp -> ProfileX( h_tempName + "_pfx" );
+            temp_profile -> Write();
+            delete temp_profile;
+        }
         m_histMngr->ClearTH2(it_h2);
     }
     f -> Close();
     return true;
+}
+
+//________________________________________________________________________________________
+//
+bool OutputManager::StoreTProfile( const TString &nameX, const TString &nameY, const bool hasSyst ){
+    TString name = nameY + "_vs_" + nameX;
+    if(!hasSyst){
+        if( m_vecH2ToProfile -> find(name) != m_vecH2ToProfile -> end() ){
+            std::cout << " !! WARNING: In OutputManager::StoreTProfile(" << nameX << ", " << nameY << "): the TProfile is already in the vector !" << std::endl;
+            return false;
+        } else {
+            m_vecH2ToProfile -> insert(name);
+            return true;
+        }
+    } else {
+        std::cout << "In OutputManager::StoreTProfile: The systematic version of this is not yet implemented !" << std::endl;
+        return false;
+    }
+    return false;
 }
 
 //-----------------------------TREE-SPECIFIC METHODS-------------------------------

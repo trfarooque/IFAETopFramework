@@ -6,6 +6,7 @@
 
 //Standard libraries
 #include <map>
+#include <set>
 #include <vector>
 
 //IFAEFramework classes
@@ -108,8 +109,7 @@ public:
     }
     bool BookStandardTH1( const TString &pattern, const bool hasSyst = false);
     bool FillStandardTH1( const TString &name );
-    bool SaveStandardTH1( const TString& );
-    
+    bool SaveStandardTH1( const TString&, const bool newFile = true );
     
     //
     //___________________________________________________________
@@ -137,8 +137,8 @@ public:
             return false;
         }
         
-        VariableDef _varX(nameX,"", variableTypeX, tX, vec_indX);
-        VariableDef _varY(nameY,"", variableTypeY, tY, vec_indY);
+        VariableDef _varX(nameX,titleX, variableTypeX, tX, vec_indX);
+        VariableDef _varY(nameY,titleY, variableTypeY, tY, vec_indY);
         
         std::map< TString , h2Def*>::iterator it = m_stdTH2Def -> find(name);
         if(it != m_stdTH2Def->end()){
@@ -151,7 +151,13 @@ public:
     }
     bool BookStandardTH2( const TString &pattern, const bool hasSyst = false);
     bool FillStandardTH2( const TString &name );
-    bool SaveStandardTH2( const TString& );
+    bool SaveStandardTH2( const TString&, const bool newFile = true );
+    
+    //
+    // Light TProfile interface
+    //
+    bool StoreTProfile( const TString &nameX, const TString &nameY, const bool hasSyst = false );
+    
     
     
     //
@@ -198,6 +204,7 @@ private:
     OptionsBase *m_opt;
     OutputType m_type;
     StdTH1 *m_stdTH1Def;
+    StdTH1 *m_stdTProfileDef;
     StdTH2 *m_stdTH2Def;
     StdBranches *m_stdBranchDef;
     
@@ -207,6 +214,7 @@ private:
     SystManager::SystVector *m_sysVector;
     OutputData *m_data;
     std::map < TString, bool > *m_mapHasSyst;
+    std::set < TString > *m_vecH2ToProfile;
 };
 #endif
 
