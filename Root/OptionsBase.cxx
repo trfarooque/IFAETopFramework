@@ -9,6 +9,7 @@
 //
 OptionsBase::OptionsBase():
 m_msgLevel(Debug::STANDARD),
+m_optStr(""),
 m_isData(false),
 m_computeWeightSys(false),//do you want to run the weight systematics
 m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
@@ -37,32 +38,34 @@ m_pickEvent(-1)
 //
 OptionsBase::OptionsBase( const OptionsBase& q )
 {
-    m_msgLevel  = q.m_msgLevel;
+  m_optStr            = q.m_optStr;
+
+  m_msgLevel          = q.m_msgLevel;
+
+  m_isData            = q.m_isData;
+  m_computeWeightSys  = q.m_computeWeightSys;
+  m_textFileList      = q.m_textFileList;
     
-    m_isData            = q.m_isData;
-    m_computeWeightSys  = q.m_computeWeightSys;
-    m_textFileList      = q.m_textFileList;
+  m_sampleName        = q.m_sampleName;
+  m_sysName           = q.m_sysName;
+  m_anaType           = q.m_anaType;
+  m_leptonChannel     = q.m_leptonChannel;
     
-    m_sampleName        = q.m_sampleName;
-    m_sysName           = q.m_sysName;
-    m_anaType           = q.m_anaType;
-    m_leptonChannel     = q.m_leptonChannel;
+  m_str_sampleName    = q.m_str_sampleName;
+  m_str_sysName       = q.m_str_sysName;
+  m_str_leptonChannel = q.m_str_leptonChannel;
     
-    m_str_sampleName    = q.m_str_sampleName;
-    m_str_sysName       = q.m_str_sysName;
-    m_str_leptonChannel = q.m_str_leptonChannel;
+  m_inputTree         = q.m_inputTree;
+  m_outputTree        = q.m_outputTree;
     
-    m_inputTree         = q.m_inputTree;
-    m_outputTree        = q.m_outputTree;
+  m_inputFile         = q.m_inputFile;
+  m_outputFile        = q.m_outputFile;
     
-    m_inputFile         = q.m_inputFile;
-    m_outputFile        = q.m_outputFile;
+  m_outputFolder      = q.m_outputFolder;
     
-    m_outputFolder      = q.m_outputFolder;
-    
-    m_skipEvents        = q.m_skipEvents;
-    m_nEvents           = q.m_nEvents;
-    m_pickEvent         = q.m_pickEvent;
+  m_skipEvents        = q.m_skipEvents;
+  m_nEvents           = q.m_nEvents;
+  m_pickEvent         = q.m_pickEvent;
     
 }
 
@@ -100,6 +103,7 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
         if(!IdentifyOption(argument, value)){
             std::cout << "<!> Problem identifying the option : " << value << std::endl;
         }
+	else{ m_optStr += argument; }
     }
     
     //

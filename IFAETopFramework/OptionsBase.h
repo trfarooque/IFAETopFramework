@@ -35,6 +35,8 @@ public:
     
     //_____________________________________________________________
     // Data access and modification
+    inline const std::string& OptStr() const{ return m_optStr; }
+
     inline Debug::debug MsgLevel() const { return m_msgLevel; }
     
     inline bool IsData() const { return m_isData; }
@@ -68,6 +70,7 @@ protected:
 protected:
     int m_argc;
     char** m_argv;
+    std::string m_optStr;    
     
     Debug::debug m_msgLevel;
     bool m_isData,m_computeWeightSys,m_textFileList;
@@ -78,7 +81,7 @@ protected:
 
     std::string m_str_sampleName,m_str_sysName,m_str_anaType,m_str_leptonChannel;
     std::string m_inputTree,m_outputTree,m_inputFile,m_outputFile,m_outputFolder;
-    
+
     int m_skipEvents, m_nEvents, m_pickEvent;
     
 };
