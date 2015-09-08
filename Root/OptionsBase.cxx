@@ -8,8 +8,8 @@
 //_____________________________________________________________________________________________
 //
 OptionsBase::OptionsBase():
-m_msgLevel(Debug::STANDARD),
 m_optStr(""),
+m_msgLevel(Debug::STANDARD),
 m_isData(false),
 m_computeWeightSys(false),//do you want to run the weight systematics
 m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
