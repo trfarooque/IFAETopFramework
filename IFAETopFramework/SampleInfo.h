@@ -12,15 +12,16 @@ public:
     //_______________________________________
     //
     SampleInfo( OptionsBase* opt );
-    SampleInfo( OptionsBase* opt, const std::string &, const std::string & );
+    SampleInfo( OptionsBase* opt, const std::string & );
     SampleInfo( const SampleInfo & );
     ~SampleInfo();
     
     //_______________________________________
     //
-    inline double NWeightEvents() const { return m_nWeightedEvents; }
+    inline double NWeightedEvents() const { return m_nWeightedEvents; }
     inline double CrossSection() const { return m_crossSection; }
-    inline double NormFactor( const double lumi ) { return (m_crossSection * lumi / m_nWeightedEvents); }
+    inline double NormFactor( const double lumi = 1. ) { return (m_crossSection * lumi / m_nWeightedEvents); }
+    inline bool Ready() const { return m_ready; }
     
     //_______________________________________
     //
@@ -31,6 +32,7 @@ private:
     OptionsBase* m_opt;
     double m_nWeightedEvents;
     double m_crossSection;
+    bool m_ready;
     
 };
 

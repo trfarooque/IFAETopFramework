@@ -10,12 +10,13 @@
 SampleInfo::SampleInfo( OptionsBase *opt ):
 m_opt(opt),
 m_nWeightedEvents(-1),
-m_crossSection(-1)
+m_crossSection(-1),
+m_ready(false)
 {}
 
 //___________________________________________________________
 //
-SampleInfo::SampleInfo( OptionsBase *opt, const std::string &id, const std::string &configFile ):
+SampleInfo::SampleInfo( OptionsBase *opt, const std::string &configFile ):
 m_opt(opt)
 {
     //
@@ -29,9 +30,10 @@ m_opt(opt)
     }
     std::string dsid,nEvents,xSec;
     while ( infile >> dsid >> nEvents >> xSec ) {
-        if(dsid==id){
+        if( dsid == m_opt -> StrSampleID() ){
             m_nWeightedEvents = atof(nEvents.c_str());
             m_crossSection = atof(xSec.c_str());
+            m_ready = true;
             break;
         }
     }
@@ -44,6 +46,7 @@ SampleInfo::SampleInfo( const SampleInfo &q )
     m_opt = q.m_opt;
     m_nWeightedEvents = q.m_nWeightedEvents;
     m_crossSection = q.m_crossSection;
+    m_ready = q.m_ready;
 }
 
 //___________________________________________________________

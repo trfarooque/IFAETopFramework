@@ -20,6 +20,7 @@ m_anaType(AnaType::HSG8),//enum
 m_leptonChannel(LeptonChannel::ELEC),//enum
 
 m_str_sampleName(""),//used to define the enum
+m_str_sampleID(""),
 m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_anaType(""),
 m_str_leptonChannel(""),
@@ -47,6 +48,7 @@ OptionsBase::OptionsBase( const OptionsBase& q )
   m_textFileList      = q.m_textFileList;
     
   m_sampleName        = q.m_sampleName;
+  m_str_sampleID      = q.m_str_sampleID;
   m_sysName           = q.m_sysName;
   m_anaType           = q.m_anaType;
   m_leptonChannel     = q.m_leptonChannel;
@@ -177,6 +179,9 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         }
         m_str_sampleName = temp_val;
     }
+    else if( temp_arg.find("--SAMPLEID") != std::string::npos ){
+        m_str_sampleID = temp_val;
+    }
     else if( temp_arg.find("--SYSNAME") != std::string::npos ){
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("NOMINAL") != std::string::npos){
@@ -244,6 +249,7 @@ void OptionsBase::PrintOptions()
     
     std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
+    std::cout << " m_str_sampleID       = " << m_str_sampleID << std::endl;
     std::cout << " m_sysName            = " << m_sysName << std::endl;
     std::cout << " m_str_sysName        = " << m_str_sysName << std::endl;
     std::cout << " m_anaType            = " << m_anaType << std::endl;
