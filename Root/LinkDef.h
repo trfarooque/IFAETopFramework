@@ -6,6 +6,7 @@
 #include "IFAETopFramework/OutputData.h"
 #include "IFAETopFramework/NtupleReader.h"
 #include "IFAETopFramework/VariableDef.h"
+#include "IFAETopFramework/SampleInfo.h"
 
 #pragma link off all globals;
 #pragma link off all classes;
@@ -20,5 +21,6 @@
 #pragma link C++ class OptionsBase+;
 #pragma link C++ class OutputManager+;
 #pragma link C++ class VariableDef+;
+#pragma link C++ class SampleInfo+;
 
 #endif
