@@ -20,7 +20,7 @@ public:
     //
     inline double NWeightedEvents() const { return m_nWeightedEvents; }
     inline double CrossSection() const { return m_crossSection; }
-    inline double NormFactor( const double lumi = 1. ) { return (m_crossSection * lumi / m_nWeightedEvents); }
+    inline double NormFactor( const double lumi = 1. ) { return ( m_ready ? (m_crossSection * lumi / m_nWeightedEvents) : 1. ); }
     inline bool Ready() const { return m_ready; }
     
     //_______________________________________

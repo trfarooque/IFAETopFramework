@@ -9,15 +9,18 @@
 //
 SampleInfo::SampleInfo( OptionsBase *opt ):
 m_opt(opt),
-m_nWeightedEvents(-1),
-m_crossSection(-1),
+m_nWeightedEvents(-1.),
+m_crossSection(-1.),
 m_ready(false)
 {}
 
 //___________________________________________________________
 //
 SampleInfo::SampleInfo( OptionsBase *opt, const std::string &configFile ):
-m_opt(opt)
+m_opt(opt),
+m_nWeightedEvents(-1.),
+m_crossSection(-1.),
+m_ready(false)
 {
     //
     // Reads an input config file following the structure:

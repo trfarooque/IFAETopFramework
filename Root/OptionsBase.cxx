@@ -20,7 +20,7 @@ m_anaType(AnaType::HSG8),//enum
 m_leptonChannel(LeptonChannel::ELEC),//enum
 
 m_str_sampleName(""),//used to define the enum
-m_str_sampleID(""),
+m_str_sampleID("UNDEFINED"),
 m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_anaType(""),
 m_str_leptonChannel(""),
