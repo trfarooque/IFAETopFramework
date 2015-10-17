@@ -10,3 +10,16 @@
  The outputs are .eps file, as well as printed values of the results on the screen.
  
  Contact: Loic Valery <lvalery@cern.ch>
+
+
+ CheckFiles.py
+ =============
+ Useful to check if files taken from the grid have been properly recovered locally.
+ Performs a very raw corruption check if requested (default is false)
+
+ EXECUTION:
+     python CheckFiles.py --path=<path> [--check_corruption=true]
+     []: optional arguments
+ For template checking (e.g. check that all files corresponding to "rucio list-files user.toto.*.bla.root")
+     python CheckFiles.py --path=<path> --template=<template> [--check_corruption=true]
+     []: optional arguments
