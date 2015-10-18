@@ -31,7 +31,8 @@ SystManager::~SystManager(){
 void SystManager::Print() const {
     
     if(!m_systVec) {
-        std::cerr << "<!> ERROR in SystManager::PrintSystematics(): the systematics pointer is NULL: please check." << std::endl;
+        std::cerr << "<!> ERROR in SystManager::PrintSystematics(): ";
+        std::cerr << "the systematics pointer is NULL: please check." << std::endl;
         return;
     }
     
@@ -39,7 +40,7 @@ void SystManager::Print() const {
     std::cout << "Systematics list" << std::endl;
     std::cout << "=====================================================" << std::endl;
     std::cout << std::endl;
-    for ( const auto sys : *m_systVec ){
+    for ( const std::pair < std::string, Systematic* > sys : *m_systVec ){
         std::cout << sys.first << std::endl;
     }
 }
