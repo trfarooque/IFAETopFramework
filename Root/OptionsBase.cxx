@@ -83,7 +83,7 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
     m_argc = argc;
     m_argv = argv;
     
-    for (int i=1; i< argc; i++){// the 0th component is the name of the executable
+    for (int i=1; i < argc; i++){// the 0th component is the name of the executable
         
         //
         //Converting the argument to string format
@@ -267,28 +267,3 @@ void OptionsBase::PrintOptions()
     std::cout << " m_nEvents            = " << m_nEvents << std::endl;
     std::cout << " m_pickEvent          = " << m_pickEvent << std::endl;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

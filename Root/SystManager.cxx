@@ -43,4 +43,6 @@ void SystManager::Print() const {
     for ( const std::pair < std::string, Systematic* > sys : *m_systVec ){
         std::cout << sys.first << std::endl;
     }
+    std::cout << std::endl;
+    std::cout << "=====================================================" << std::endl;
 }
