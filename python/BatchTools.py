@@ -50,21 +50,35 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
             Systs += [iterator_sys['nameUp']]
             Systs += [iterator_sys['nameDown']]
 
+    # In case the systematics are in different trees, no list to list the files multiple times
+    listCreated = False
+    ListName = ""
+
     # Loop over all the object systematics to be processed (including the nominal)
     for iSys in range(len(Systs)):
         
         # Producing the list of all files corresponding to the template
-        ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
-        
+        temp_ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
+        if not useDiffFilesForObjSyst:
+            if ListName=="":
+                ListName = temp_ListName
+        else:
+            ListName = temp_ListName
+    
         failed = 1
-        templateName =  []
+        templateName = []
         
         #Define the template name of the file
         templateName += [sample['name']]
         if(useDiffFilesForObjSyst):
             templateName += [Systs[iSys]]
-        failed = produceList(templateName,InputDir,ListName,exclusions)
         
+        if ( not listCreated or useDiffFilesForObjSyst ):
+            failed = produceList(templateName,InputDir,ListName,exclusions)
+            listCreated = True
+        else:
+            failed = -1
+    
         if(failed>=1):#in case there are no files, skip this systematic
             printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. Sure it's expected ? I continue with the next one.")
             continue
