@@ -27,7 +27,7 @@ def printGoodNews(text):
 
 #___________________________________________________________________
 #
-def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[],splitWeightSyst=False):
+def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[], useDiffFilesForObjSyst=False):
     
     # Return a library containing the necessary informations
     if (UseList and ListFolder==""):
@@ -45,31 +45,26 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
     Systs = []
     for iterator_sys in sample['objSyst']:
         if iterator_sys['oneSided']:#one-sided systematics
-            Systs += [iterator_sys['nameUp']]
+            Systs += [iterator_sys['name']]
         else:
             Systs += [iterator_sys['nameUp']]
             Systs += [iterator_sys['nameDown']]
 
-    if(splitWeightSyst):
-    	for iterator_wgt in sample['weightSyst']:
-        	if iterator_wgt['oneSided']:#one-sided systematics
-            		Systs += [iterator_wgt['nameUp']+"_WeightSys"]
-        	else:
-            		Systs += [iterator_wgt['nameUp']+"_WeightSys"]
-            		Systs += [iterator_wgt['nameDown']+"_WeightSys"]
-
     # Loop over all the object systematics to be processed (including the nominal)
     for iSys in range(len(Systs)):
-        # Producing the list of all files corresponding to the expected ones
-        ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
-
-        failed = 1
         
-        if(Systs[iSys].find("_WeightSys")==-1):#if obj systs
-            failed = produceList([sample['name'],Systs[iSys]],InputDir,ListName,exclusions)
-        else:#if weight sys, take nom file
-            failed = produceList([sample['name'],"nominal"],InputDir,ListName,exclusions)
-
+        # Producing the list of all files corresponding to the template
+        ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
+        
+        failed = 1
+        templateName =  []
+        
+        #Define the template name of the file
+        templateName += [sample['name']]
+        if(useDiffFilesForObjSyst):
+            templateName += [Systs[iSys]]
+        failed = produceList(templateName,InputDir,ListName,exclusions)
+        
         if(failed>=1):#in case there are no files, skip this systematic
             printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. Sure it's expected ? I continue with the next one.")
             continue
@@ -77,17 +72,15 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
         # Split the list according to the number of input files to be merged
         nListFiles = splitList(ListName,ListName+"_",NFiles)
 
-        # Get the weight systematics in case we run over the nimnal object
+        # Get the weight systematics in case we run over the nominal object
         listWeight=""
-        if(Systs[iSys]=="nominal" and splitWeightSyst==False):
+        if( Systs[iSys].upper()=="NOMINAL" ):
             for iWS in sample['weightSyst']:
                 if iWS['oneSided']:
                     listWeight+=iWS['name']+","
                 else:
                     listWeight+=iWS['nameUp']+","
                     listWeight+=iWS['nameDown']+","
-        elif(splitWeightSyst and Systs[iSys].find("_WeightSys")>-1):
-            listWeight+=Systs[iSys].replace("_WeightSys","")
 
         # For each file/syst, creates a dictionnary
         for i in range(nListFiles):
@@ -109,7 +102,8 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
                         'name':SampleName,
                         'filelist':fileListCommandLine,
                         'objSyst':Systs[iSys],
-                        'weightSyst':listWeight
+                        'weightSyst':listWeight,
+                        'objectTree':Systs[iSys]
                     }
             Result += [sample]
     return Result
