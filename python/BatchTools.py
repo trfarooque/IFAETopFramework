@@ -27,8 +27,8 @@ def printGoodNews(text):
 
 #___________________________________________________________________
 #
-def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[], useDiffFilesForObjSyst=False):
-    
+def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[], useDiffFilesForObjSyst=False, useTotalFileFirst=True):
+
     # Return a library containing the necessary informations
     if (UseList and ListFolder==""):
         printError("No ListFolder given ... returns ...")
@@ -38,7 +38,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
 
     printGoodNews("--> Generating the object for '"+SampleName+"' sample")
 
-    # Creates the file lists (always needed even when using list files in command line)
+    # Output of function
     Result = []
 
     # Creates the list of object systematics (different instances of the code)
@@ -54,34 +54,56 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
     listCreated = False
     ListName = ""
 
+    # Produce the total files list if the option useTotalFileFirst is setto True
+    if useTotalFileFirst :
+        failed = produceList([sample['name']],InputDir,ListFolder + "/" + SampleName,exclusions)
+        if failed>=1 :
+            printWarning("I didn't find any files for sample "+sample['name']+". Sure it's expected ? I continue with the next one.")
+            return
+
     # Loop over all the object systematics to be processed (including the nominal)
     for iSys in range(len(Systs)):
-        
+
         # Producing the list of all files corresponding to the template
         temp_ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
-        if not useDiffFilesForObjSyst:
-            if ListName=="":
+        
+        if not useTotalFileFirst:
+            if not useDiffFilesForObjSyst:
+                if ListName=="":
+                    ListName = temp_ListName
+            else:
                 ListName = temp_ListName
+
+            failed = 1
+            templateName = []
+
+            #Define the template name of the file
+            templateName += [sample['name']]
+            if(useDiffFilesForObjSyst):
+                templateName += [Systs[iSys]]
+
+            if ( not listCreated or useDiffFilesForObjSyst ):
+                failed = produceList(templateName,InputDir,ListName,exclusions)
+                listCreated = True
+            else:
+                failed = -1
+
+            if(failed>=1):#in case there are no files, skip this systematic
+                printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. Sure it's expected ? I continue with the next one.")
+                continue
+                    
         else:
+            template = []
+            if(useDiffFilesForObjSyst):
+                template += [Systs[iSys]]
+            failed = filterListWithTemplate(ListFolder + "/" + SampleName, template, temp_ListName)
+            if(failed>=1):#in case there are no files, skip this systematic
+                if Systs[iSys]=="":
+                    printWarning("I didn't find any files for the sample. Sure it's expected ? I continue with the next one.")
+                else:
+                    printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. Sure it's expected ? I continue with the next one.")
+                continue
             ListName = temp_ListName
-    
-        failed = 1
-        templateName = []
-        
-        #Define the template name of the file
-        templateName += [sample['name']]
-        if(useDiffFilesForObjSyst):
-            templateName += [Systs[iSys]]
-        
-        if ( not listCreated or useDiffFilesForObjSyst ):
-            failed = produceList(templateName,InputDir,ListName,exclusions)
-            listCreated = True
-        else:
-            failed = -1
-    
-        if(failed>=1):#in case there are no files, skip this systematic
-            printWarning("I didn't find any files for the systematic *" + Systs[iSys] + "*. Sure it's expected ? I continue with the next one.")
-            continue
 
         # Split the list according to the number of input files to be merged
         nListFiles = splitList(ListName,ListName+"_",NFiles)
@@ -103,7 +125,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
             if(i<100): listFileName = listFileName + "0"
             if(i<10): listFileName = listFileName + "0"
             listFileName = listFileName + `i`
-        
+
             fileListCommandLine=""
             if not(UseList):
                 fileListCommandLine = getCommandLineFromFile(listFileName)
@@ -121,6 +143,17 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
                     }
             Result += [sample]
     return Result
+
+#___________________________________________________________________
+#
+def filterListWithTemplate( originalTotalFile, templates, filterFile):
+    com = "less "+originalTotalFile
+    if len(templates):
+        for temp in templates:
+            com += " | grep "+temp
+    com += " > "+filterFile
+    result = os.system(com)
+    return result
 
 #___________________________________________________________________
 #

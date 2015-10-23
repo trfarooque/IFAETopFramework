@@ -13,6 +13,7 @@ m_msgLevel(Debug::STANDARD),
 m_isData(false),
 m_computeWeightSys(false),//do you want to run the weight systematics
 m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
+m_onlyDumpSystHistograms(false),
 
 m_sampleName(SampleName::TTH),//enum
 m_sysName(SysName::NOMINAL),//enum
@@ -39,36 +40,36 @@ m_pickEvent(-1)
 //
 OptionsBase::OptionsBase( const OptionsBase& q )
 {
-  m_optStr            = q.m_optStr;
-
-  m_msgLevel          = q.m_msgLevel;
-
-  m_isData            = q.m_isData;
-  m_computeWeightSys  = q.m_computeWeightSys;
-  m_textFileList      = q.m_textFileList;
+    m_optStr            = q.m_optStr;
     
-  m_sampleName        = q.m_sampleName;
-  m_str_sampleID      = q.m_str_sampleID;
-  m_sysName           = q.m_sysName;
-  m_anaType           = q.m_anaType;
-  m_leptonChannel     = q.m_leptonChannel;
+    m_msgLevel          = q.m_msgLevel;
     
-  m_str_sampleName    = q.m_str_sampleName;
-  m_str_sysName       = q.m_str_sysName;
-  m_str_leptonChannel = q.m_str_leptonChannel;
+    m_isData                    = q.m_isData;
+    m_computeWeightSys          = q.m_computeWeightSys;
+    m_textFileList              = q.m_textFileList;
+    m_onlyDumpSystHistograms    = q.m_onlyDumpSystHistograms;
     
-  m_inputTree         = q.m_inputTree;
-  m_outputTree        = q.m_outputTree;
+    m_sampleName        = q.m_sampleName;
+    m_str_sampleID      = q.m_str_sampleID;
+    m_sysName           = q.m_sysName;
+    m_anaType           = q.m_anaType;
+    m_leptonChannel     = q.m_leptonChannel;
     
-  m_inputFile         = q.m_inputFile;
-  m_outputFile        = q.m_outputFile;
+    m_str_sampleName    = q.m_str_sampleName;
+    m_str_sysName       = q.m_str_sysName;
+    m_str_leptonChannel = q.m_str_leptonChannel;
     
-  m_outputFolder      = q.m_outputFolder;
+    m_inputTree         = q.m_inputTree;
+    m_outputTree        = q.m_outputTree;
     
-  m_skipEvents        = q.m_skipEvents;
-  m_nEvents           = q.m_nEvents;
-  m_pickEvent         = q.m_pickEvent;
+    m_inputFile         = q.m_inputFile;
+    m_outputFile        = q.m_outputFile;
     
+    m_outputFolder      = q.m_outputFolder;
+    
+    m_skipEvents        = q.m_skipEvents;
+    m_nEvents           = q.m_nEvents;
+    m_pickEvent         = q.m_pickEvent;
 }
 
 //_____________________________________________________________________________________________
@@ -105,7 +106,7 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
         if(!IdentifyOption(argument, value)){
             std::cout << "<!> Problem identifying the option : " << value << std::endl;
         }
-	else{ m_optStr += argument; }
+        else{ m_optStr += argument; }
     }
     
     //
@@ -141,6 +142,12 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         if ( temp_val.find("TRUE") != std::string::npos) 	m_computeWeightSys = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_computeWeightSys = false;
         else{std::cout<<"Unknown COMPUTEWEIGHTSYS option"<<std::endl;}
+    }
+    else if( temp_arg.find("--ONLYDUMPSYSTHISTOGRAMS") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("TRUE") != std::string::npos) 	m_onlyDumpSystHistograms = true;
+        else if ( temp_val.find("FALSE") != std::string::npos) 	m_onlyDumpSystHistograms = false;
+        else{std::cout<<"Unknown ONLYDUMPSYSTHISTOGRAMS option"<<std::endl;}
     }
     else if( temp_arg.find("--TEXTFILELIST") != std::string::npos ){
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
@@ -243,9 +250,10 @@ void OptionsBase::PrintOptions()
     std::cout << "============== OptionsBase =================" << std::endl;
     std::cout << " m_msgLevel           = " << m_msgLevel << std::endl;
     
-    std::cout << " m_isData             = " << m_isData << std::endl;
-    std::cout << " m_computeWeightSys   = " << m_computeWeightSys << std::endl;
-    std::cout << " m_textFileList       = " << m_textFileList << std::endl;
+    std::cout << " m_isData             = "     << m_isData << std::endl;
+    std::cout << " m_computeWeightSys   = "     << m_computeWeightSys << std::endl;
+    std::cout << " m_textFileList       = "     << m_textFileList << std::endl;
+    std::cout << " m_onlyDumpSystHistograms = " << m_onlyDumpSystHistograms << std::endl;
     
     std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;

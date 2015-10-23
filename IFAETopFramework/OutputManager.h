@@ -81,9 +81,18 @@ public:
     template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min,
                                                const double max, const TString &title, const TString &variableType,
                                                const bool hasSyst, T *t, const int vec_ind = -1) {
-        
+        //
+        // Checks if the mode is correct
+        //
         if(m_type==TREES){
             std::cout << "<!> ERROR in OutputManager::addStandardTH1 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
+        //
+        // Don't do it if there is no systematics
+        //
+        if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
             return false;
         }
         
@@ -121,9 +130,18 @@ public:
                                                              const double widthY, const double minY, const double maxY,
                                                              const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
                                                              const bool hasSyst, TX *tX, TY *tY, const int vec_indX = -1, const int vec_indY = -1) {
-        
+        //
+        // Checks if the mode is correct
+        //
         if(m_type==TREES){
             std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
+        //
+        // Don't do it if there is no systematics
+        //
+        if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
             return false;
         }
         
@@ -216,7 +234,7 @@ private:
     std::map < TString, bool > *m_mapHasSyst;
     std::set < TString > *m_vecH2ToProfile;
 };
-#endif
+#endif // OUTPUTMANAGER_H
 
 
 

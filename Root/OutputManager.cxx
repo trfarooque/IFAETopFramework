@@ -118,6 +118,13 @@ bool OutputManager::BookStandardTH1( const TString &pattern, const bool hasSyst)
         return false;
     }
     
+    //
+    // Don't do it if there is no systematics
+    //
+    if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
+        return false;
+    }
+    
     m_mapHasSyst -> insert( std::pair <TString, bool>(pattern,hasSyst));
     
     //
@@ -338,6 +345,13 @@ bool OutputManager::BookStandardTH2( const TString &pattern, const bool hasSyst)
     //
     if(m_type==TREES){
         std::cout << "<!> ERROR in OutputManager::bookStandardTH2(): histogram booking has been requested in TREES mode. Please check." << std::endl;
+        return false;
+    }
+    
+    //
+    // Don't do it if there is no systematics
+    //
+    if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
         return false;
     }
     
