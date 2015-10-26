@@ -54,11 +54,18 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
     listCreated = False
     ListName = ""
 
-    # Produce the total files list if the option useTotalFileFirst is setto True
-    if useTotalFileFirst :
-        failed = produceList([sample['name']],InputDir,ListFolder + "/" + SampleName,exclusions)
+    # Produce the total files list if the option useTotalFileFirst is set to True (avoids doing ls multiple times)
+    if useTotalFileFirst and not os.path.exists(ListFolder + "/AllFiles") :
+        failed = produceList(["",],InputDir,ListFolder + "/AllFiles",exclusions)
         if failed>=1 :
             printWarning("I didn't find any files for sample "+sample['name']+". Sure it's expected ? I continue with the next one.")
+            return
+
+    # Filters the total files to only consider the files for the current sample (speeds up the process)
+    if useTotalFileFirst and not os.path.exists(ListFolder + "/" +SampleName) :
+        failed = filterListWithTemplate(ListFolder + "/AllFiles", [SampleName,], ListFolder + "/" + SampleName)
+        if failed>=1 :
+            printWarning("I didn't find any files for sample "+SampleName+". Sure it's expected ? I continue with the next one.")
             return
 
     # Loop over all the object systematics to be processed (including the nominal)
@@ -96,7 +103,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
             template = []
             if(useDiffFilesForObjSyst):
                 template += [Systs[iSys]]
-            failed = filterListWithTemplate(ListFolder + "/" + SampleName, template, temp_ListName)
+            failed = filterListWithTemplate(ListFolder + "/"+SampleName, template, temp_ListName)
             if(failed>=1):#in case there are no files, skip this systematic
                 if Systs[iSys]=="":
                     printWarning("I didn't find any files for the sample. Sure it's expected ? I continue with the next one.")
@@ -142,6 +149,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
                         'objectTree':Systs[iSys]
                     }
             Result += [sample]
+
     return Result
 
 #___________________________________________________________________
