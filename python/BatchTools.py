@@ -55,15 +55,17 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
     ListName = ""
 
     # Produce the total files list if the option useTotalFileFirst is set to True (avoids doing ls multiple times)
-    if useTotalFileFirst and not os.path.exists(ListFolder + "/AllFiles") :
-        failed = produceList(["",],InputDir,ListFolder + "/AllFiles",exclusions)
+    totalFileName = "AllFiles_"+InputDir.replace("/","_")
+    if useTotalFileFirst and not os.path.exists(ListFolder + "/" + totalFileName ) :
+        failed = produceList(["",],InputDir,ListFolder + "/" + totalFileName,exclusions)
         if failed>=1 :
             printWarning("I didn't find any files for sample "+sample['name']+". Sure it's expected ? I continue with the next one.")
             return
 
     # Filters the total files to only consider the files for the current sample (speeds up the process)
-    if useTotalFileFirst and not os.path.exists(ListFolder + "/" +SampleName) :
-        failed = filterListWithTemplate(ListFolder + "/AllFiles", [SampleName,], ListFolder + "/" + SampleName)
+    sampleListName = SampleName + "_" + InputDir.replace("/","_")
+    if useTotalFileFirst and not os.path.exists(ListFolder + "/" +sampleListName) :
+        failed = filterListWithTemplate(ListFolder + "/" + totalFileName, [SampleName,], ListFolder + "/" + sampleListName)
         if failed>=1 :
             printWarning("I didn't find any files for sample "+SampleName+". Sure it's expected ? I continue with the next one.")
             return
@@ -72,7 +74,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
     for iSys in range(len(Systs)):
 
         # Producing the list of all files corresponding to the template
-        temp_ListName = ListFolder + "/" + SampleName + "_" + Systs[iSys]
+        temp_ListName = ListFolder + "/" + sampleListName + "_" + Systs[iSys]
         
         if not useTotalFileFirst:
             if not useDiffFilesForObjSyst:
@@ -103,7 +105,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
             template = []
             if(useDiffFilesForObjSyst):
                 template += [Systs[iSys]]
-            failed = filterListWithTemplate(ListFolder + "/"+SampleName, template, temp_ListName)
+            failed = filterListWithTemplate(ListFolder + "/"+sampleListName, template, temp_ListName)
             if(failed>=1):#in case there are no files, skip this systematic
                 if Systs[iSys]=="":
                     printWarning("I didn't find any files for the sample. Sure it's expected ? I continue with the next one.")

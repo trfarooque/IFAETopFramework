@@ -1,0 +1,4 @@
+2015-11-18 - Loic Valery <lvalery@cern.ch>
+    - Adding ChangeLog ;-)
+    - Fixing virtual destructor
+    - Improve macro to submit jobs

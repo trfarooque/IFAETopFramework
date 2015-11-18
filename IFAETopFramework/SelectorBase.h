@@ -11,14 +11,13 @@ class OutputData;
 class SelectorBase {
 
 public:
-    
     SelectorBase( OptionsBase *opt );
     SelectorBase( const SelectorBase &q );
-    ~SelectorBase();
+    virtual ~SelectorBase();
     
     void AddSelection( const int index, const std::string &name );
     
-    bool PassSelection( const std::string &) const;
+    bool PassSelection( const std::string & ) const;
     virtual bool PassSelection( const int ) const;
     
     inline std::map < int, std::string >* GetSelectionMap() const { return m_map_sel_int_string; }
