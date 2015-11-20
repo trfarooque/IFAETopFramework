@@ -1,3 +1,6 @@
+2015-11-20 - Loic Valery <lvalery@cern.ch>
+    - Adding the IFAE_Object class
+
 2015-11-18 - Loic Valery <lvalery@cern.ch>
     - Adding ChangeLog ;-)
     - Fixing virtual destructor

@@ -8,6 +8,7 @@
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/SampleInfo.h"
 #include "IFAETopFramework/SelectorBase.h"
+#include "IFAETopFramework/IFAE_Object.h"
 
 #pragma link off all globals;
 #pragma link off all classes;
@@ -24,5 +25,6 @@
 #pragma link C++ class VariableDef+;
 #pragma link C++ class SampleInfo+;
 #pragma link C++ class SelectorBase+;
+#pragma link C++ class IFAE_Object+;
 
 #endif
