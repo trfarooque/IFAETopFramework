@@ -1,11 +1,11 @@
 #include <iostream>
 #include <iomanip>
 
-#include "IFAETopFramework/IFAE_Object.h"
+#include "IFAETopFramework/AnalysisObject.h"
 
 //_______________________________________________________________________
 //
-IFAE_Object::IFAE_Object():
+AnalysisObject::AnalysisObject():
 TLorentzVector()
 {
     m_moments.clear();
@@ -13,43 +13,43 @@ TLorentzVector()
 
 //_______________________________________________________________________
 //
-IFAE_Object::~IFAE_Object()
+AnalysisObject::~AnalysisObject()
 {
     m_moments.clear();
 }
 
 //_______________________________________________________________________
 //
-IFAE_Object::IFAE_Object( const IFAE_Object& q ):
+AnalysisObject::AnalysisObject( const AnalysisObject& q ):
 TLorentzVector(q),
 m_moments(q.m_moments)
 {}
 
 //_______________________________________________________________________
 //
-void IFAE_Object::Reset(){
+void AnalysisObject::Reset(){
     m_moments.clear();
 }
 
 //_______________________________________________________________________
 //
-void IFAE_Object::SetMoment(const std::string &name,const double value){
+void AnalysisObject::SetMoment(const std::string &name,const double value){
     m_moments.insert(std::pair<std::string,double>(name,value));
 }
 
 //_______________________________________________________________________
 //
-double IFAE_Object::GetMoment(const std::string &name) const
+double AnalysisObject::GetMoment(const std::string &name) const
 {
     std::map<std::string,double>::const_iterator it=m_moments.find(name);
     if (it!=m_moments.end()) return it->second;
-    std::cout << " >>>>> FATAL in IFAE_Object::GetMoment(''" <<  name << "''): unknown moment !" << std::endl;
+    std::cout << " >>>>> FATAL in AnalysisObject::GetMoment(''" <<  name << "''): unknown moment !" << std::endl;
     return -1;
 }
 
 //_______________________________________________________________________
 //
-bool IFAE_Object::IsKnownMoment(const std::string &name) const
+bool AnalysisObject::IsKnownMoment(const std::string &name) const
 {
     std::map<std::string,double>::const_iterator it=m_moments.find(name);
     if (it!=m_moments.end()) return true;
@@ -58,7 +58,7 @@ bool IFAE_Object::IsKnownMoment(const std::string &name) const
 
 //_______________________________________________________________________
 //
-IFAE_Object &IFAE_Object::operator=(const IFAE_Object& q) {
+AnalysisObject &AnalysisObject::operator=(const AnalysisObject& q) {
     if (this!=&q) {
         TLorentzVector::operator=(q);
         m_moments=q.m_moments;
@@ -68,12 +68,12 @@ IFAE_Object &IFAE_Object::operator=(const IFAE_Object& q) {
 
 //_______________________________________________________________________
 //
-IFAE_Object IFAE_Object::operator+(const IFAE_Object& q) const{
+AnalysisObject AnalysisObject::operator+(const AnalysisObject& q) const{
     double x= Px() + q.Px();
     double y= Py() + q.Py();
     double z= Pz() + q.Pz();
     double e= E()  + q.E();
-    IFAE_Object object;
+    AnalysisObject object;
     object.SetPxPyPzE(x,y,z,e);
     return object;
 }
