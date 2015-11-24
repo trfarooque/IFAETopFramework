@@ -26,7 +26,8 @@ m_treeMngr(0),
 m_sysVector(0),
 m_data(0),
 m_mapHasSyst(0),
-m_vecH2ToProfile(0)
+m_vecH2ToProfile(0),
+m_weightVarName("weight")
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
     
@@ -62,6 +63,7 @@ OutputManager::OutputManager( const OutputManager &q )
     m_data          = q.m_data;
     m_mapHasSyst    = q.m_mapHasSyst;
     m_vecH2ToProfile= q.m_vecH2ToProfile;
+    m_weightVarName = q.m_weightVarName;
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager copy-constructor" << std::endl;
 }
@@ -71,6 +73,31 @@ OutputManager::OutputManager( const OutputManager &q )
 OutputManager::~OutputManager()
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager destructor" << std::endl;
+}
+
+//______________________________________________________________________________________
+//
+bool OutputManager::SetSystVector( SystManager::SystVector *sysVector ){
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::SetSystVector()" << std::endl;
+    
+    m_sysVector = sysVector;
+    if(m_type==HISTOS){
+        return true;
+    } else {
+        AddStandardBranch( m_weightVarName, "Nominal weight", "D", &(m_data -> o_eventWeight_Nom) );
+        if(m_sysVector){
+            for( const auto &sys : *m_sysVector ){
+                if(sys.second -> IsPrimitive()){
+                    std::string branchName = m_weightVarName + "_" + std::string(sys.second -> Name());
+                    AddStandardBranch( branchName, sys.second -> Title(), sys.second -> VarTypeString(), sys.second -> Address() );
+                } else {
+                    std::cout << "<!> In OutputManager::SetSystVector(): you are not allowed to use non-primitive types for systematic weights yet ... You can kindly ask :-)" << std::endl;
+                }
+            }
+        }
+    }
+    return true;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::SetSystVector()" << std::endl;
 }
 
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
@@ -524,6 +551,7 @@ bool OutputManager::BookStandardTree( const TString &pattern, const TString &tit
         m_treeMngr->AddBranchToTree((std::string)pattern, *(branch.second));
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Added branch : " << branch.first << std::endl;
     }
+    
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::bookStandardTree" << std::endl;
     return true;
 }

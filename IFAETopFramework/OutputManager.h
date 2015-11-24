@@ -64,11 +64,14 @@ public:
     OutputManager( const OutputManager &q );
     ~OutputManager();
     
+    bool SetSystVector( SystManager::SystVector *sysVector );
+
+    
     //________________________
     // Inline functions
-    bool SetSystVector( SystManager::SystVector *sysVector ){ m_sysVector = sysVector; return true;}
-    bool SetData( OutputData *data ){ m_data = data; return true;}
-    HistManager* HistMngr(){ return m_histMngr; }
+    inline bool SetData( OutputData *data ){ m_data = data; return true;}
+    inline HistManager* HistMngr(){ return m_histMngr; }
+    inline void SetWeightBranchName( const std::string &name ) { m_weightVarName = name; }
     
     //
     //___________________________________________________________
@@ -176,8 +179,6 @@ public:
     //
     bool StoreTProfile( const TString &nameX, const TString &nameY, const bool hasSyst = false );
     
-    
-    
     //
     //___________________________________________________________
     // TREE-SPECIFIC FUNCTIONS
@@ -195,6 +196,7 @@ public:
             std::cout << "In OutputManager::addStandardBranch" << std::endl;
             std::cout << "Adding variable: "<< name << std::endl;
             std::cout << "  title  = " << title << std::endl;
+            std::cout << "  address  = " << t << std::endl;
         }
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind);
@@ -203,8 +205,6 @@ public:
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
         
         return true;
-        
-        
     }
     bool BookStandardTree( const TString &pattern, const TString &title);
     bool FillStandardTree( const TString &name );
@@ -233,6 +233,8 @@ private:
     OutputData *m_data;
     std::map < TString, bool > *m_mapHasSyst;
     std::set < TString > *m_vecH2ToProfile;
+    
+    std::string m_weightVarName;
 };
 #endif // OUTPUTMANAGER_H
 
