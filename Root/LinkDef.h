@@ -9,6 +9,7 @@
 #include "IFAETopFramework/SampleInfo.h"
 #include "IFAETopFramework/SelectorBase.h"
 #include "IFAETopFramework/AnalysisObject.h"
+#include "IFAETopFramework/AnalysisUtils.h"
 
 #pragma link off all globals;
 #pragma link off all classes;
@@ -26,5 +27,6 @@
 #pragma link C++ class SampleInfo+;
 #pragma link C++ class SelectorBase+;
 #pragma link C++ class AnalysisObject+;
+#pragma link C++ class AnalysisUtils+;
 
 #endif

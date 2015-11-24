@@ -9,7 +9,6 @@ class AnalysisObject : public TLorentzVector {
     ClassDef(AnalysisObject, 1);
     
 public:
-    typedef std::vector<AnalysisObject*> AOVector;
     
     AnalysisObject();
     virtual ~AnalysisObject();
@@ -26,5 +25,7 @@ private:
     std::map<std::string,double> m_moments;
     
 };
+
+typedef std::vector<AnalysisObject*> AOVector;
 
 #endif // ANALYSISOBJECT_H
