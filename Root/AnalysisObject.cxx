@@ -34,7 +34,23 @@ void AnalysisObject::Reset(){
 //_______________________________________________________________________
 //
 void AnalysisObject::SetMoment(const std::string &name,const double value){
+    if (IsKnownMoment(name)){
+        //The moment is already in the map ... you should use UpdateMoment function
+        std::cout << "<!> WARNING in AnalysisObject::SetMoment(): The moment \"" << name << "\" is already used and set. Please use UpdateMoment function instead." << std::endl;
+        return;
+    }
     m_moments.insert(std::pair<std::string,double>(name,value));
+}
+
+//_______________________________________________________________________
+//
+void AnalysisObject::UpdateMoment(const std::string &name,const double value){
+    if (!IsKnownMoment(name)){
+        //The moment is not in the map ... you should use SetMoment function
+        std::cout << "<!> WARNING in AnalysisObject::UpdateMoment(): The moment \"" << name << "\" is not known. Please use SetMoment function instead." << std::endl;
+        return;
+    }
+    m_moments[name] = value;
 }
 
 //_______________________________________________________________________

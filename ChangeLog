@@ -1,3 +1,10 @@
+2015-15-25 - Loic Valery <lvalery@cern.ch>
+    - Adding functions to update moments
+
+2015-11-25 - Trisha Farooque <trisha.farooque@cern.ch>
+    - Adding AnalysisUtils class
+    - Change typedef place in AnalysisObject class
+
 2015-11-24 - Loic Valery <lvalery@cern.ch>
     - Adding the hadnling of the weight systematic uncertainties in trees
 
