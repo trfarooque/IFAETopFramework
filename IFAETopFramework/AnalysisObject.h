@@ -12,6 +12,7 @@ public:
     //Standard C++ functions
     AnalysisObject();
     virtual ~AnalysisObject();
+    AnalysisObject( const TLorentzVector& tlv );
     AnalysisObject( const AnalysisObject& q );
     
     //Specific functions

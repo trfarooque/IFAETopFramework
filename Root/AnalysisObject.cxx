@@ -25,10 +25,17 @@ TLorentzVector(q),
 m_moments(q.m_moments)
 {}
 
+AnalysisObject::AnalysisObject( const TLorentzVector& tlv ) : 
+  TLorentzVector(tlv)
+{  
+  m_moments.clear(); 
+}
+
 //_______________________________________________________________________
 //
 void AnalysisObject::Reset(){
-    m_moments.clear();
+  SetPtEtaPhiE(0.,0.,0.,0.);
+  m_moments.clear();
 }
 
 //_______________________________________________________________________
