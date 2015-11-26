@@ -1,3 +1,7 @@
+2015-15-25 - Trisha Farooque <trisha.farooque@cern.ch>
+    - Adding a constructor for AnalysisObject class
+    - Cleaning functions in AnalysisObject class
+
 2015-15-25 - Loic Valery <lvalery@cern.ch>
     - Adding functions to update moments
 
