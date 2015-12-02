@@ -43,6 +43,7 @@ public:
     inline bool ComputeWeightSys() const { return m_computeWeightSys; }
     inline bool TextFileList() const { return m_textFileList; }
     inline bool OnlyDumpSystHistograms() const { return m_onlyDumpSystHistograms; }
+    inline bool DoBlind() const { return m_doBlind; }
     
     inline const std::string& StrSampleName() const { return m_str_sampleName; }
     inline const std::string& StrSampleID() const { return m_str_sampleID; }
@@ -75,7 +76,7 @@ protected:
     std::string m_optStr;    
     
     Debug::debug m_msgLevel;
-    bool m_isData,m_computeWeightSys,m_textFileList,m_onlyDumpSystHistograms;
+    bool m_isData,m_computeWeightSys,m_textFileList,m_onlyDumpSystHistograms, m_doBlind;
     SampleName::sample m_sampleName;
     SysName::sys m_sysName;
     AnaType::ana m_anaType;

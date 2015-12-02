@@ -1,11 +1,14 @@
-2015-15-25 - Loic Valery <lvalery@cern.ch>
+2015-12-02 - Trisha Farooque <trisha.farooque@cern.ch>
+	- Adding new option DOBLIND to OptionsBase
+	
+2015-11-25 - Loic Valery <lvalery@cern.ch>
     - Removing the install.sh and replacing it by share/packages.txt
 
-2015-15-25 - Trisha Farooque <trisha.farooque@cern.ch>
+2015-11-25 - Trisha Farooque <trisha.farooque@cern.ch>
     - Adding a constructor for AnalysisObject class
     - Cleaning functions in AnalysisObject class
 
-2015-15-25 - Loic Valery <lvalery@cern.ch>
+2015-11-25 - Loic Valery <lvalery@cern.ch>
     - Adding functions to update moments
 
 2015-11-25 - Trisha Farooque <trisha.farooque@cern.ch>
