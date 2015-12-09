@@ -32,7 +32,7 @@ m_weightVarName("weight")
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
     
     m_stdTH1Def     = new StdTH1();
-    m_stdTProfileDef   = new StdTH1();
+    m_stdTProfileDef= new StdTH1();
     m_stdTH2Def     = new StdTH2();
     m_stdBranchDef  = new StdBranches();
     m_histMngr      = new HistManager();
@@ -241,7 +241,7 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
                         m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
                     } else {
                         FillTH1FromVector( h1.second->var.Address(),
-                                           h1.second->var.VarType(), histName, sys.second->GetDoubleValue(),
+                                           h1.second->var.VarType(), (std::string)systHistName, sys.second->GetDoubleValue(),
                                            h1.second->var.VecInd() );
                     }
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
