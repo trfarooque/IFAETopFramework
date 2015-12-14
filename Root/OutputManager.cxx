@@ -103,7 +103,7 @@ bool OutputManager::SetSystVector( SystManager::SystVector *sysVector ){
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
 //______________________________________________________________________________________
 //
-bool OutputManager::AddStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst){
+bool OutputManager::AddStandardTH1(const TString name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst){
     
     //
     // INTERNAL FUNCTION
@@ -115,6 +115,7 @@ bool OutputManager::AddStandardTH1(const TString name, const double width, const
         std::cout << "  width  = " << width << std::endl;
         std::cout << "  min    = " << min << std::endl;
         std::cout << "  max    = " << max << std::endl;
+	std::cout << "  edges  = " << edges << std::endl;
         std::cout << "  hasSyst= " << hasSyst << std::endl;
     }
     
@@ -123,7 +124,7 @@ bool OutputManager::AddStandardTH1(const TString name, const double width, const
     hist -> min = min;
     hist -> max = max;
     hist -> hasSyst = hasSyst;
-    
+    hist -> edges = edges;    
     m_stdTH1Def -> insert( std::pair < TString, h1Def* >( name, hist ) );
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
@@ -162,9 +163,16 @@ bool OutputManager::BookStandardTH1( const TString &pattern, const bool hasSyst)
         TString histName = pattern;
         histName += "_" ;
         histName += h1.second->var.Name();
-        
-        m_histMngr -> BookTH1D( (std::string)histName, (std::string)(h1.second->var.Title()), h1.second->width, h1.second->min, h1.second->max);
-        
+
+	const double* ptr_edges = (h1.second -> edges != NULL) ? &( h1.second->edges->at(0) ) : NULL;
+	int nbins = ( (h1.second -> edges != NULL) && (h1.second -> edges->size() > 0) )? h1.second->edges->size() - 1 : 0;
+
+	if(nbins > 0){        
+	  m_histMngr -> BookTH1D( (std::string)histName, (std::string)(h1.second->var.Title()), nbins, ptr_edges);
+        }
+	else{
+	  m_histMngr -> BookTH1D( (std::string)histName, (std::string)(h1.second->var.Title()), h1.second->width, h1.second->min, h1.second->max);
+	}
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
         if(hasSyst && h1.second->hasSyst){
@@ -175,7 +183,13 @@ bool OutputManager::BookStandardTH1( const TString &pattern, const bool hasSyst)
                     TString systHistName = histName;
                     systHistName += "_";
                     systHistName += sys.second->Name();
-                    m_histMngr -> BookTH1D((std::string)systHistName, (std::string)(h1.second->var.Title()), h1.second->width, h1.second->min, h1.second->max);
+
+		    if(nbins > 0){  
+		      m_histMngr -> BookTH1D( (std::string)systHistName, (std::string)(h1.second->var.Title()), nbins, ptr_edges);
+		    }
+		    else{
+		      m_histMngr -> BookTH1D((std::string)systHistName, (std::string)(h1.second->var.Title()), h1.second->width, h1.second->min, h1.second->max);
+		    }
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
             }
@@ -319,7 +333,9 @@ bool OutputManager::SaveStandardTH1( const TString &outputName, const bool newFi
 //______________________________________________________________________________________
 //
 bool OutputManager::AddStandardTH2( const TString name, const double widthX, const double minX, const double maxX,
-                                   const double widthY, const double minY, const double maxY, const bool hasSyst){
+				    const double widthY, const double minY, const double maxY, 
+				    const std::vector<double>* edgesX, const std::vector<double>* edgesY,
+				    const bool hasSyst){
     
     //
     // INTERNAL FUNCTION
@@ -349,9 +365,11 @@ bool OutputManager::AddStandardTH2( const TString name, const double widthX, con
     hist -> widthX = widthX;
     hist -> minX = minX;
     hist -> maxX = maxX;
+    hist -> edgesX = edgesX;
     hist -> widthY = widthY;
     hist -> minY = minY;
     hist -> maxY = maxY;
+    hist -> edgesY = edgesY;
     hist -> hasSyst = hasSyst;
     
     m_stdTH2Def -> insert( std::pair < TString, h2Def* >( name, hist ) );
@@ -394,9 +412,31 @@ bool OutputManager::BookStandardTH2( const TString &pattern, const bool hasSyst)
         TString histTitle = h2.second->varY.Title();
         histTitle += " vs ";
         histTitle += h2.second->varX.Title();
-        m_histMngr -> BookTH2D( (std::string)histName, (std::string)histTitle,
-                               h2.second->widthX, h2.second->minX, h2.second->maxX,
-                               h2.second->widthY, h2.second->minY, h2.second->maxY);
+
+	const double* ptr_edgesX = (h2.second -> edgesX != NULL) ? &( h2.second->edgesX->at(0) ) : NULL;
+	int nbinsX = ( (h2.second -> edgesX != NULL) && (h2.second -> edgesX->size() > 0) ) ? h2.second -> edgesX->size() - 1 : 0;
+	const double* ptr_edgesY = (h2.second -> edgesY != NULL) ? &( h2.second->edgesY->at(0) ) : NULL;
+	int nbinsY = ( (h2.second -> edgesY != NULL) && (h2.second -> edgesY->size() > 0) ) ? h2.second -> edgesY->size() - 1 : 0;
+
+	if( (nbinsX > 0) && (nbinsY > 0) ){ 
+	  m_histMngr -> BookTH2D( (std::string)histName, (std::string)histTitle,
+				  nbinsX, ptr_edgesX, nbinsY, ptr_edgesY);
+	}
+	else if( (nbinsX <= 0) && (nbinsY > 0) ){
+	  m_histMngr -> BookTH2D( (std::string)histName, (std::string)histTitle,
+				  h2.second->widthX, h2.second->minX, h2.second->maxX, nbinsY, ptr_edgesY);
+	}
+	else if( (nbinsX > 0) && (nbinsY <= 0) ){
+	  //This point should never be reached
+	  std::cerr << " IFAETopFramework::HistManager does not support variable x-bins and uniform y-bins. Consider switching the axes" << std::endl;
+	  return false;
+	}
+	else{
+	  m_histMngr -> BookTH2D( (std::string)histName, (std::string)histTitle,
+				  h2.second->widthX, h2.second->minX, h2.second->maxX,
+				  h2.second->widthY, h2.second->minY, h2.second->maxY);
+	}
+
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
         if(hasSyst && h2.second->hasSyst){
@@ -407,10 +447,27 @@ bool OutputManager::BookStandardTH2( const TString &pattern, const bool hasSyst)
                     TString systHistName = histName;
                     systHistName += "_";
                     systHistName += sys.second->Name();
-                    m_histMngr -> BookTH2D((std::string)systHistName,
-                                           (std::string)histTitle,
-                                           h2.second->widthX, h2.second->minX, h2.second->maxX,
-                                           h2.second->widthY, h2.second->minY, h2.second->maxY);
+
+		    if( (nbinsX > 0) && (nbinsY > 0) ){ 
+		      m_histMngr -> BookTH2D( (std::string)systHistName, (std::string)histTitle,
+					      nbinsX, ptr_edgesX, nbinsY, ptr_edgesY);
+		    }
+		    else if( (nbinsX <= 0) && (nbinsY > 0) ){
+		      m_histMngr -> BookTH2D( (std::string)systHistName, (std::string)histTitle,
+					      h2.second->widthX, h2.second->minX, h2.second->maxX, nbinsY, ptr_edgesY);
+		    }
+		    else if( (nbinsX > 0) && (nbinsY <= 0) ){
+		      //This point should never be reached
+		      std::cerr << " IFAETopFramework::HistManager does not support variable x-bins and uniform y-bins. Consider switching the axes" << std::endl;
+		      return false;
+		    }
+		    else{
+		      m_histMngr -> BookTH2D( (std::string)systHistName, (std::string)histTitle,
+					      h2.second->widthX, h2.second->minX, h2.second->maxX,
+					      h2.second->widthY, h2.second->minY, h2.second->maxY);
+		    }
+
+
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
             }

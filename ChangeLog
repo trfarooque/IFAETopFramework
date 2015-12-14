@@ -1,3 +1,5 @@
+2015-12-14 Trisha Farooque <farooque@cern.ch>
+	- Implemented variable-size binning in OutputManager	
 2015-12-09 - Loic Valery <lvalery@cern.ch>
     - Bug fix in OutputManager
 

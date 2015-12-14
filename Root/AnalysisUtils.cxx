@@ -1,5 +1,8 @@
-#include "IFAETopFramework/AnalysisUtils.h"
+#include <sys/stat.h>
 #include <iostream>
+#include "IFAETopFramework/AnalysisUtils.h"
+
+
 AnalysisUtils::AnalysisUtils(){}
 AnalysisUtils::~AnalysisUtils(){}
 
@@ -153,4 +156,9 @@ bool AnalysisUtils::BoolValue(std::string& arg_val, bool& bin_val){
 
 }
 
-
+//Copied from StackOverflow -
+bool AnalysisUtils::FileExists(const std::string& filename){
+  struct stat buf;
+  if (stat(filename.c_str(), &buf) != -1){ return true; }
+  return false;
+}

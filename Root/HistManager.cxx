@@ -83,7 +83,7 @@ vector<string> HistManager::GetTProfileKeyList(){
 
 //__________________________________________________________________
 //
-void HistManager::FinaliseTH1Bins(const string &s_hist){
+void HistManager::FinaliseTH1Bins(const string &s_hist, bool addUF){
     map<string, TH1D*>::iterator h1_it = m_h1d.find(s_hist);
     if( h1_it == m_h1d.end() ){
         cout<<"H1D "<<s_hist<<" not found "<<endl;
@@ -91,27 +91,28 @@ void HistManager::FinaliseTH1Bins(const string &s_hist){
     }
     
     int nbins = h1_it->second->GetNbinsX();
-    double v_uf       = h1_it->second->GetBinContent(0);
+
     double v_of       = h1_it->second->GetBinContent(nbins+1);
-    double v_first    = h1_it->second->GetBinContent(1);
     double v_last     = h1_it->second->GetBinContent(nbins);
-    
-    double e_uf       = h1_it->second->GetBinError(0);
     double e_of       = h1_it->second->GetBinError(nbins+1);
-    double e_first    = h1_it->second->GetBinError(1);
     double e_last     = h1_it->second->GetBinError(nbins);
-    
-    h1_it->second->SetBinContent(1, v_first + v_uf);
     h1_it->second->SetBinContent(nbins, v_last + v_of);
-    
-    h1_it->second->SetBinError(1, sqrt(e_first*e_first + e_uf*e_uf) );
     h1_it->second->SetBinError(nbins, sqrt(e_last*e_last + e_of*e_of) );
-    
-    //Since the over/underflows are set in the last/first bins, remove the under/over flow component
-    h1_it->second->SetBinContent(0, 0.);
     h1_it->second->SetBinContent(nbins+1, 0.);
-    h1_it->second->SetBinError(0, 0.);
     h1_it->second->SetBinError(nbins+1, 0.);
+
+    if(addUF){
+      double v_uf       = h1_it->second->GetBinContent(0);
+      double v_first    = h1_it->second->GetBinContent(1);
+      double e_uf       = h1_it->second->GetBinError(0);
+      double e_first    = h1_it->second->GetBinError(1);
+      h1_it->second->SetBinContent(1, v_first + v_uf);
+      h1_it->second->SetBinError(1, sqrt(e_first*e_first + e_uf*e_uf) );
+    }
+    //Always set the underflow to zero, whether or not it is included in the first bin
+    h1_it->second->SetBinContent(0, 0.);
+    h1_it->second->SetBinError(0, 0.);
+
     return;
 }
 
@@ -245,7 +246,7 @@ TH1D* HistManager::BookTH1D( const string &name, const string &title, double bin
 
 //__________________________________________________________________
 //
-TH1D* HistManager::BookTH1D( const string &name, const string &title, int nbins, double* xedges,
+TH1D* HistManager::BookTH1D( const string &name, const string &title, int nbins, const double* xedges,
                             const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
     TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xedges);
@@ -311,7 +312,7 @@ TH2D* HistManager::BookTH2D( const string &name, const string &title, double xbi
 //__________________________________________________________________
 //
 TH2D* HistManager::BookTH2D(const string &name, const string &title,
-                            int nxbins, double* xedges, int nybins, double* yedges,
+                            int nxbins, const double* xedges, int nybins, const double* yedges,
                             const string &key, const string &xtitle, const string &ytitle,
                             int lw, int lc){
     
@@ -334,7 +335,7 @@ TH2D* HistManager::BookTH2D(const string &name, const string &title,
 //__________________________________________________________________
 //
 TH2D* HistManager::BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
-                            int nybins, double* yedges,
+                            int nybins, const double* yedges,
                             const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
     double dnxbins=(xup-xlow)/xbinsize +0.5;
@@ -377,7 +378,7 @@ TH3D* HistManager::BookTH3D(const string &key, const string &name, const string 
 //__________________________________________________________________
 //
 TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbinsize, double xlow, double xup,
-                            double ybinsize, double ylow, double yup, int nzbins, double* zedges,
+                            double ybinsize, double ylow, double yup, int nzbins, const double* zedges,
                             const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
     
     double dnxbins=(xup-xlow)/xbinsize + 0.5;
@@ -448,7 +449,7 @@ TH3D* HistManager::BookTH3D( const string &name, const string &title, double xbi
 //__________________________________________________________________
 //
 TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbinsize, double xlow, double xup,
-                            int nybins, double* yedges, int nzbins, double* zedges,
+                            int nybins, const double* yedges, int nzbins, const double* zedges,
                             const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
     
     double dnxbins=(xup-xlow)/xbinsize +0.5;
@@ -501,7 +502,7 @@ TProfile* HistManager::BookTProfile( const string &name, const string &title, do
 
 //__________________________________________________________________
 //
-TProfile* HistManager::BookTProfile( const string &name, const string &title, int nbins, double* xedges,
+TProfile* HistManager::BookTProfile( const string &name, const string &title, int nbins, const double* xedges,
                                      const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
     TProfile* prof = new TProfile( name.c_str(), title.c_str(), nbins, xedges );

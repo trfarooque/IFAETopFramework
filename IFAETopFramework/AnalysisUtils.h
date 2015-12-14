@@ -25,6 +25,7 @@ class AnalysisUtils{
   static void TrimString(std::string& str, const std::string& whitespace=" \t");
   static std::string::size_type ParseString(std::string& base, std::string& piece, const std::string& delim);
   static bool BoolValue(std::string& arg_val, bool& bin_val);
+  static bool FileExists(const std::string& filename);
 
  protected:
   static  bool orderAscend(std::pair<int, double> p1, std::pair<int, double> p2 ){

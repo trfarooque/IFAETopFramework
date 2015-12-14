@@ -32,7 +32,7 @@ public:
     vector<string> GetTH2KeyList();
     vector<string> GetTH3KeyList();
     
-    void FinaliseTH1Bins( const string &s_hist);
+    void FinaliseTH1Bins( const string &s_hist, bool addUF=true);
     
     void ClearAllTH1();
     void ClearAllTProfile();
@@ -47,7 +47,7 @@ public:
     TH1D* BookTH1D( const string &, const string &, const string &title = ""  );
     TH1D* BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
                    const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
-    TH1D* BookTH1D( const string &name, const string &title, int nbins, double* xedges,
+    TH1D* BookTH1D( const string &name, const string &title, int nbins, const double* xedges,
                    const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
     
     TH2D* BookTH2D( const string &key, const string &name, const string &title);
@@ -55,21 +55,21 @@ public:
                    double ybinsize, double ylow, double yup, const string &key="", const string &xtitle="",
                    const string &ytitle="", int lw=2, int lc=1);
     TH2D* BookTH2D( const string &name, const string &title,
-                   int nxbins, double* xedges, int nybins, double* yedges,
+                   int nxbins, const double* xedges, int nybins, const double* yedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    int lw=2, int lc=1);
     TH2D* BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
-                  int nybins, double* yedges,
+                  int nybins, const double* yedges,
                   const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
     
     TH3D* BookTH3D( const string &key, const string &name, const string &title);
     TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                    double ybinsize, double ylow, double yup,
-                   int nzbins, double* zedges,
+                   int nzbins, const double* zedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    const string &ztitle="", int lw=2, int lc=1);
     TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
-                   int nybins, double* yedges, int nzbins, double* zedges,
+                   int nybins, const double* yedges, int nzbins, const double* zedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    const string &ztitle="", int lw=2, int lc=1);
     TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
@@ -80,7 +80,7 @@ public:
     
     TProfile* BookTProfile( const string &name, const string &title, double binsize, double xlow, double xup,
                             const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
-    TProfile* BookTProfile( const string &name, const string &title, int nbins, double* xedges,
+    TProfile* BookTProfile( const string &name, const string &title, int nbins, const double* xedges,
                             const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
     
     void FillTH1D( const string &hname, double val, double wgt=1. );

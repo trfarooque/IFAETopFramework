@@ -33,23 +33,26 @@ public:
     //________________________
     // Structs to make the code readable
     struct h1Def{
-        VariableDef var;
-        double width;
-        double min;
-        double max;
-        bool hasSyst;
+      VariableDef var;
+      double width;
+      double min;
+      double max;
+      const std::vector<double>* edges;
+      bool hasSyst;
     };
     
     struct h2Def{
-        VariableDef varX;
-        double widthX;
-        double minX;
-        double maxX;
-        VariableDef varY;
-        double widthY;
-        double minY;
-        double maxY;
-        bool hasSyst;
+      VariableDef varX;
+      double widthX;
+      double minX;
+      double maxX;
+      const std::vector<double>* edgesX;
+      VariableDef varY;
+      double widthY;
+      double minY;
+      double maxY;
+      const std::vector<double>* edgesY;
+      bool hasSyst;
     };
     
     //_________________________
@@ -81,44 +84,20 @@ public:
     
     //___________________________________________________
     //
-    template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min,
-                                               const double max, const TString &title, const TString &variableType,
-                                               const bool hasSyst, T *t, const int vec_ind = -1) {
-        //
-        // Checks if the mode is correct
-        //
-        if(m_type==TREES){
-            std::cout << "<!> ERROR in OutputManager::addStandardTH1 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
-            return false;
-        }
-        
-        //
-        // Don't do it if there is no systematics
-        //
-        if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
-            return false;
-        }
-        
-        if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
-        
-        bool added = AddStandardTH1(name, width, min, max, hasSyst);
-        if(!added) {
-            std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): could not add the variable !! Please check." << std::endl;
-            return false;
-        }
-        
-        VariableDef _var(name, title, variableType, t, vec_ind);
-        
-        std::map< TString , h1Def*>::iterator it = m_stdTH1Def -> find(name);
-        if(it != m_stdTH1Def->end()){
-            m_stdTH1Def->at(name)->var = _var;
-        }
-        else {
-            std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): The searched variable has not been booked previously. Please check !" << std::endl;
-        }
-        
-        return true;
+    template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min, const double max,
+						const TString &title, const TString &variableType,
+						const bool hasSyst, T *t,  const int vec_ind = -1) {
+
+      return AddStandardTH1(name, width, min, max, NULL, title, variableType, hasSyst, t, vec_ind);
     }
+
+    template< typename T > bool AddStandardTH1( const TString &name, const std::vector<double>* edges,
+						const TString &title, const TString &variableType,
+						const bool hasSyst, T *t, const int vec_ind = -1) {
+      return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, hasSyst, t, vec_ind);
+
+    }
+
     bool BookStandardTH1( const TString &pattern, const bool hasSyst = false);
     bool FillStandardTH1( const TString &name );
     bool SaveStandardTH1( const TString&, const bool newFile = true );
@@ -128,47 +107,37 @@ public:
     // TH2-SPECIFIC FUNCTIONS
     //
     //
+    //___________________________________________________
+    //
     template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
-                                                             const double widthX, const double minX, const double maxX,
-                                                             const double widthY, const double minY, const double maxY,
-                                                             const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
-                                                             const bool hasSyst, TX *tX, TY *tY, const int vec_indX = -1, const int vec_indY = -1) {
-        //
-        // Checks if the mode is correct
-        //
-        if(m_type==TREES){
-            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
-            return false;
-        }
-        
-        //
-        // Don't do it if there is no systematics
-        //
-        if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
-            return false;
-        }
-        
-        if(!tX ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tX << "). Please check !" << std::endl;
-        if(!tY ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tY << "). Please check !" << std::endl;
-        
-        TString name = nameY + "_vs_" + nameX;
-        bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, hasSyst);
-        if(!added) {
-            std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::endl;
-            return false;
-        }
-        
-        VariableDef _varX(nameX,titleX, variableTypeX, tX, vec_indX);
-        VariableDef _varY(nameY,titleY, variableTypeY, tY, vec_indY);
-        
-        std::map< TString , h2Def*>::iterator it = m_stdTH2Def -> find(name);
-        if(it != m_stdTH2Def->end()){
-            m_stdTH2Def->at(name)->varX = _varX;
-            m_stdTH2Def->at(name)->varY = _varY;
-        }
-        
-        else std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): The searched variable has not been booked previously. Please check !" << std::endl;
-        return true;
+							      const double widthX, const double minX, const double maxX,
+							      const double widthY, const double minY, const double maxY,
+							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const bool hasSyst, TX *tX, TY *tY, 
+							      const int vec_indX = -1, const int vec_indY = -1) {
+      return AddStandardTH2(nameX, nameY, widthX, minX, minY, widthY, minY, maxY, 0, NULL, 0, NULL, 
+			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY);
+    }
+
+    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+							      const double widthX, const double minX, const double maxX,
+							      const std::vector<double>* edgesY, 
+							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const bool hasSyst, TX *tX, TY *tY, 
+							      const int vec_indX = -1, const int vec_indY = -1) {
+      return AddStandardTH2(nameX, nameY, widthX, minX, maxX, 0., 0., 0., NULL, edgesY, 
+			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY);
+
+    }
+
+    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+							      const std::vector<double>* edgesX, const std::vector<double>* edgesY, 
+							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const bool hasSyst, TX *tX, TY *tY, 
+							      const int vec_indX = -1, const int vec_indY = -1) {
+      return AddStandardTH2(nameX, nameY, 0., 0., 0., 0., 0., 0., edgesX, edgesY, 
+			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY);
+
     }
     bool BookStandardTH2( const TString &pattern, const bool hasSyst = false);
     bool FillStandardTH2( const TString &name );
@@ -188,7 +157,7 @@ public:
                                                   T *t, const int vec_ind = -1) {
         
         if(m_type==HISTOS){
-            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a branch, but OutputManager is in HISTOS mode." << std::endl;
+            std::cout << "<!> ERROR in OutputManager::addStandardBranch : You requested the booking of a branch, but OutputManager is in HISTOS mode." << std::endl;
             return false;
         }
         
@@ -212,11 +181,101 @@ public:
     
     
 private:
-    bool AddStandardTH1(const TString name, const double width, const double min, const double max, const bool hasSyst);
+
+
+    template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min, const double max,
+						const std::vector<double>* edges, 
+						const TString &title, const TString &variableType,
+						const bool hasSyst, T *t, 
+						const int vec_ind = -1) {
+        //
+        // Checks if the mode is correct
+        //
+        if(m_type==TREES){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH1 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
+        //
+        // Don't do it if there is no systematics
+        //
+        if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
+            return false;
+        }
+        
+        if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
+
+        bool added = AddStandardTH1(name, width, min, max, edges, hasSyst);
+        if(!added) {
+            std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): could not add the variable !! Please check." << std::endl;
+            return false;
+        }
+        
+        VariableDef _var(name, title, variableType, t, vec_ind);
+        
+        std::map< TString , h1Def*>::iterator it = m_stdTH1Def -> find(name);
+        if(it != m_stdTH1Def->end()){
+            m_stdTH1Def->at(name)->var = _var;
+        }
+        else {
+            std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): The searched variable has not been booked previously. Please check !" << std::endl;
+        }
+        
+        return true;
+    }
+
+    bool AddStandardTH1(const TString name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst = false);
+
+    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+							      const double widthX, const double minX, const double maxX,
+							      const double widthY, const double minY, const double maxY,
+							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
+							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const bool hasSyst, TX *tX, TY *tY, 
+							      const int vec_indX = -1, const int vec_indY = -1) {
+      //
+        // Checks if the mode is correct
+        //
+        if(m_type==TREES){
+            std::cout << "<!> ERROR in OutputManager::addStandardTH2 : You requested the booking of a histogram, but OutputManager is in TREE mode." << std::endl;
+            return false;
+        }
+        
+        //
+        // Don't do it if there is no systematics
+        //
+        if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
+            return false;
+        }
+        
+        if(!tX ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tX << "). Please check !" << std::endl;
+        if(!tY ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the pointer (" << tY << "). Please check !" << std::endl;
+        
+        TString name = nameY + "_vs_" + nameX;
+        bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, edgesX, edgesY, hasSyst);
+        if(!added) {
+            std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::endl;
+            return false;
+        }
+        
+        VariableDef _varX(nameX,titleX, variableTypeX, tX, vec_indX);
+        VariableDef _varY(nameY,titleY, variableTypeY, tY, vec_indY);
+        
+        std::map< TString , h2Def*>::iterator it = m_stdTH2Def -> find(name);
+        if(it != m_stdTH2Def->end()){
+            m_stdTH2Def->at(name)->varX = _varX;
+            m_stdTH2Def->at(name)->varY = _varY;
+        }
+        
+        else std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): The searched variable has not been booked previously. Please check !" << std::endl;
+        return true;
+    }
+
     bool AddStandardTH2(const TString name, const double widthX, const double minX, const double maxX,
-                        const double widthY, const double minY, const double maxY, const bool hasSyst);
-    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight,
-                            const int index = -1 );
+                        const double widthY, const double minY, const double maxY, 
+			const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false);
+
+    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const int index = -1 );
     
 private:
     OptionsBase *m_opt;
