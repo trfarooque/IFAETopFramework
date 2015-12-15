@@ -314,16 +314,16 @@ bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType 
 
 //________________________________________________________________________________________
 //
-bool OutputManager::SaveStandardTH1( const TString &outputName, const bool newFile ){
+bool OutputManager::SaveStandardTH1( const TString &outputName, const bool newFile, const bool addUF ){
     
     TFile *f = new TFile( outputName, ( newFile ? "recreate" : "update" ) );
     //Storing TH1 in the output file
     vector<string> h1list = m_histMngr->GetTH1KeyList();
     for( const auto it_h1 : h1list ){
-        m_histMngr->FinaliseTH1Bins(it_h1);
-        f->cd();
-        m_histMngr->GetTH1D(it_h1)->Write();
-        m_histMngr->ClearTH1(it_h1);
+      m_histMngr->FinaliseTH1Bins(it_h1, addUF);
+      f->cd();
+      m_histMngr->GetTH1D(it_h1)->Write();
+      m_histMngr->ClearTH1(it_h1);
     }
     f -> Close();
     return true;

@@ -100,7 +100,7 @@ public:
 
     bool BookStandardTH1( const TString &pattern, const bool hasSyst = false);
     bool FillStandardTH1( const TString &name );
-    bool SaveStandardTH1( const TString&, const bool newFile = true );
+    bool SaveStandardTH1( const TString&, const bool newFile = true, const bool addUF=true );
     
     //
     //___________________________________________________________
