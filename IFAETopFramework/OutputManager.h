@@ -116,7 +116,7 @@ public:
 							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY, 
 							      const int vec_indX = -1, const int vec_indY = -1) {
-      return AddStandardTH2(nameX, nameY, widthX, minX, minY, widthY, minY, maxY, NULL, NULL, 
+      return AddStandardTH2(nameX, nameY, widthX, minX, minY, widthY, maxY, maxY, NULL, NULL, 
 			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY);
     }
 
