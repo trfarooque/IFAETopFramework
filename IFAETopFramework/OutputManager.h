@@ -39,6 +39,7 @@ public:
       double max;
       const std::vector<double>* edges;
       bool hasSyst;
+      int hopt;
     };
     
     struct h2Def{
@@ -86,21 +87,21 @@ public:
     //
     template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min, const double max,
 						const TString &title, const TString &variableType,
-						const bool hasSyst, T *t,  const int vec_ind = -1) {
+						const bool hasSyst, T *t,  const int vec_ind = -1, const int hopt=0) {
 
-      return AddStandardTH1(name, width, min, max, NULL, title, variableType, hasSyst, t, vec_ind);
+      return AddStandardTH1(name, width, min, max, NULL, title, variableType, hasSyst, t, vec_ind, hopt);
     }
 
     template< typename T > bool AddStandardTH1( const TString &name, const std::vector<double>* edges,
 						const TString &title, const TString &variableType,
-						const bool hasSyst, T *t, const int vec_ind = -1) {
-      return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, hasSyst, t, vec_ind);
+						const bool hasSyst, T *t, const int vec_ind = -1, const int hopt=0) {
+      return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, hasSyst, t, vec_ind, hopt);
 
     }
 
     bool BookStandardTH1( const TString &pattern, const bool hasSyst = false);
     bool FillStandardTH1( const TString &name );
-    bool SaveStandardTH1( const TString&, const bool newFile = true, const bool addUF=true );
+    bool SaveStandardTH1( const TString&, const bool newFile = true);
     
     //
     //___________________________________________________________
@@ -115,7 +116,7 @@ public:
 							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY, 
 							      const int vec_indX = -1, const int vec_indY = -1) {
-      return AddStandardTH2(nameX, nameY, widthX, minX, minY, widthY, minY, maxY, 0, NULL, 0, NULL, 
+      return AddStandardTH2(nameX, nameY, widthX, minX, minY, widthY, minY, maxY, NULL, NULL, 
 			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY);
     }
 
@@ -187,7 +188,7 @@ private:
 						const std::vector<double>* edges, 
 						const TString &title, const TString &variableType,
 						const bool hasSyst, T *t, 
-						const int vec_ind = -1) {
+						const int vec_ind = -1, const int hopt = 0) {
         //
         // Checks if the mode is correct
         //
@@ -205,7 +206,7 @@ private:
         
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
 
-        bool added = AddStandardTH1(name, width, min, max, edges, hasSyst);
+        bool added = AddStandardTH1(name, width, min, max, edges, hasSyst, hopt);
         if(!added) {
             std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): could not add the variable !! Please check." << std::endl;
             return false;
@@ -224,7 +225,7 @@ private:
         return true;
     }
 
-    bool AddStandardTH1(const TString name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst = false);
+    bool AddStandardTH1(const TString &name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst = false, const int hopt = 0);
 
     template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
 							      const double widthX, const double minX, const double maxX,
@@ -271,7 +272,7 @@ private:
         return true;
     }
 
-    bool AddStandardTH2(const TString name, const double widthX, const double minX, const double maxX,
+    bool AddStandardTH2(const TString &name, const double widthX, const double minX, const double maxX,
                         const double widthY, const double minY, const double maxY, 
 			const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false);
 

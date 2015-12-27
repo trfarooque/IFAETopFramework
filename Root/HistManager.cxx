@@ -2,13 +2,20 @@
 
 using namespace std;
 
+const int HistManager::FCHECK  = 0x1 << 0;
+const int HistManager::UFLOW  = 0x1 << 1;
+const int HistManager::OFLOW  = 0x1 << 2;
+
 //__________________________________________________________________
 //
-HistManager::HistManager(){
-    m_h1d.clear();
-    m_h2d.clear();
-    m_h3d.clear();
-    m_profile.clear();
+HistManager::HistManager( bool addUF, bool addOF) : 
+  m_addUF(addUF),
+  m_addOF(addOF)
+{
+  m_h1d.clear();
+  m_h2d.clear();
+  m_h3d.clear();
+  m_profile.clear();
 }
 
 //__________________________________________________________________
@@ -18,6 +25,10 @@ HistManager::HistManager( const HistManager &q, bool make_new){
     m_profile.clear();
     m_h2d.clear();
     m_h3d.clear();
+
+    m_addUF = q.m_addUF;
+    m_addOF = q.m_addOF;
+
     if(make_new){
         //Loop over old HistManager, clone each histogram, and add it to the new HistManager
         map<string, TH1D*>::const_iterator h1_it = (q.m_h1d).begin();
@@ -83,24 +94,25 @@ vector<string> HistManager::GetTProfileKeyList(){
 
 //__________________________________________________________________
 //
-void HistManager::FinaliseTH1Bins(const string &s_hist, bool addUF){
+void HistManager::FinaliseTH1Bins(const string &s_hist){
     map<string, TH1D*>::iterator h1_it = m_h1d.find(s_hist);
     if( h1_it == m_h1d.end() ){
         cout<<"H1D "<<s_hist<<" not found "<<endl;
         return;
     }
-    
+    int hopt = m_h1d_opt[s_hist];
+    bool addUF = (hopt & FCHECK) ? (hopt & UFLOW) : m_addUF;
+    bool addOF = (hopt & FCHECK) ? (hopt & OFLOW) : m_addOF;
+
     int nbins = h1_it->second->GetNbinsX();
-
-    double v_of       = h1_it->second->GetBinContent(nbins+1);
-    double v_last     = h1_it->second->GetBinContent(nbins);
-    double e_of       = h1_it->second->GetBinError(nbins+1);
-    double e_last     = h1_it->second->GetBinError(nbins);
-    h1_it->second->SetBinContent(nbins, v_last + v_of);
-    h1_it->second->SetBinError(nbins, sqrt(e_last*e_last + e_of*e_of) );
-    h1_it->second->SetBinContent(nbins+1, 0.);
-    h1_it->second->SetBinError(nbins+1, 0.);
-
+    if(addOF){
+      double v_of       = h1_it->second->GetBinContent(nbins+1);
+      double v_last     = h1_it->second->GetBinContent(nbins);
+      double e_of       = h1_it->second->GetBinError(nbins+1);
+      double e_last     = h1_it->second->GetBinError(nbins);
+      h1_it->second->SetBinContent(nbins, v_last + v_of);
+      h1_it->second->SetBinError(nbins, sqrt(e_last*e_last + e_of*e_of) );
+    }
     if(addUF){
       double v_uf       = h1_it->second->GetBinContent(0);
       double v_first    = h1_it->second->GetBinContent(1);
@@ -109,9 +121,11 @@ void HistManager::FinaliseTH1Bins(const string &s_hist, bool addUF){
       h1_it->second->SetBinContent(1, v_first + v_uf);
       h1_it->second->SetBinError(1, sqrt(e_first*e_first + e_uf*e_uf) );
     }
-    //Always set the underflow to zero, whether or not it is included in the first bin
+    //Always set the underflow/overflow to zero, whether or not it is included in the first/last bin
     h1_it->second->SetBinContent(0, 0.);
     h1_it->second->SetBinError(0, 0.);
+    h1_it->second->SetBinContent(nbins+1, 0.);
+    h1_it->second->SetBinError(nbins+1, 0.);
 
     return;
 }
@@ -204,19 +218,33 @@ void HistManager::ClearTProfile(const string &s_hist){
     return;
 }
 
+void HistManager::InitTH1(const string &name, TH1D* h1d, const string &title, const string &key, const string& xtitle, const string& ytitle, int opt, int lw, int lc){
+
+  h1d->SetDirectory(0);
+  h1d->SetName(name.c_str());
+  h1d->SetTitle(title.c_str());
+
+  if(xtitle!=""){h1d->GetXaxis()->SetTitle(xtitle.c_str());}
+  if(ytitle!=""){h1d->GetYaxis()->SetTitle(ytitle.c_str());}
+  h1d->SetLineWidth(lw);
+  h1d->SetLineColor(lc);
+  h1d->Sumw2();
+    
+  const string &in_key = (key=="") ? name : key;
+  if(m_h1d.find(in_key) != m_h1d.end()){
+    cout<<"Warning: Replacing existing H1D "<<name<<endl;
+  }
+  m_h1d[in_key]=h1d;
+  m_h1d_opt[in_key]=opt;
+
+  return;
+}
 
 //__________________________________________________________________
 //
 TH1D* HistManager::BookTH1D( const string &key, const string &name, const string &title){
     TH1D* h1 = new TH1D();
-    h1->SetDirectory(0);
-    h1->SetName(name.c_str());
-    h1->SetTitle(title.c_str());
-    const string &in_key = (key=="") ? name : key;
-    if(m_h1d.find(in_key) != m_h1d.end()){
-        cout<<"Warning: Replacing existing H1D "<<name<<endl;
-    }
-    m_h1d[in_key]=h1;
+    InitTH1(name, h1, title, key);
     
     return h1;
 }
@@ -224,60 +252,52 @@ TH1D* HistManager::BookTH1D( const string &key, const string &name, const string
 //__________________________________________________________________
 //
 TH1D* HistManager::BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
-                            const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
+			     const string &key, const string &xtitle, const string &ytitle, int opt, int lw, int lc){
     
     double dnbins=(xup-xlow)/binsize +0.5;
     int nbins=(int)(dnbins);
     TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xlow,xup);
-    h1->SetDirectory(0);
-    if(xtitle!=""){h1->GetXaxis()->SetTitle(xtitle.c_str());}
-    if(ytitle!=""){h1->GetYaxis()->SetTitle(ytitle.c_str());}
-    h1->SetLineWidth(lw);
-    h1->SetLineColor(lc);
-    h1->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h1d.find(in_key) != m_h1d.end()){
-        cout<<"Warning: Replacing existing H1D "<<name<<endl;
-    }
-    m_h1d[in_key]=h1;
+    InitTH1(name, h1, title, key, xtitle, ytitle, opt, lw, lc);
     return h1;
 }
 
 //__________________________________________________________________
 //
 TH1D* HistManager::BookTH1D( const string &name, const string &title, int nbins, const double* xedges,
-                            const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
+			     const string &key, const string &xtitle, const string &ytitle, int opt, int lw, int lc){
     
     TH1D* h1=new TH1D(name.c_str(), title.c_str(), nbins,xedges);
-    h1->SetDirectory(0);
-    if(xtitle!="")h1->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h1->GetYaxis()->SetTitle(ytitle.c_str());
-    h1->SetLineWidth(lw);
-    h1->SetLineColor(lc);
-    h1->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h1d.find(in_key) != m_h1d.end()){
-        cout<<"Warning: Replacing existing H1D "<<name<<endl;
-    }
-    m_h1d[in_key]=h1;
+    InitTH1(name, h1, title, key, xtitle, ytitle, opt, lw, lc);
     return h1;
+}
+
+
+
+//__________________________________________________________________________________________________________________
+//
+void HistManager::InitTH2(const string &name, TH2D* h2d, const string &title, const string &key, const string& xtitle, const string& ytitle, int lw, int lc){
+  h2d->SetDirectory(0);
+  h2d->SetName(name.c_str());
+  h2d->SetTitle(title.c_str());
+  if(xtitle!="")h2d->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h2d->GetYaxis()->SetTitle(ytitle.c_str());
+  h2d->SetLineWidth(lw);
+  h2d->SetLineColor(lc);
+  h2d->Sumw2();
+  
+  const string &in_key = (key=="") ? name : key;
+  if(m_h2d.find(in_key) != m_h2d.end()){
+    cout<<"Warning: Replacing existing H2D "<<name<<endl;
+  }
+  m_h2d[in_key]=h2d;
+  
 }
 
 //__________________________________________________________________
 //
 TH2D* HistManager::BookTH2D( const string &key, const string &name, const string &title ){
     TH2D* h2 = new TH2D();
-    h2->SetDirectory(0);
-    h2->SetName(name.c_str());
-    h2->SetTitle(title.c_str());
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h2d.find(in_key) != m_h2d.end()){
-        cout<<"Warning: Replacing existing H2D "<<name<<endl;
-    }
-    m_h2d[in_key]=h2;
+    InitTH2(name, h2, title, key);
     return h2;
 }
 
@@ -294,18 +314,8 @@ TH2D* HistManager::BookTH2D( const string &name, const string &title, double xbi
     int nybins=(int)(dnybins);
     
     TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,ylow,yup);
-    h2->SetDirectory(0);
-    if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
-    h2->SetLineWidth(lw);
-    h2->SetLineColor(lc);
-    h2->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h2d.find(in_key) != m_h2d.end()){
-        cout<<"Warning: Replacing existing H2D "<<name<<endl;
-    }
-    m_h2d[in_key]=h2;
+    InitTH2(name, h2, title, key, xtitle, ytitle, lw, lc);
+
     return h2;
 }
 
@@ -317,18 +327,8 @@ TH2D* HistManager::BookTH2D(const string &name, const string &title,
                             int lw, int lc){
     
     TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges);
-    h2->SetDirectory(0);
-    if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
-    h2->SetLineWidth(lw);
-    h2->SetLineColor(lc);
-    h2->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h2d.find(in_key) != m_h2d.end()){
-        cout<<"Warning: Replacing existing H2D "<<name<<endl;
-    }
-    m_h2d[in_key]=h2;
+    InitTH2(name, h2, title, key, xtitle, ytitle, lw, lc);
+
     return h2;
 }
 
@@ -342,36 +342,53 @@ TH2D* HistManager::BookTH2D( const string &name, const string &title, double xbi
     int nxbins=(int)(dnxbins);
     
     TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,yedges);
-    h2->SetDirectory(0);
-    if(xtitle!="")h2->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h2->GetYaxis()->SetTitle(ytitle.c_str());
-    h2->SetLineWidth(lw);
-    h2->SetLineColor(lc);
-    h2->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h2d.find(in_key) != m_h2d.end()){
-        cout<<"Warning: Replacing existing H2D "<<name<<endl;
-    }
-    m_h2d[in_key]=h2;
+    InitTH2(name, h2, title, key, xtitle, ytitle, lw, lc);
+
     return h2;
     
 }
 
 //__________________________________________________________________
 //
+TH2D* HistManager::BookTH2D( const string &name, const string &title, int nxbins, const double* xedges,
+			     double ybinsize, double ylow, double yup,
+			     const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
+    
+    double dnybins=(yup-ylow)/ybinsize +0.5;
+    int nybins=(int)(dnybins);
+    
+    TH2D* h2=new TH2D(name.c_str(), title.c_str(), nxbins,xedges, nybins,ylow,yup);
+    InitTH2(name, h2, title, key, xtitle, ytitle, lw, lc);
+
+    return h2;
+    
+}
+
+//__________________________________________________________________________________________________________________
+//
+void HistManager::InitTH3(const string &name, TH3D* h3d, const string &title, const string &key, const string& xtitle, const string& ytitle, const string& ztitle, int lw, int lc){
+  h3d->SetName(name.c_str());
+  h3d->SetTitle(title.c_str());
+  h3d->SetDirectory(0);
+  if(xtitle!="")h3d->GetXaxis()->SetTitle(xtitle.c_str());
+  if(ytitle!="")h3d->GetYaxis()->SetTitle(ytitle.c_str());
+  if(ztitle!="")h3d->GetZaxis()->SetTitle(ztitle.c_str());
+  h3d->SetLineWidth(lw);
+  h3d->SetLineColor(lc);
+  h3d->Sumw2();
+  
+  const string &in_key = (key=="") ? name : key;
+  if(m_h3d.find(in_key) != m_h3d.end()){
+    cout<<"Warning: Replacing existing H3D "<<name<<endl;
+  }
+  m_h3d[in_key]=h3d;
+  
+}
+//__________________________________________________________________
+//
 TH3D* HistManager::BookTH3D(const string &key, const string &name, const string &title){
     TH3D* h3 = new TH3D();
-    h3->SetDirectory(0);
-    h3->SetName(name.c_str());
-    h3->SetTitle(title.c_str());
-    h3->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h3d.find(in_key) != m_h3d.end()){
-        cout<<"Warning: Replacing existing H3D "<<name<<endl;
-    }
-    m_h3d[in_key]=h3;
+    InitTH3(name, h3, title, key);
     return h3;
 }
 
@@ -395,19 +412,7 @@ TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbin
     
     double* xedges=&xe[0]; double* yedges=&ye[0];
     TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
-    h3->SetDirectory(0);
-    if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
-    if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
-    h3->SetLineWidth(lw);
-    h3->SetLineColor(lc);
-    h3->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h3d.find(in_key) != m_h3d.end()){
-        cout<<"Warning: Replacing existing H3D "<<name<<endl;
-    }
-    m_h3d[in_key]=h3;
+    InitTH3(name, h3, title, key, xtitle, ytitle, ztitle, lw, lc);
     
     delete[] xe;
     delete[] ye;
@@ -430,19 +435,7 @@ TH3D* HistManager::BookTH3D( const string &name, const string &title, double xbi
     int nzbins=(int)(dnzbins);
     
     TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xlow,xup, nybins,ylow,yup, nzbins,zlow,zup);
-    h3->SetDirectory(0);
-    if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
-    if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
-    h3->SetLineWidth(lw);
-    h3->SetLineColor(lc);
-    h3->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h3d.find(in_key) != m_h3d.end()){
-        cout<<"Warning: Replacing existing H3D "<<name<<endl;
-    }
-    m_h3d[in_key]=h3;
+    InitTH3(name, h3, title, key, xtitle, ytitle, ztitle, lw, lc);
     return h3;
 }
 
@@ -460,18 +453,7 @@ TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbin
     for(int i=0; i<=nxbins; i++){xe[i]=xlow+i*xbinsize;}
     double* xedges=&xe[0];
     TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
-    h3->SetDirectory(0);
-    if(xtitle!="")h3->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")h3->GetYaxis()->SetTitle(ytitle.c_str());
-    if(ztitle!="")h3->GetZaxis()->SetTitle(ztitle.c_str());
-    h3->SetLineWidth(lw); h3->SetLineColor(lc);
-    h3->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_h3d.find(in_key) != m_h3d.end()){
-        cout<<"Warning: Replacing existing H3D "<<name<<endl;
-    }
-    m_h3d[in_key]=h3;
+    InitTH3(name, h3, title, key, xtitle, ytitle, ztitle, lw, lc);
     
     delete[] xe;
     return h3;
@@ -479,13 +461,24 @@ TH3D* HistManager::BookTH3D(const string &name, const string &title, double xbin
 
 //__________________________________________________________________
 //
-TProfile* HistManager::BookTProfile( const string &name, const string &title, double binsize, double xlow, double xup,
-                                    const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
+TH3D* HistManager::BookTH3D(const string &name, const string &title, int nxbins, const double* xedges,
+                            int nybins, const double* yedges, int nzbins, const double* zedges,
+                            const string &key, const string &xtitle, const string &ytitle, const string &ztitle, int lw, int lc){
     
-    double dnbins=(xup-xlow)/binsize +0.5;
-    int nbins=(int)(dnbins);
-    TProfile* prof = new TProfile(name.c_str(), title.c_str(), nbins,xlow,xup);
+    TH3D* h3=new TH3D(name.c_str(), title.c_str(), nxbins,xedges, nybins,yedges, nzbins,zedges);
+    InitTH3(name, h3, title, key, xtitle, ytitle, ztitle, lw, lc);
+    
+    return h3;
+}
+
+//
+//_________________________________________________________________________________
+//
+void HistManager::InitTProfile(const string &name, TProfile* prof, const string &title, const string &key, const string& xtitle, const string& ytitle, int lw, int lc){
+
     prof->SetDirectory(0);
+    prof->SetName(name.c_str());
+    prof->SetTitle(title.c_str());
     if(xtitle!=""){prof->GetXaxis()->SetTitle(xtitle.c_str());}
     if(ytitle!=""){prof->GetYaxis()->SetTitle(ytitle.c_str());}
     prof->SetLineWidth(lw);
@@ -497,6 +490,21 @@ TProfile* HistManager::BookTProfile( const string &name, const string &title, do
         cout<<"Warning: Replacing existing TProfile: "<<name<<endl;
     }
     m_profile[in_key]=prof;
+
+    return;
+}
+
+
+//__________________________________________________________________
+//
+TProfile* HistManager::BookTProfile( const string &name, const string &title, double binsize, double xlow, double xup,
+                                    const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
+    
+    double dnbins=(xup-xlow)/binsize +0.5;
+    int nbins=(int)(dnbins);
+    TProfile* prof = new TProfile(name.c_str(), title.c_str(), nbins,xlow,xup);
+    InitTProfile(name, prof, title, key, xtitle, ytitle, lw, lc);
+
     return prof;
 }
 
@@ -506,18 +514,7 @@ TProfile* HistManager::BookTProfile( const string &name, const string &title, in
                                      const string &key, const string &xtitle, const string &ytitle, int lw, int lc){
     
     TProfile* prof = new TProfile( name.c_str(), title.c_str(), nbins, xedges );
-    prof->SetDirectory(0);
-    if(xtitle!="")prof->GetXaxis()->SetTitle(xtitle.c_str());
-    if(ytitle!="")prof->GetYaxis()->SetTitle(ytitle.c_str());
-    prof->SetLineWidth(lw);
-    prof->SetLineColor(lc);
-    prof->Sumw2();
-    
-    const string &in_key = (key=="") ? name : key;
-    if(m_profile.find(in_key) != m_profile.end()){
-        cout<<"Warning: Replacing existing TProfile "<<name<<endl;
-    }
-    m_profile[in_key]=prof;
+    InitTProfile(name, prof, title, key, xtitle, ytitle, lw, lc);
     return prof;
 }
 

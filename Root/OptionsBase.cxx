@@ -15,6 +15,8 @@ m_computeWeightSys(false),//do you want to run the weight systematics
 m_textFileList(false),//tells if you use a text file or a string line to define the input files (nature of m_inputFile)
 m_onlyDumpSystHistograms(false),
 m_doBlind(false),
+m_add_underflow(true),
+m_add_overflow(true),
 
 m_sampleName(SampleName::TTH),//enum
 m_sysName(SysName::NOMINAL),//enum
@@ -50,6 +52,8 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_textFileList              = q.m_textFileList;
     m_onlyDumpSystHistograms    = q.m_onlyDumpSystHistograms;
     m_doBlind                   = q.m_doBlind;
+    m_add_underflow             = q.m_add_underflow;
+    m_add_overflow              = q.m_add_overflow;
     
     m_sampleName        = q.m_sampleName;
     m_str_sampleID      = q.m_str_sampleID;
@@ -159,6 +163,20 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else{std::cout<<"Unknown DOBLIND option"<<std::endl;}
     }
 
+    else if( temp_arg.find("--ADDUNDERFLOW") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("TRUE") != std::string::npos) 	m_add_underflow = true;
+        else if ( temp_val.find("FALSE") != std::string::npos) 	m_add_underflow = false;
+        else{std::cout<<"Unknown ADDUNDERFLOW option"<<std::endl;}
+    }
+
+    else if( temp_arg.find("--ADDOVERFLOW") != std::string::npos ){
+        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+        if ( temp_val.find("TRUE") != std::string::npos) 	m_add_overflow = true;
+        else if ( temp_val.find("FALSE") != std::string::npos) 	m_add_overflow = false;
+        else{std::cout<<"Unknown ADDOVERFLOW option"<<std::endl;}
+    }
+
     else if( temp_arg.find("--TEXTFILELIST") != std::string::npos ){
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) {
@@ -264,7 +282,9 @@ void OptionsBase::PrintOptions()
     std::cout << " m_computeWeightSys   = "     << m_computeWeightSys << std::endl;
     std::cout << " m_textFileList       = "     << m_textFileList << std::endl;
     std::cout << " m_onlyDumpSystHistograms = " << m_onlyDumpSystHistograms << std::endl;
-    std::cout << " m_doBlind = "                << m_doBlind << std::endl;
+    std::cout << " m_doBlind            = "     << m_doBlind << std::endl;
+    std::cout << " m_add_underflow      = "     << m_add_underflow << std::endl;
+    std::cout << " m_add_overflow       = "     << m_add_overflow << std::endl;
     
     std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;

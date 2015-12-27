@@ -45,6 +45,9 @@ public:
     inline bool OnlyDumpSystHistograms() const { return m_onlyDumpSystHistograms; }
     inline bool DoBlind() const { return m_doBlind; }
     
+    inline bool AddUnderflow() const { return m_add_underflow; }
+    inline bool AddOverflow() const { return m_add_overflow; }
+
     inline const std::string& StrSampleName() const { return m_str_sampleName; }
     inline const std::string& StrSampleID() const { return m_str_sampleID; }
     inline const std::string& StrSysName() const { return m_str_sysName; }
@@ -76,7 +79,7 @@ protected:
     std::string m_optStr;    
     
     Debug::debug m_msgLevel;
-    bool m_isData,m_computeWeightSys,m_textFileList,m_onlyDumpSystHistograms, m_doBlind;
+    bool m_isData,m_computeWeightSys,m_textFileList,m_onlyDumpSystHistograms, m_doBlind, m_add_underflow, m_add_overflow;
     SampleName::sample m_sampleName;
     SysName::sys m_sysName;
     AnaType::ana m_anaType;

@@ -21,9 +21,9 @@ public:
     //
     // Standard C++ functions
     //
-    HistManager();
-    HistManager( const HistManager &q, bool make_new=false );
-    
+  HistManager(bool addUF=false, bool addOF=false);
+  HistManager( const HistManager &q, bool make_new=false );
+  
     //
     // Class-specific functions
     //
@@ -32,7 +32,7 @@ public:
     vector<string> GetTH2KeyList();
     vector<string> GetTH3KeyList();
     
-    void FinaliseTH1Bins( const string &s_hist, bool addUF=true);
+    void FinaliseTH1Bins( const string &s_hist);
     
     void ClearAllTH1();
     void ClearAllTProfile();
@@ -46,9 +46,9 @@ public:
     
     TH1D* BookTH1D( const string &, const string &, const string &title = ""  );
     TH1D* BookTH1D( const string &name, const string &title, double binsize, double xlow, double xup,
-                   const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
+		    const string &key="", const string &xtitle="", const string &ytitle="", int opt=0, int lw=2, int lc=1);
     TH1D* BookTH1D( const string &name, const string &title, int nbins, const double* xedges,
-                   const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
+                   const string &key="", const string &xtitle="", const string &ytitle="", int opt=0, int lw=2, int lc=1);
     
     TH2D* BookTH2D( const string &key, const string &name, const string &title);
     TH2D* BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
@@ -61,6 +61,13 @@ public:
     TH2D* BookTH2D( const string &name, const string &title, double xbinsize, double xlow, double xup,
                   int nybins, const double* yedges,
                   const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
+    TH2D* BookTH2D( const string &name, const string &title, 
+		    int nxbins, const double* xedges,
+		    double ybinsize, double ylow, double yup,
+                  const string &key="", const string &xtitle="", const string &ytitle="", int lw=2, int lc=1);
+
+
+
     
     TH3D* BookTH3D( const string &key, const string &name, const string &title);
     TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
@@ -69,6 +76,10 @@ public:
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    const string &ztitle="", int lw=2, int lc=1);
     TH3D* BookTH3D( const string &name, const string &title, double xbinsize, double xlow, double xup,
+                   int nybins, const double* yedges, int nzbins, const double* zedges,
+                   const string &key="", const string &xtitle="", const string &ytitle="",
+                   const string &ztitle="", int lw=2, int lc=1);
+    TH3D* BookTH3D( const string &name, const string &title, int nxbins, const double* xedges, 
                    int nybins, const double* yedges, int nzbins, const double* zedges,
                    const string &key="", const string &xtitle="", const string &ytitle="",
                    const string &ztitle="", int lw=2, int lc=1);
@@ -119,12 +130,30 @@ public:
     TProfile* ReadTProfile( const string &name, TFile* f, const string &key);
     TH2D* ReadTH2D( const string &name, TFile* f, const string &key);
     TH3D* ReadTH3D( const string &name, TFile* f, const string &key);
+
+    void SetTH1Opt(const string &hkey, int opt){ m_h1d_opt[hkey] = opt;}
+
+    static const int FCHECK;
+    static const int UFLOW;
+    static const int OFLOW;
     
 protected:
     map<string, TH1D*> m_h1d;
     map<string, TProfile*> m_profile;
     map<string, TH2D*> m_h2d;
     map<string, TH3D*> m_h3d;
+
+    map<string, int> m_h1d_opt; 
+
+    bool m_addUF;
+    bool m_addOF;
+
+ private:
+    void InitTH1(const string &name, TH1D* h1d, const string &title, const string &key="", const string& xtitle="", const string& ytitle="", int opt=0, int lw=2, int lc=1);
+    void InitTH2(const string &name, TH2D* h2d, const string &title, const string &key="", const string& xtitle="", const string& ytitle="", int lw=2, int lc=1);
+    void InitTH3(const string &name, TH3D* h3d, const string &title, const string &key="", const string& xtitle="", const string& ytitle="", const string& ztitle="", int lw=2, int lc=1);
+    void InitTProfile(const string &name, TProfile* prof, const string &title, const string &key="", const string& xtitle="", const string& ytitle="", int lw=2, int lc=1);
+
 };
 
 
