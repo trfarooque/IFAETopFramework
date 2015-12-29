@@ -1,3 +1,6 @@
+2015-12-29 Trisha Farooque <farooque@cern.ch>
+	- Bug fix in AddStandardTH2
+	
 2015-12-27 Trisha Farooque <farooqu@cern.ch>
 	- Added option to suppress addition of undeflow/overflow bin for each distribution and as gloabl option
 	- Fixed  bug in AddStandardTH2 in OutputManager
