@@ -1,3 +1,6 @@
+2015-12-30 Loic Valery <lvalery@cern.ch>
+   	- Add CheckOutput.py script in the python folder
+
 2015-12-29 Trisha Farooque <farooque@cern.ch>
 	- Bug fix in AddStandardTH2
 	
