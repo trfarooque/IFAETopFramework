@@ -89,18 +89,17 @@ for line in f:
     if not(os.path.isfile(fileToCheck)):
         printError("ABSENT: "+fileToCheck)
         nMissing += 1
-        fNew.write(fileToCheck+"\n")
         hasProblems = True
     else:
         rootFile = TFile(fileToCheck,"read")
         if rootFile.IsZombie():
             printError("ZOMBIE: "+fileToCheck)
-            fNew.write(fileToCheck+"\n")
             nZombie += 1
             hasProblems = True
         rootFile.Close()
 
     if hasProblems:
+        fNew.write(fileToCheck+" "+scriptFile+"\n")
         if relaunchJobs:
             submitFailedJobs(fileToCheck, scriptFile)
             nRelaunchedJobs += 1
