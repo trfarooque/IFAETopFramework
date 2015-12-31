@@ -1,8 +1,14 @@
+#!/bin/python
 from BatchTools import *
 
-
+##
+##
+## CLASS JOBSET
+##
+##
 class JobSet:
     ##_________________________________________________________________________
+    ##
     def __init__(self,platform):
         
         if(platform.find("lxplus")>-1):
@@ -10,8 +16,8 @@ class JobSet:
         elif(platform.find("pic")>-1):
             self.platform = "pic"
         else:
-            printError("<!> In Job class constructor ... Sorry guy I do not know the platform you run on ... " + platform)
-            self.platform = "lxplus"
+            printError("<!> In JobSet class constructor ... Sorry guy I do not know the platform you run on ... yet ... " + platform)
+            self.platform = "pic"
         self.jobs=[]
         self.logDir=""
         self.scriptDir=""
@@ -19,45 +25,61 @@ class JobSet:
         self.tarballPath=""
         self.packageName=""
         self.queue=""
+        self.jobRecoveryFileName=""
 
     ##_________________________________________________________________________
+    ##
     def addJob(self,job):
         self.jobs += [job]
 
     ##_________________________________________________________________________
+    ##
     def size(self):
         return len(self.jobs)
 
     ##_________________________________________________________________________
+    ##
     def clear(self):
         self.jobs=[]
         self.scriptName=""
 
     ##_________________________________________________________________________
+    ##
     def setQueue(self,queue):
 	self.queue=queue
 
     ##_________________________________________________________________________
+    ##
     def setLogDir(self,logDir):
         self.logDir=logDir
     
     ##_________________________________________________________________________
+    ##
     def setScriptDir(self,scriptDir):
         self.scriptDir=scriptDir
 
     ##_________________________________________________________________________
+    ##
     def setScriptName(self,name):
         self.scriptName=name
 
     ##_________________________________________________________________________
+    ##
     def setTarBall(self,tarBall):
         self.tarballPath=tarBall
     
     ##_________________________________________________________________________
+    ##
     def setPackageName(self,package):
         self.packageName=package
+    
+    ##_________________________________________________________________________
+    ##
+    def setJobRecoveryFile(self,name):
+        self.jobRecoveryFileName = name
 
     ##_________________________________________________________________________
+    ##
     def Initialize(self,f):
         f.write("#!/bin/bash \n")
         if(self.platform=="pic"):
@@ -80,6 +102,7 @@ class JobSet:
         f.write("\n")
 
     ##_________________________________________________________________________
+    ##
     def Running(self,f,job):
 
         f.write("export OUTDIR='"+job.outDir+"' \n")
@@ -99,6 +122,7 @@ class JobSet:
         f.write("\n")
 
     ##_________________________________________________________________________
+    ##
     def Terminate(self,f):
         
         if(self.platform=="pic"):
@@ -106,20 +130,48 @@ class JobSet:
         f.write("\n")
 
     ##_________________________________________________________________________
+    ##
     def writeScript(self):
         if(self.scriptName==""):
             self.scriptName = self.jobs[len(self.jobs)-1].jobName
-        
-        f = open(self.scriptDir+"/"+self.scriptName,"w")
+    
+    
+        #Declaration of the output revoery tool
+        f_reco_file = 0
+        if not self.jobRecoveryFileName == "":
+            if os.path.exists(self.jobRecoveryFileName):
+                f_reco_file = open(self.jobRecoveryFileName,"update")
+            else:
+                f_reco_file = open(self.jobRecoveryFileName,"write")
 
+        #Writting the scripts
+        current_merged_script_name = self.scriptDir+"/"+self.scriptName
+        f = open(current_merged_script_name,"w")
         self.Initialize(f)
         for iJob in range(len(self.jobs)):
             self.Running(f,self.jobs[iJob])
+            
+            #Also write a sub-script to make easier the resubmission of the jobs
+            current_sub_script_name = self.scriptDir+"/sub_"+self.scriptName+"_"+job.jobName
+            f_sub = open(current_sub_script_name,"w")
+            self.Initialize(f_sub)
+            self.Running(f_sub,self.jobs[iJob])
+            self.Terminate(f_sub)
+            f_sub.close()
+        
+            #Write the file to possibly relaunch the missing jobs
+            if not self.jobRecoveryFileName == "":
+                for iOption in range(len(job.jobOptions)):
+                    if job.jobOptions[iOption][0].upper()=="OUTPUTFILE":
+                        f_reco_file.write(job.outDir+"/"+job.jobOptions[iOption][1]+" "+current_sub_script_name)
+                        break
 
         self.Terminate(f)
+        f_reco_file.close()
         f.close()
         
     ##_________________________________________________________________________
+    ##
     def submitSet(self):
         com=""
         com += "qsub -q "
@@ -131,6 +183,12 @@ class JobSet:
             com += " -o "+self.logDir+" -e "+self.logDir
         os.system(com)
 
+
+##
+##
+## CLASS JOB
+##
+##
 class Job:
     """
     Class allowing to deal transparently with all batch systems. The interface
@@ -139,6 +197,7 @@ class Job:
     """
 
     ##_________________________________________________________________________
+    ##
     def __init__(self,platform):
         
         if(platform.find("pic")>-1):
@@ -153,22 +212,26 @@ class Job:
         self.outDir=""
 
     ##_________________________________________________________________________
+    ##
     def setDebug(self,debug):
         self.debug = debug
 
     ##_________________________________________________________________________
+    ##
     def addOption(self,option,value):
         self.jobOptions += [[option,value]]
 
     ##_________________________________________________________________________
+    ##
     def setName(self,name):
         self.jobName=name
     
     ##_________________________________________________________________________
+    ##
     def setExecutable(self,exe):
         self.execName = exe
     
     ##_________________________________________________________________________
+    ##
     def setOutDir(self,outDir):
         self.outDir = outDir
-    
