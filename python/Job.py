@@ -76,21 +76,25 @@ class JobSet:
     ##
     def Initialize(self,f):
         f.write("#!/bin/bash \n")
-        if(self.platform=="pic"):
-            f.write("export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase \n")
-            f.write("source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh \n")
-            f.write("cd $TMPDIR \n")
-            f.write("\n")
+        f.write("export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase \n")
+        f.write("source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh \n")
+        f.write("cd $TMPDIR \n")
+        f.write("\n")
         f.write("echo '==> Before copying tarball'\n")
         f.write("ls -lrth\n")
         f.write("\n")
         f.write("cp -r "+self.tarballPath+" AnaCode.tgz \n")
-        f.write("mkdir -p AnalysisPackageForBatch/ \n")
-        f.write("tar xf AnaCode.tgz -C AnalysisPackageForBatch/ --strip-components=1 \n")
-        f.write("cd AnalysisPackageForBatch/ \n")
+        f.write("\n")
+        f.write("echo '==> After copying the tarball'\n")
+        f.write("ls -lrth\n")
+        f.write("\n")
+        f.write("tar xf AnaCode.tgz \n")
+        f.write("echo '==> After extracting the tarball'\n")
+        f.write("ls -lrth\n")
+        f.write("\n")
         f.write("rcSetup \n")
         f.write("\n")
-        f.write("echo '==>After the download' \n")
+        f.write("echo '==> After the setup' \n")
         f.write("ls -lrth \n")
         f.write("\n")
         f.write("\n")
@@ -119,9 +123,7 @@ class JobSet:
     ##_________________________________________________________________________
     ##
     def Terminate(self,f):
-        
-        if(self.platform=="pic"):
-            f.write("rm -rf $TMPDIR/*")
+        f.write("rm -rf $TMPDIR/*")
         f.write("\n")
 
     ##_________________________________________________________________________
@@ -130,8 +132,7 @@ class JobSet:
         if(self.scriptName==""):
             self.scriptName = self.jobs[len(self.jobs)-1].jobName
     
-    
-        #Declaration of the output revoery tool
+        #Declaration of the output recovery tool
         f_reco_file = 0
         if not self.jobRecoveryFileName == "":
             f_reco_file = open(self.jobRecoveryFileName,"a")
@@ -167,7 +168,12 @@ class JobSet:
     ##
     def submitSet(self):
         com=""
-        com += "qsub -q "
+        if(self.platform == "lxplus"):
+            com += "bsub "
+        elif(self.platform == "pic"):
+            com += "qsub "
+        else:
+            printError("The system you are running on is not supported yet ... Please move to lxplus or PIC")
         if(self.queue==""):
             self.queue="at3_short"
         com += self.queue
@@ -193,9 +199,11 @@ class Job:
     def __init__(self,platform):
         if(platform.find("pic")>-1):
             self.platform = "pic"
+        elif(platform.find("lxplus")>-1):
+            self.platform = "lxplus"
         else:
             printError("<!> In Job class constructor ... Sorry guy I do not know the platform you run on ... " + platform)
-            self.platform = "lxplus"
+            self.platform = "pic"
         self.debug = False
         self.jobOptions=[]
         self.jobName=""

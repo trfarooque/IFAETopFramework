@@ -204,21 +204,13 @@ def getCommandLineFromFile(listFileName):
 ##
 def prepareTarBall(pathToPackage,pathToTarball):
     current_folder = os.getcwd()
-    print "Original: ", os.getcwd()
     os.chdir(pathToPackage)
-    print "Changed: ", os.getcwd()
-    com = "tar czf " + pathToTarball + " *"
-
+    
     printGoodNews("=> Creating tarball !")
-    print "      -> ", com
+    print "   -> ", pathToTarball
+    com = "tar czf " + pathToTarball + " *"
     os.system(com)
     printGoodNews("=> Tarball done :-)")
+    
     os.chdir(current_folder)
-    print "Back to normal: ", os.getcwd()
-
-
-
-
-
-
 
