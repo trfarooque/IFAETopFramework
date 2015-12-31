@@ -135,9 +135,9 @@ class JobSet:
         f_reco_file = 0
         if not self.jobRecoveryFileName == "":
             if os.path.exists(self.jobRecoveryFileName):
-                f_reco_file = open(self.jobRecoveryFileName,"update")
+                f_reco_file = open(self.jobRecoveryFileName,"u")
             else:
-                f_reco_file = open(self.jobRecoveryFileName,"write")
+                f_reco_file = open(self.jobRecoveryFileName,"w")
 
         #Writting the scripts
         current_merged_script_name = self.scriptDir+"/"+self.scriptName
