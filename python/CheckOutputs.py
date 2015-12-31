@@ -34,6 +34,7 @@ def submitFailedJobs( expectedRootFile, scriptFile ):
     else:
         os.system(com)
 
+
 ##------------------------------------------------------
 ## Check there is enough arguments
 ##------------------------------------------------------
