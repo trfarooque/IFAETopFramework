@@ -134,10 +134,7 @@ class JobSet:
         #Declaration of the output revoery tool
         f_reco_file = 0
         if not self.jobRecoveryFileName == "":
-            if os.path.exists(self.jobRecoveryFileName):
-                f_reco_file = open(self.jobRecoveryFileName,"u")
-            else:
-                f_reco_file = open(self.jobRecoveryFileName,"w")
+            f_reco_file = open(self.jobRecoveryFileName,"a")
 
         #Writting the scripts
         current_merged_script_name = self.scriptDir+"/"+self.scriptName
@@ -159,7 +156,7 @@ class JobSet:
             if not self.jobRecoveryFileName == "":
                 for iOption in range(len(temp_job.jobOptions)):
                     if temp_job.jobOptions[iOption][0].upper()=="OUTPUTFILE":
-                        f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+current_sub_script_name)
+                        f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+current_sub_script_name+"\n")
                         break
 
         self.Terminate(f)
