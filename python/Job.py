@@ -144,21 +144,22 @@ class JobSet:
         f = open(current_merged_script_name,"w")
         self.Initialize(f)
         for iJob in range(len(self.jobs)):
-            self.Running(f,self.jobs[iJob])
+            temp_job = self.jobs[iJob]
+            self.Running(f,temp_job)
             
             #Also write a sub-script to make easier the resubmission of the jobs
-            current_sub_script_name = self.scriptDir+"/sub_"+self.scriptName+"_"+job.jobName
+            current_sub_script_name = self.scriptDir+"/sub_"+self.scriptName+"_"+temp_job.jobName
             f_sub = open(current_sub_script_name,"w")
             self.Initialize(f_sub)
-            self.Running(f_sub,self.jobs[iJob])
+            self.Running(f_sub,temp_job)
             self.Terminate(f_sub)
             f_sub.close()
         
             #Write the file to possibly relaunch the missing jobs
             if not self.jobRecoveryFileName == "":
-                for iOption in range(len(job.jobOptions)):
-                    if job.jobOptions[iOption][0].upper()=="OUTPUTFILE":
-                        f_reco_file.write(job.outDir+"/"+job.jobOptions[iOption][1]+" "+current_sub_script_name)
+                for iOption in range(len(temp_job.jobOptions)):
+                    if temp_job.jobOptions[iOption][0].upper()=="OUTPUTFILE":
+                        f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+current_sub_script_name)
                         break
 
         self.Terminate(f)
