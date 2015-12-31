@@ -9,24 +9,24 @@ import getpass
 import sys
 import glob
 
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def printError(text):
     #prints text in red
     os.system("echo -e '\\033[41;1;37m "+text+" \\033[0m'")
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def printWarning(text):
     #prints text in orange
     os.system("echo -e '\\033[43;1;37m "+text+" \\033[0m'")
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def printGoodNews(text):
     #prints text in green
     os.system("echo -e '\\033[42;1;37m "+text+" \\033[0m'")
 
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",exclusions=[], useDiffFilesForObjSyst=False, useTotalFileFirst=True):
 
     # Return a library containing the necessary informations
@@ -154,8 +154,8 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
 
     return Result
 
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def filterListWithTemplate( originalTotalFile, templates, filterFile):
     com = "less "+originalTotalFile
     if len(templates):
@@ -165,8 +165,8 @@ def filterListWithTemplate( originalTotalFile, templates, filterFile):
     result = os.system(com)
     return result
 
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def produceList(Patterns, InputDirectory, listName,exclusions=[]):
     com = "ls "+InputDirectory+"{*,*/*}.root*"
     for iPattern in range(len(Patterns)):
@@ -180,16 +180,16 @@ def produceList(Patterns, InputDirectory, listName,exclusions=[]):
     result = os.system(com)
     return result
 
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def splitList(name, outName, Nlines):
     os.system("rm -f "+outName+"*")
     com = "split -d -a 4 -l "+`Nlines`+" "+name+" "+outName
     os.system(com)
     return int(os.popen("ls "+outName+"* |wc ").readlines()[0].split()[0])
 
-#___________________________________________________________________
-#
+##___________________________________________________________________
+##
 def getCommandLineFromFile(listFileName):
     f = open(listFileName,"r")
     command_line = ""
@@ -199,3 +199,12 @@ def getCommandLineFromFile(listFileName):
         command_line += ","
     command_line=command_line[:-1]#removing the last coma
     return command_line
+
+##___________________________________________________________________
+##
+def prepareTarBall(pathToPackage,pathToTarball):
+    com = "tar -czf " + pathToTarball + " " + pathToPackage
+    printGoodNews("=> Creating tarball !")
+    print "      -> ", com
+    os.system(com)
+    printGoodNews("=> Tarball done :-)")

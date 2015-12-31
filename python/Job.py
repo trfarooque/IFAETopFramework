@@ -23,7 +23,6 @@ class JobSet:
         self.scriptDir=""
         self.scriptName=""
         self.tarballPath=""
-        self.packageName=""
         self.queue=""
         self.jobRecoveryFileName=""
 
@@ -70,11 +69,6 @@ class JobSet:
     
     ##_________________________________________________________________________
     ##
-    def setPackageName(self,package):
-        self.packageName=package
-    
-    ##_________________________________________________________________________
-    ##
     def setJobRecoveryFile(self,name):
         self.jobRecoveryFileName = name
 
@@ -91,8 +85,9 @@ class JobSet:
         f.write("ls -lrth\n")
         f.write("\n")
         f.write("cp -r "+self.tarballPath+" AnaCode.tgz \n")
-        f.write("tar -xf AnaCode.tgz \n")
-        f.write("cd "+self.packageName+" \n")
+        f.write("mkdir -p AnalysisPackageForBatch/ \n")
+        f.write("tar xf AnaCode.tgz -C AnalysisPackageForBatch/ --strip-components=1 \n")
+        f.write("cd AnalysisPackageForBatch/ \n")
         f.write("rcSetup \n")
         f.write("\n")
         f.write("echo '==>After the download' \n")
@@ -195,11 +190,9 @@ class Job:
     is done in the class (by the means of the platform variable), and not in 
     the script itself
     """
-
     ##_________________________________________________________________________
     ##
     def __init__(self,platform):
-        
         if(platform.find("pic")>-1):
             self.platform = "pic"
         else:
@@ -235,3 +228,4 @@ class Job:
     ##
     def setOutDir(self,outDir):
         self.outDir = outDir
+

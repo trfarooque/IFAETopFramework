@@ -1,5 +1,7 @@
 2015-12-31 Loic Valery <lvalery@cern.ch>
       	- Start changes to relaunch failed jobs on batch
+	- Add functions to create the tarball when launching jobs
+	- Remove useless options
 
 2015-12-30 Loic Valery <lvalery@cern.ch>
    	- Add CheckOutput.py script in the python folder
