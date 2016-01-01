@@ -169,9 +169,9 @@ class JobSet:
     def submitSet(self):
         com=""
         if(self.platform == "lxplus"):
-            com += "bsub "
+            com += "bsub -q "
         elif(self.platform == "pic"):
-            com += "qsub "
+            com += "qsub -q "
         else:
             printError("The system you are running on is not supported yet ... Please move to lxplus or PIC")
         if(self.queue==""):
