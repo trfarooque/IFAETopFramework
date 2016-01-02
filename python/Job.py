@@ -9,8 +9,7 @@ from BatchTools import *
 class JobSet:
     ##_________________________________________________________________________
     ##
-    def __init__(self,platform):
-        
+    def __init__(self,platform):        
         if(platform.find("lxplus")>-1):
             self.platform = "lxplus"
         elif(platform.find("pic")>-1):
@@ -24,7 +23,7 @@ class JobSet:
         self.scriptName=""
         self.tarballPath=""
         self.queue=""
-        self.jobRecoveryFileName=""
+        self.jobRecoveryFileName="JobCheck.chk"
 
     ##_________________________________________________________________________
     ##
@@ -234,4 +233,3 @@ class Job:
     ##
     def setOutDir(self,outDir):
         self.outDir = outDir
-
