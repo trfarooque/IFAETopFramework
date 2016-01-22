@@ -156,6 +156,15 @@ bool AnalysisUtils::BoolValue(std::string& arg_val, bool& bin_val){
 
 }
 
+bool AnalysisUtils::BoolValue(std::string& arg_val, const std::string& arg_name){
+
+  std::transform(arg_val.begin(), arg_val.end(), arg_val.begin(), ::toupper);
+  if( arg_val.find("TRUE") != std::string::npos ){ return true; }
+  else if( arg_val.find("FALSE") != std::string::npos ){ return false; }
+  else{std::cout<<"Error : Unknown value "<<arg_val<<" for binary option "<<arg_name<<std::endl; return false; }
+
+}
+
 //Copied from StackOverflow -
 bool AnalysisUtils::FileExists(const std::string& filename){
   struct stat buf;
