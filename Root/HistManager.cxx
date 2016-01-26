@@ -171,7 +171,7 @@ void HistManager::ClearAllTProfile(){
 void HistManager::ClearTH1(const string &s_hist){
     map<string, TH1D*>::iterator h1_it = m_h1d.find(s_hist);
     if( h1_it == m_h1d.end() ){
-        cout<<"H1D "<<s_hist<<" not found "<<endl;
+        cout<<"HistManager::ClearTH1  Warning: H1D "<<s_hist<<" not found "<<endl;
         return;
     }
     delete h1_it->second;
@@ -184,7 +184,7 @@ void HistManager::ClearTH1(const string &s_hist){
 void HistManager::ClearTH2(const string &s_hist){
     map<string, TH2D*>::iterator h2_it = m_h2d.find(s_hist);
     if( h2_it == m_h2d.end() ){
-        cout<<"H2D "<<s_hist<<" not found "<<endl;
+        cout<<"HistManager::ClearTH2  Warning: H2D "<<s_hist<<" not found "<<endl;
         return;
     }
     delete h2_it->second;
@@ -197,7 +197,7 @@ void HistManager::ClearTH2(const string &s_hist){
 void HistManager::ClearTH3(const string &s_hist){
     map<string, TH3D*>::iterator h3_it = m_h3d.find(s_hist);
     if( h3_it == m_h3d.end() ){
-        cout<<"H3D "<<s_hist<<" not found "<<endl;
+        cout<<"HistManager::ClearTH3  Warning: H3D "<<s_hist<<" not found "<<endl;
         return;
     }
     delete h3_it->second;
@@ -210,7 +210,7 @@ void HistManager::ClearTH3(const string &s_hist){
 void HistManager::ClearTProfile(const string &s_hist){
     map<string, TProfile*>::iterator prof_it = m_profile.find(s_hist);
     if( prof_it == m_profile.end() ){
-        cout<<"TProfile: "<<s_hist<<" not found "<<endl;
+        cout<<"HistManager::ClearTProfile  Warning: TProfile: "<<s_hist<<" not found "<<endl;
         return;
     }
     delete prof_it->second;
@@ -232,7 +232,7 @@ void HistManager::InitTH1(const string &name, TH1D* h1d, const string &title, co
     
   const string &in_key = (key=="") ? name : key;
   if(m_h1d.find(in_key) != m_h1d.end()){
-    cout<<"Warning: Replacing existing H1D "<<name<<endl;
+    cout<<"HistManager::InitTH1  Warning: Replacing existing H1D "<<name<<endl;
   }
   m_h1d[in_key]=h1d;
   m_h1d_opt[in_key]=opt;
@@ -287,7 +287,7 @@ void HistManager::InitTH2(const string &name, TH2D* h2d, const string &title, co
   
   const string &in_key = (key=="") ? name : key;
   if(m_h2d.find(in_key) != m_h2d.end()){
-    cout<<"Warning: Replacing existing H2D "<<name<<endl;
+    cout<<"HistManager::InitTH2  Warning: Replacing existing H2D "<<name<<endl;
   }
   m_h2d[in_key]=h2d;
   
@@ -379,7 +379,7 @@ void HistManager::InitTH3(const string &name, TH3D* h3d, const string &title, co
   
   const string &in_key = (key=="") ? name : key;
   if(m_h3d.find(in_key) != m_h3d.end()){
-    cout<<"Warning: Replacing existing H3D "<<name<<endl;
+    cout<<"HistManager::InitTH3  Warning: Replacing existing H3D "<<name<<endl;
   }
   m_h3d[in_key]=h3d;
   
@@ -487,7 +487,7 @@ void HistManager::InitTProfile(const string &name, TProfile* prof, const string 
     
     const string &in_key = (key=="") ? name : key;
     if(m_profile.find(in_key) != m_profile.end()){
-        cout<<"Warning: Replacing existing TProfile: "<<name<<endl;
+        cout<<"HistManager::InitTProfile  Warning: Replacing existing TProfile: "<<name<<endl;
     }
     m_profile[in_key]=prof;
 
@@ -616,88 +616,119 @@ TProfile* HistManager::GetTProfile( const string &hname){
 
 //__________________________________________________________________
 //
-TH1D* HistManager::CloneTH1D( const string &hkey, const string &origkey, bool reset){
+TH1D* HistManager::CloneTH1D( const string &hkey, const string &origkey, bool reset, bool force_replace){
     if(m_h1d.find(origkey) == m_h1d.end()){
         std::cout<<"Error: TH1D "<<origkey<<" not found to clone"<<std::endl;
         return NULL;
     }
-    TH1D* hret = CloneTH1D(hkey, m_h1d[origkey], reset);
+    TH1D* hret = CloneTH1D(hkey, m_h1d[origkey], reset, force_replace);
     return hret;
 }
 
 //__________________________________________________________________
 //
-TH2D* HistManager::CloneTH2D( const string &hkey, const string &origkey, bool reset){
+TH2D* HistManager::CloneTH2D( const string &hkey, const string &origkey, bool reset, bool force_replace){
     if(m_h2d.find(origkey) == m_h2d.end()){
         std::cout<<"Error: TH2D "<<origkey<<" not found to clone"<<std::endl;
         return NULL;
     }
-    TH2D* hret = CloneTH2D(hkey, m_h2d[origkey], reset);
+    TH2D* hret = CloneTH2D(hkey, m_h2d[origkey], reset, force_replace);
     return hret;
 }
 
 //__________________________________________________________________
 //
-TH3D* HistManager::CloneTH3D( const string &hkey, const string &origkey, bool reset){
+TH3D* HistManager::CloneTH3D( const string &hkey, const string &origkey, bool reset, bool force_replace){
     if(m_h3d.find(origkey) == m_h3d.end()){
         std::cout<<"Error: TH3D "<<origkey<<" not found to clone"<<std::endl;
         return NULL;
     }
-    TH3D* hret = CloneTH3D(hkey, m_h3d[origkey], reset);
+    TH3D* hret = CloneTH3D(hkey, m_h3d[origkey], reset, force_replace);
     return hret;
 }
 
 //__________________________________________________________________
 //
-TProfile* HistManager::CloneTProfile( const string &hkey, const string &origkey, bool reset){
+TProfile* HistManager::CloneTProfile( const string &hkey, const string &origkey, bool reset, bool force_replace){
     if(m_profile.find(origkey) == m_profile.end()){
         std::cout<<"Error: TProfile "<<origkey<<" not found to clone"<<std::endl;
         return NULL;
     }
-    TProfile* hret = CloneTProfile(hkey, m_profile[origkey], reset);
+    TProfile* hret = CloneTProfile(hkey, m_profile[origkey], reset, force_replace);
     return hret;
 }
 
 //__________________________________________________________________
 //
-TH1D* HistManager::CloneTH1D( const string &hkey, TH1D* h1d, bool reset){
+TH1D* HistManager::CloneTH1D( const string &hkey, TH1D* h1d, bool reset, bool force_replace){
+
+  if(  m_h1d.find(hkey) != m_h1d.end() ){ 
+    if(!force_replace){
+      std::cout<<"HistManager::CloneTH1D  ERROR: TH1 "<<hkey<<" already exists. Set force_replace=true to force replacement"<<std::endl; 
+      return NULL;
+    }
+    delete m_h1d[hkey];
+  }
+  TH1D* hclone = (TH1D*)(h1d->Clone(hkey.c_str()));
+  hclone->SetDirectory(0);
+  if(reset){hclone->Reset();}
+  if(hclone->GetSumw2N()==0){hclone->Sumw2();}
     
-    TH1D* hclone = (TH1D*)(h1d->Clone(hkey.c_str()));
-    hclone->SetDirectory(0);
-    if(reset){hclone->Reset();}
-    if(hclone->GetSumw2N()==0){hclone->Sumw2();}
-    
-    m_h1d[hkey] = hclone;
-    return hclone;
+  m_h1d[hkey] = hclone;
+  return hclone;
 }
 
 //__________________________________________________________________
 //
-TH2D* HistManager::CloneTH2D( const string &hkey, TH2D* h2d, bool reset){
+TH2D* HistManager::CloneTH2D( const string &hkey, TH2D* h2d, bool reset, bool force_replace){
     
-    TH2D* hclone = (TH2D*)(h2d->Clone(hkey.c_str()));
-    hclone->SetDirectory(0);
-    if(reset){hclone->Reset();}
-    if(hclone->GetSumw2N()==0){hclone->Sumw2();}
-    m_h2d[hkey] = hclone;
-    return hclone;
+  if(  m_h2d.find(hkey) != m_h2d.end() ){ 
+    if(!force_replace){
+      std::cout<<"HistManager::CloneTH2D  ERROR: TH2 "<<hkey<<" already exists. Set force_replace=true to force replacement"<<std::endl; 
+      return NULL;
+    }
+    delete m_h2d[hkey];
+  }
+  TH2D* hclone = (TH2D*)(h2d->Clone(hkey.c_str()));
+  hclone->SetDirectory(0);
+  if(reset){hclone->Reset();}
+  if(hclone->GetSumw2N()==0){hclone->Sumw2();}
+  m_h2d[hkey] = hclone;
+  return hclone;
 }
 
 //__________________________________________________________________
 //
-TH3D* HistManager::CloneTH3D( const string &hkey, TH3D* h3d, bool reset){
+TH3D* HistManager::CloneTH3D( const string &hkey, TH3D* h3d, bool reset, bool force_replace){
     
-    TH3D* hclone = (TH3D*)(h3d->Clone(hkey.c_str()));
-    hclone->SetDirectory(0);
-    if(reset){hclone->Reset();}
-    if(hclone->GetSumw2N()==0){hclone->Sumw2();}
-    m_h3d[hkey] = hclone;
-    return hclone;
+  if(  m_h3d.find(hkey) != m_h3d.end() ){ 
+    if(!force_replace){
+      std::cout<<"HistManager::CloneTH3D  ERROR: TH3 "<<hkey<<" already exists. Set force_replace=true to force replacement"<<std::endl; 
+      return NULL;
+    }
+    delete m_h3d[hkey];
+  }
+
+  TH3D* hclone = (TH3D*)(h3d->Clone(hkey.c_str()));
+  hclone->SetDirectory(0);
+  if(reset){hclone->Reset();}
+  if(hclone->GetSumw2N()==0){hclone->Sumw2();}
+  m_h3d[hkey] = hclone;
+  return hclone;
 }
 
 //__________________________________________________________________
 //
-TProfile* HistManager::CloneTProfile( const string &hkey, TProfile* prof_ori, bool reset){
+TProfile* HistManager::CloneTProfile( const string &hkey, TProfile* prof_ori, bool reset, bool force_replace){
+
+  if(  m_profile.find(hkey) != m_profile.end() ){ 
+    if(!force_replace){
+      std::cout<<"HistManager::CloneTProfile  ERROR: TProfile "<<hkey<<" already exists. Set force_replace=true to force replacement"<<std::endl; 
+      return NULL;
+    }
+    delete m_profile[hkey];
+  }
+
     TProfile* hclone = (TProfile*)(prof_ori->Clone(hkey.c_str()));
     hclone->SetDirectory(0);
     if(reset){
@@ -781,38 +812,38 @@ void HistManager::ReplaceTProfile(const string &hkey, TProfile* prof){
 
 //__________________________________________________________________
 //
-TH1D* HistManager::ReadTH1D( const string &name, TFile* f, const string &key){
+TH1D* HistManager::ReadTH1D( const string &name, TFile* f, const string &key, bool force_replace){
     
     string s;
     if(key!=""){s=key;}
     else{ s=name; }
     
-    if(m_h1d.find(s)!= m_h1d.end()){
-        cout<<"TH1D "<<s.c_str()<<" already exists"<<endl;
+    if( !force_replace && (m_h1d.find(s)!= m_h1d.end()) ){
+        cout<<"HistManager::ReadTH1D  Warning : TH1D "<<s.c_str()<<" already exists. Ignoring."<<endl;
         return NULL;
     } //if hist already exists, do nothing
     TH1D* forig = (TH1D*)(f->Get(name.c_str()));
-    if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
-    TH1D* hret = CloneTH1D(s, forig);
+    if(forig == 0){cout<<"HistManager::ReadTH1D  Warning : TH1D "<<name.c_str()<<" not found in file"<<endl; return NULL;}
+    TH1D* hret = CloneTH1D(s, forig, force_replace);
     return hret;
 }
 
 //__________________________________________________________________
 //
-TH2D* HistManager::ReadTH2D(const string &name, TFile* f, const string &key){
+TH2D* HistManager::ReadTH2D(const string &name, TFile* f, const string &key, bool force_replace){
     
     string s;
     if(key!=""){s=key;}
     else{ s=name; }
     
-    if(m_h2d.find(s)!= m_h2d.end()){
-        cout<<"TH2D "<<s.c_str()<<" already exists"<<endl;
+    if( !force_replace && (m_h2d.find(s)!= m_h2d.end()) ){
+        cout<<"HistManager::ReadTH2D  Warning : TH2D "<<s.c_str()<<" already exists. Ignoring."<<endl;
         return NULL;
     } //if hist already exists, do nothing
     
     TH2D* forig = (TH2D*)(f->Get(name.c_str()));
-    if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
-    TH2D* hret = CloneTH2D(s, forig);
+    if(forig == 0){cout<<"HistManager::ReadTH1D  Warning : TH2D "<<name.c_str()<<" not found in file"<<endl; return NULL;}
+    TH2D* hret = CloneTH2D(s, forig, force_replace);
     
     return hret;
     
@@ -820,38 +851,39 @@ TH2D* HistManager::ReadTH2D(const string &name, TFile* f, const string &key){
 
 //__________________________________________________________________
 //
-TH3D* HistManager::ReadTH3D(const string &name, TFile* f, const string &key){
+TH3D* HistManager::ReadTH3D(const string &name, TFile* f, const string &key, bool force_replace){
     
     string s;
     if(key!=""){s=key;}
     else{ s=name; }
     
-    if(m_h3d.find(s)!= m_h3d.end()){
+    if( !force_replace && (m_h3d.find(s)!= m_h3d.end()) ){
+        cout<<"HistManager::ReadTH3D  Warning : TH3D "<<s.c_str()<<" already exists. Ignoring."<<endl;
         cout<<"TH3D "<<s.c_str()<<" already exists"<<endl;
         return NULL;
     } //if hist already exists, do nothing
     
     TH3D* forig = (TH3D*)(f->Get(name.c_str()));
-    if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
-    TH3D* hret = CloneTH3D(s, forig);
+    if(forig == 0){cout<<"HistManager::ReadTH1D  Warning : TH1D "<<name.c_str()<<" not found in file"<<endl; return NULL;}
+    TH3D* hret = CloneTH3D(s, forig, force_replace);
     
     return hret;
 }
 
 //__________________________________________________________________
 //
-TProfile* HistManager::ReadTProfile( const string &name, TFile* f, const string &key){
+TProfile* HistManager::ReadTProfile( const string &name, TFile* f, const string &key, bool force_replace){
     string s;
     if(key!=""){s=key;}
     else{ s=name; }
     
-    if(m_profile.find(s)!= m_profile.end()){
-        cout<<"TProfile "<<s.c_str()<<" already exists"<<endl;
+    if( !force_replace && (m_profile.find(s)!= m_profile.end()) ){
+        cout<<"HistManager::ReadTProfile  Warning : TProfile "<<s.c_str()<<" already exists. Ignoring."<<endl;
         return NULL;
     } //if hist already exists, do nothing
     TProfile* forig = (TProfile*)(f->Get(name.c_str()));
-    if(forig == 0){cout<<name.c_str()<<" not found in file"<<endl; return NULL;}
-    TProfile* hret = CloneTProfile(s, forig);
+    if(forig == 0){cout<<"HistManager::ReadTH1D  Warning : TH1D "<<name.c_str()<<" not found in file"<<endl; return NULL;}
+    TProfile* hret = CloneTProfile(s, forig, force_replace);
     return hret;
 }
 

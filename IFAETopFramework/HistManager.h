@@ -105,15 +105,15 @@ public:
     TH3D* GetTH3D( const string &hname);
 
     
-    TH1D* CloneTH1D( const string &hkey, const string &origkey, bool reset = false);
-    TProfile* CloneTProfile( const string &hkey, const string &origkey, bool reset = false);
-    TH2D* CloneTH2D( const string &hkey, const string &origkey, bool reset = false);
-    TH3D* CloneTH3D( const string &hkey, const string &origkey, bool reset = false);
+    TH1D* CloneTH1D( const string &hkey, const string &origkey, bool reset = false, bool force_replace = false);
+    TProfile* CloneTProfile( const string &hkey, const string &origkey, bool reset = false, bool force_replace = false);
+    TH2D* CloneTH2D( const string &hkey, const string &origkey, bool reset = false, bool force_replace = false);
+    TH3D* CloneTH3D( const string &hkey, const string &origkey, bool reset = false, bool force_replace = false);
     
-    TH1D* CloneTH1D( const string &hkey, TH1D* h1d, bool reset = false);
-    TProfile* CloneTProfile( const string &hkey, TProfile* hprof, bool reset = false);
-    TH2D* CloneTH2D( const string &hkey, TH2D* h2d, bool reset = false);
-    TH3D* CloneTH3D( const string &hkey, TH3D* h3d, bool reset = false);
+    TH1D* CloneTH1D( const string &hkey, TH1D* h1d, bool reset = false, bool force_replace = false);
+    TProfile* CloneTProfile( const string &hkey, TProfile* hprof, bool reset = false, bool force_replace = false);
+    TH2D* CloneTH2D( const string &hkey, TH2D* h2d, bool reset = false, bool force_replace = false);
+    TH3D* CloneTH3D( const string &hkey, TH3D* h3d, bool reset = false, bool force_replace = false);
 
     
     void SetTH1D( const string &hkey, TH1D* h1d);
@@ -126,10 +126,10 @@ public:
     void ReplaceTH2D( const string &hkey, TH2D* h2d);
     void ReplaceTH3D( const string &hkey, TH3D* h3d);
     
-    TH1D* ReadTH1D( const string &name, TFile* f, const string &key);
-    TProfile* ReadTProfile( const string &name, TFile* f, const string &key);
-    TH2D* ReadTH2D( const string &name, TFile* f, const string &key);
-    TH3D* ReadTH3D( const string &name, TFile* f, const string &key);
+    TH1D* ReadTH1D( const string &name, TFile* f, const string &key, bool force_replace = false);
+    TProfile* ReadTProfile( const string &name, TFile* f, const string &key, bool force_replace = false);
+    TH2D* ReadTH2D( const string &name, TFile* f, const string &key, bool force_replace = false);
+    TH3D* ReadTH3D( const string &name, TFile* f, const string &key, bool force_replace = false);
 
     void SetTH1Opt(const string &hkey, int opt){ m_h1d_opt[hkey] = opt;}
 

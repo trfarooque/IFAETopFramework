@@ -1,3 +1,7 @@
+2016-01-26 Trisha Farooque <farooque@cern.ch>
+	- Added options to force replacement of histograms in ReadTH1(/2/3) and CloneTH1(/2/3) in HistManager
+	- More informative error printouts in HistManager
+	
 2015-12-31 Loic Valery <lvalery@cern.ch>
       	- Start changes to relaunch failed jobs on batch
 	- Add functions to create the tarball when launching jobs
