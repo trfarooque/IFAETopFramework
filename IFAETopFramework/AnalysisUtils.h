@@ -28,6 +28,8 @@ class AnalysisUtils{
   static bool BoolValue(std::string& arg_val, const std::string& arg_name="");
   static bool FileExists(const std::string& filename);
 
+  static std::string ReplaceString(const std::string& inputStr, const std::string& orig, const std::string& replacement);
+
  protected:
   static  bool orderAscend(std::pair<int, double> p1, std::pair<int, double> p2 ){
     return valOrderAscend(p1.second, p2.second);

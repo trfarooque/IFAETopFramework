@@ -147,6 +147,20 @@ std::string::size_type AnalysisUtils::ParseString(std::string& base, std::string
 
 }
 
+std::string AnalysisUtils::ReplaceString(const std::string& inputStr, const std::string& orig, const std::string& replacement){
+
+  std::string newStr = inputStr;
+  for( std::string::size_type  pos = 0; ; pos += replacement.length() ){
+    pos = newStr.find(orig, pos);
+    if(pos == std::string::npos) break;
+    newStr.erase( pos, orig.length() );
+    newStr.insert( pos, replacement );
+  }
+
+  return newStr;
+
+}
+
 bool AnalysisUtils::BoolValue(std::string& arg_val, bool& bin_val){
 
   std::transform(arg_val.begin(), arg_val.end(), arg_val.begin(), ::toupper);
