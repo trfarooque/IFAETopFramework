@@ -3,11 +3,12 @@
 
 using namespace std;
 
+
 //________________________________________________________________________
 //
 NtupleData::NtupleData()
 {}
-
+/*
 //________________________________________________________________________
 //
 NtupleData::~NtupleData()
@@ -22,3 +23,4 @@ void NtupleData::ClearNtupleData()
 //
 void NtupleData::EmptyNtupleData()
 {}
+*/

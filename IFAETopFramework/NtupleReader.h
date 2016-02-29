@@ -32,9 +32,9 @@ public:
     //
     // Standard C++ classes
     //
-    NtupleReader(NtupleData* ntupData, OptionsBase* opt);
+    NtupleReader(OptionsBase* opt);
     NtupleReader(const NtupleReader &);
-    virtual ~NtupleReader();
+    virtual ~NtupleReader();//{ delete m_ntupData; }
 
     //
     // Class specific functions
@@ -56,20 +56,24 @@ public:
     virtual int SetWeightBranchAddresses(const std::string &sj);
     virtual int SetTruthParticleBranchAddresses(const std::string &sj);
     
-    
     int GetChainEntry(long entry) const ;
     int ChainNEntries() const;
     void ChainFromTextFile(TChain* ch, std::string infilename);
     void ChainFromStrList(TChain* ch, std::string infilelist);
     
+    ///virtual const NtupleData* Data() = 0;//{ return m_ntupData; }
+
     //NtupleReader needs to know:
     // the location and name of the chain to read (read here from given file name and tree name)
     // the type of input tree
     // the ntupledata which it must fill
     
-protected:
-    TChain* m_chain;    //!
+ protected:
+    
+    int SetVariableToChain(const std::string& name, void* variable);
+    
     OptionsBase* m_opt;
+    TChain* m_chain;    //!
     NtupleData* m_ntupData;
     
 };

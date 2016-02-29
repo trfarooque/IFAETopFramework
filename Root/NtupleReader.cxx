@@ -17,26 +17,32 @@ using namespace std;
 
 //_________________________________________________________________________________
 //
-NtupleReader::NtupleReader(NtupleData* ntupData, OptionsBase* opt ):
-m_opt(opt),
-m_ntupData(ntupData)
-{
-    m_chain = NULL;
-    return;
-}
+
+NtupleReader::NtupleReader(OptionsBase* opt) : 
+  m_opt(opt),
+  m_chain(NULL),
+  m_ntupData(NULL)
+{  }
+
 
 //_________________________________________________________________________________
 //
 NtupleReader::NtupleReader( const NtupleReader &q ){
     m_opt   = q.m_opt;
-    m_ntupData = q.m_ntupData;
     m_chain = q.m_chain;
+    m_ntupData = q.m_ntupData;
 }
 
 //_________________________________________________________________________________
 //
 NtupleReader::~NtupleReader()
-{}
+{
+
+  delete m_opt;
+  delete m_chain;
+  delete m_ntupData;
+
+}
 
 //_________________________________________________________________________________
 //
@@ -81,10 +87,7 @@ void NtupleReader::Finalise(){
     
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::Finalize()" << std::endl;
     
-    delete m_chain;
-    delete m_opt;
     m_ntupData->EmptyNtupleData();
-    delete m_ntupData;
 
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::Finalize()" << std::endl;
     return;
@@ -125,6 +128,14 @@ void NtupleReader::ChainFromStrList(TChain* ch, string inputfilelist){
     }
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::ChainFromStrList()" << std::endl;
     return;
+}
+
+int NtupleReader::SetVariableToChain(const std::string& name, void* variable){
+  m_chain->SetBranchStatus(name.c_str(), 1);
+
+  TBranch* branch = 0;
+  int stat = m_chain->SetBranchAddress(name.c_str(), variable, &branch);
+  return stat;
 }
 
 //_________________________________________________________________________________

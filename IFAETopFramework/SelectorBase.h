@@ -5,8 +5,8 @@
 #include <map>
 
 class OptionsBase;
-class NtupleData;
-class OutputData;
+//class NtupleData;
+//class OutputData;
 
 class SelectorBase {
 

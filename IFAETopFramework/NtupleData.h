@@ -9,13 +9,13 @@ public:
     // Standard C++ functions
     //
     NtupleData();
-    virtual ~NtupleData();
+    virtual ~NtupleData(){}
     
     //
     // Specific functions
     //
-    virtual void ClearNtupleData();
-    virtual void EmptyNtupleData();
+    virtual void ClearNtupleData(){}
+    virtual void EmptyNtupleData(){}
     
 };
 
