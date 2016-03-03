@@ -130,6 +130,7 @@ void NtupleReader::ChainFromStrList(TChain* ch, string inputfilelist){
     return;
 }
 
+
 int NtupleReader::SetVariableToChain(const std::string& name, void* variable){
   m_chain->SetBranchStatus(name.c_str(), 1);
 

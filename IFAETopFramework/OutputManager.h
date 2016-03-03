@@ -33,27 +33,27 @@ public:
     //________________________
     // Structs to make the code readable
     struct h1Def{
-        VariableDef var;
-        double width;
-        double min;
-        double max;
-        const std::vector<double>* edges;
-        bool hasSyst;
+      VariableDef var;
+      double width;
+      double min;
+      double max;
+      const std::vector<double>* edges;
+      bool hasSyst;
       int hopt;
     };
     
     struct h2Def{
-        VariableDef varX;
-        double widthX;
-        double minX;
-        double maxX;
-        const std::vector<double>* edgesX;
-        VariableDef varY;
-        double widthY;
-        double minY;
-        double maxY;
-        const std::vector<double>* edgesY;
-        bool hasSyst;
+      VariableDef varX;
+      double widthX;
+      double minX;
+      double maxX;
+      const std::vector<double>* edgesX;
+      VariableDef varY;
+      double widthY;
+      double minY;
+      double maxY;
+      const std::vector<double>* edgesY;
+      bool hasSyst;
     };
     
     //_________________________
@@ -87,15 +87,15 @@ public:
     //
     template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min, const double max,
 						const TString &title, const TString &variableType,
-						const bool hasSyst, T *t,  const int vec_ind = -1, const int hopt=0) {
+						const bool hasSyst, T *t,  const int vec_ind = -1, const std::string& moment="", const int hopt=0) {
 
-      return AddStandardTH1(name, width, min, max, NULL, title, variableType, hasSyst, t, vec_ind, hopt);
+      return AddStandardTH1(name, width, min, max, NULL, title, variableType, hasSyst, t, vec_ind, moment, hopt);
     }
     
     template< typename T > bool AddStandardTH1( const TString &name, const std::vector<double>* edges,
 						const TString &title, const TString &variableType,
-						const bool hasSyst, T *t, const int vec_ind = -1, const int hopt=0) {
-      return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, hasSyst, t, vec_ind, hopt);
+						const bool hasSyst, T *t, const int vec_ind = -1, const std::string& moment="", const int hopt=0) {
+      return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, hasSyst, t, vec_ind, moment, hopt);
 
     }
     
@@ -156,7 +156,7 @@ public:
     //
     //
     template< typename T > bool AddStandardBranch( const TString &name,  const TString &title, const TString &variableType,
-                                                  T *t, const int vec_ind = -1) {
+						   T *t, const int vec_ind = -1, const std::string moment="") {
         
         if(m_type==HISTOS){
             std::cout << "<!> ERROR in OutputManager::addStandardBranch : You requested the booking of a branch, but OutputManager is in HISTOS mode." << std::endl;
@@ -170,7 +170,7 @@ public:
             std::cout << "  address  = " << t << std::endl;
         }
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
-        VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind);
+        VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind, moment);
         m_stdBranchDef -> insert( std::pair < TString, VariableDef* >( name, _var ) );
         
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
@@ -188,7 +188,7 @@ private:
 						const std::vector<double>* edges, 
 						const TString &title, const TString &variableType,
 						const bool hasSyst, T *t, 
-						const int vec_ind = -1, const int hopt = 0) {
+						const int vec_ind = -1, const std::string& moment="", const int hopt = 0) {
         //
         // Checks if the mode is correct
         //
@@ -212,7 +212,7 @@ private:
             return false;
         }
         
-        VariableDef _var(name, title, variableType, t, vec_ind);
+        VariableDef _var(name, title, variableType, t, vec_ind, moment);
         
         std::map< TString , h1Def*>::iterator it = m_stdTH1Def -> find(name);
         if(it != m_stdTH1Def->end()){
@@ -276,7 +276,7 @@ private:
                         const double widthY, const double minY, const double maxY, 
                         const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false);
     
-    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const int index = -1 );
+    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const std::string& moment="");
     
 private:
     OptionsBase *m_opt;

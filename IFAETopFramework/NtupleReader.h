@@ -21,7 +21,7 @@
 #include <string>
 #include <map>
 
-class TChain;
+#include "TChain.h"
 class OptionsBase;
 class NtupleData;
 
@@ -71,6 +71,14 @@ public:
  protected:
     
     int SetVariableToChain(const std::string& name, void* variable);
+    
+    template<typename T>int SetVariableToChain(const std::string& name, T** variable){
+      m_chain->SetBranchStatus(name.c_str(), 1);
+      
+      TBranch* branch = 0;
+      int stat = m_chain->SetBranchAddress(name.c_str(), variable, &branch);
+      return stat;
+    }
     
     OptionsBase* m_opt;
     TChain* m_chain;    //!

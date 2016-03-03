@@ -64,8 +64,14 @@ void AnalysisObject::UpdateMoment(const std::string &name,const double value){
 //
 double AnalysisObject::GetMoment(const std::string &name) const
 {
-    std::map<std::string,double>::const_iterator it=m_moments.find(name);
-    if (it!=m_moments.end()) return it->second;
+    if(name == "Pt"){ return Pt(); }
+    else if(name == "Eta"){ return Eta(); }
+    else if(name == "Phi"){ return Phi(); }
+    else if(name == "M"){ return M(); }
+    else{
+      std::map<std::string,double>::const_iterator it=m_moments.find(name);
+      if (it!=m_moments.end()){ return it->second; }
+    }
     std::cout << " >>>>> FATAL in AnalysisObject::GetMoment(''" <<  name << "''): unknown moment !" << std::endl;
     return -1;
 }

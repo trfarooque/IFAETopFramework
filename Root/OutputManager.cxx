@@ -7,7 +7,7 @@
 #include "IFAETopFramework/OutputData.h"
 #include "IFAETopFramework/HistManager.h"
 #include "IFAETopFramework/TreeManager.h"
-
+#include "IFAETopFramework/AnalysisObject.h"
 //ROOT libraries
 #include "TString.h"
 #include "TSystem.h"
@@ -232,16 +232,20 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
         TString histName = pattern;
         histName += "_";
         histName += h1.second->var.Name();
+	//if(h1.second->var.IsAnaObject()){h1.second->var.SetAOValues();}
         
-        if( h1.second->var.IsPrimitive() ){
-            m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
-        } else {
+        if( !h1.second->var.IsVector() || (h1.second->var.VecInd() >= 0) ){
+	  h1.second->var.CalcDoubleValue();
+	  m_histMngr -> FillTH1D((std::string)histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
+        } 
+	else {
+
             // If the index provided when declaring the standard histogram is -1, the
             // histogram is filled with all the components of the vector
             // Otherwise, just fills the histogram with the given component
+
             FillTH1FromVector( h1.second->var.Address(),
-                               h1.second->var.VarType(), histName, m_data->o_eventWeight_Nom,
-                               h1.second->var.VecInd() );
+                               h1.second->var.VarType(), histName, m_data->o_eventWeight_Nom, h1.second->var.Moment() );
         }
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
@@ -256,12 +260,12 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
                     TString systHistName = histName;
                     systHistName += "_";
                     systHistName += sys.second->Name();
-                    if( h1.second->var.IsPrimitive() ){
-                        m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
+                    if( !h1.second->var.IsVector() || (h1.second->var.VecInd() >= 0) ){
+		      h1.second->var.CalcDoubleValue();
+		      m_histMngr -> FillTH1D((std::string)systHistName, h1.second->var.GetDoubleValue(), sys.second->GetDoubleValue());
                     } else {
                         FillTH1FromVector( h1.second->var.Address(),
-                                           h1.second->var.VarType(), (std::string)systHistName, sys.second->GetDoubleValue(),
-                                           h1.second->var.VecInd() );
+                                           h1.second->var.VarType(), (std::string)systHistName, sys.second->GetDoubleValue(), h1.second->var.Moment());
                     }
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }
@@ -274,47 +278,44 @@ bool OutputManager::FillStandardTH1( const TString &pattern ){
 
 //________________________________________________________________________________________
 //
-bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const int index ) {
+bool OutputManager::FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const std::string& moment ) {
     
     //
     // INTERNAL FUNCTION
     //   Used to fill a TH1 histogram based on an input vector. It checks the size of the vector
     //   before filling the histogram.
     //
-    
-    if(type == VariableDef::VECDOUBLE){
-        std::vector < double >* vec = (std::vector<double>*)t;
-        if(index!=-1 && (int)vec->size()>index){
-            m_histMngr -> FillTH1D((std::string)histName, vec->at(index), weight);
-        } else if (index==-1){
-            for ( double value : *vec ){
-                m_histMngr -> FillTH1D((std::string)histName, value, weight);
-            }
-        }
+  if( (type == VariableDef::VECDOUBLE) ){
+    std::vector < double >* vec = (std::vector<double>*)t;
+    for ( double value : *vec ){
+      m_histMngr -> FillTH1D((std::string)histName, value, weight);
     }
-    else if(type == VariableDef::VECFLOAT){
-        std::vector < float >* vec = (std::vector< float >*)t;
-        if(index!=-1 && (int)vec->size()>index){
-            m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
-        } else if (index==-1){
-            for ( double value : *vec ){
-                m_histMngr -> FillTH1D((std::string)histName, value, weight);
-            }
-        }
+
+  }
+  else if(type == VariableDef::VECFLOAT){
+    std::vector < float >* vec = (std::vector< float >*)t;
+    for ( double value : *vec ){
+      m_histMngr -> FillTH1D((std::string)histName, value, weight);
     }
-    else if(type == VariableDef::VECINT){
-        std::vector < int >* vec = (std::vector< int >*)t;
-        if(index!=-1 && (int)vec->size()>index){
-            m_histMngr -> FillTH1D((std::string)histName, (double)vec->at(index), weight);
-        } else if (index==-1){
-            for ( double value : *vec ){
-                m_histMngr -> FillTH1D((std::string)histName, value, weight);
-            }
-        }
-    } else {
-        std::cerr << "<!> ERROR in OutputManager::FillTH1FromVector: the object type is unknown. Please check." << std::endl;
+
+  }
+  else if(type == VariableDef::VECINT){
+    std::vector < int >* vec = (std::vector< int >*)t;
+    for ( double value : *vec ){
+      m_histMngr -> FillTH1D((std::string)histName, value, weight);
     }
-    return true;
+
+  }
+  else if(type == VariableDef::VECAO){
+    AOVector* vec = (AOVector*)t;
+    for ( AnalysisObject* obj : *vec ){
+      m_histMngr -> FillTH1D((std::string)histName, obj->GetMoment(moment), weight);
+    }
+  }
+  else {
+    std::cerr << "<!> ERROR in OutputManager::FillTH1FromVector: the object type is unknown. Please check." << std::endl;
+  }
+  return true;
 }
 
 //________________________________________________________________________________________
@@ -510,7 +511,9 @@ bool OutputManager::FillStandardTH2( const TString &pattern ){
         histName += h2.second->varY.Name();
         histName += "_vs_";
         histName += h2.second->varX.Name();
-        
+
+        h2.second->varX.GetDoubleValue();
+        h2.second->varY.GetDoubleValue();
         m_histMngr -> FillTH2D((std::string)histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), m_data->o_eventWeight_Nom);
         
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
@@ -526,6 +529,7 @@ bool OutputManager::FillStandardTH2( const TString &pattern ){
                     TString systHistName = histName;
                     systHistName += "_";
                     systHistName += sys.second->Name();
+
                     m_histMngr -> FillTH2D((std::string)systHistName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), sys.second->GetDoubleValue());
                     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
                 }

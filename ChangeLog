@@ -1,3 +1,5 @@
+2016-03-03 Trisha Farooque <farooque@cern.ch>
+	- TH1D filling from AnalysisObjects and AOVectors added
 2016-02-24 Trisha Farooque <farooque@cern.ch>
 	- NtupleData now private data member of NtupleReader
 	- SetVariableChain function added to NtupleReader
