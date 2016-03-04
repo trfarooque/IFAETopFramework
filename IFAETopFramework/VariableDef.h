@@ -87,6 +87,7 @@ public:
         m_isPrimitive = IsPrimitive(varType);
 	m_isVector = IsVector(varType);
 	m_isAnaObject = IsAnaObject(varType);
+	m_val_store = 0.;
 	if(m_fill_vec){
 	  m_vec_store = new std::vector<double>;
 	  m_vec_store->clear(); 
@@ -140,7 +141,6 @@ private:
     bool m_isAnaObject;
 
     std::string m_moment; //for analysis objects;
-
     double m_val_store; 
     std::vector<double>* m_vec_store; 
     bool m_fill_vec;        

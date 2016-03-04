@@ -814,9 +814,7 @@ void HistManager::ReplaceTProfile(const string &hkey, TProfile* prof){
 //
 TH1D* HistManager::ReadTH1D( const string &name, TFile* f, const string &key, bool force_replace){
     
-    string s;
-    if(key!=""){s=key;}
-    else{ s=name; }
+  const std::string s = (key=="") ? name : key;
     
     if( !force_replace && (m_h1d.find(s)!= m_h1d.end()) ){
         cout<<"HistManager::ReadTH1D  Warning : TH1D "<<s.c_str()<<" already exists. Ignoring."<<endl;
@@ -832,9 +830,7 @@ TH1D* HistManager::ReadTH1D( const string &name, TFile* f, const string &key, bo
 //
 TH2D* HistManager::ReadTH2D(const string &name, TFile* f, const string &key, bool force_replace){
     
-    string s;
-    if(key!=""){s=key;}
-    else{ s=name; }
+  const std::string s = (key=="") ? name : key;
     
     if( !force_replace && (m_h2d.find(s)!= m_h2d.end()) ){
         cout<<"HistManager::ReadTH2D  Warning : TH2D "<<s.c_str()<<" already exists. Ignoring."<<endl;
@@ -853,9 +849,7 @@ TH2D* HistManager::ReadTH2D(const string &name, TFile* f, const string &key, boo
 //
 TH3D* HistManager::ReadTH3D(const string &name, TFile* f, const string &key, bool force_replace){
     
-    string s;
-    if(key!=""){s=key;}
-    else{ s=name; }
+  const std::string s = (key=="") ? name : key;
     
     if( !force_replace && (m_h3d.find(s)!= m_h3d.end()) ){
         cout<<"HistManager::ReadTH3D  Warning : TH3D "<<s.c_str()<<" already exists. Ignoring."<<endl;
@@ -873,9 +867,8 @@ TH3D* HistManager::ReadTH3D(const string &name, TFile* f, const string &key, boo
 //__________________________________________________________________
 //
 TProfile* HistManager::ReadTProfile( const string &name, TFile* f, const string &key, bool force_replace){
-    string s;
-    if(key!=""){s=key;}
-    else{ s=name; }
+
+  const std::string s = (key=="") ? name : key;
     
     if( !force_replace && (m_profile.find(s)!= m_profile.end()) ){
         cout<<"HistManager::ReadTProfile  Warning : TProfile "<<s.c_str()<<" already exists. Ignoring."<<endl;

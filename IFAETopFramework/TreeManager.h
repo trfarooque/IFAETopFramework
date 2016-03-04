@@ -8,32 +8,31 @@
 #include <string>
 #include <iostream>
 #include "IFAETopFramework/VariableDef.h"
-using namespace std;
 
 class TreeManager{
     
 public:
     TreeManager();
     
-    void BookTree(string name, string title, string key="");
-    void AddBranchToTree(string tname, VariableDef bVar);
+    void BookTree(const std::string& name, const std::string& title, const std::string& key="");
+    void AddBranchToTree(const std::string& tname, VariableDef& bVar);
     
-    int ReadTree(string name, TFile* f, string key);
-    void SetBranchToTree(string tname, VariableDef bVar, string inputVarName = "");
+    int ReadTree(const std::string& name, TFile* f, const std::string& key);
+    void SetBranchToTree(const std::string& tname, VariableDef& bVar, const std::string& inputVarName = "");
     
-    TTree* Tree(string tname){ return m_tree[tname]; }
+    TTree* Tree(const std::string& tname){ return m_tree[tname]; }
     
-    void SetTree(string tkey, TTree* tree);
-    void ReplaceTree(string tkey, TTree* tree);
+    void SetTree(const std::string& tkey, TTree* tree);
+    void ReplaceTree(const std::string& tkey, TTree* tree);
     
-    vector<string> TreeKeyList();
+    std::vector<std::string> TreeKeyList();
     
-    void ClearTree(string s_tree);
-    void FillTree(string name, string key="");
+    void ClearTree(const std::string& s_tree);
+    void FillTree(const std::string& name, const std::string& key="");
     
 protected:
-    map<string, TTree*> m_tree;
-    map<string, map<string, TBranch*> > m_branches;
+    std::map<std::string, TTree*> m_tree;
+    std::map<std::string, std::map<std::string, TBranch*> > m_branches;
     
 };
 

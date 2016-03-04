@@ -632,7 +632,17 @@ bool OutputManager::FillStandardTree( const TString &pattern ){
         std::cout << "<!> ERROR in OutputManager::fillStandardTree(): tree booking has been requested in HISTOS mode. Please check." << std::endl;
         return false;
     }
-    
+
+    for ( const auto branch : *m_stdBranchDef ){
+      if( branch.second->IsAnaObject() && branch.second->IsVector() && (branch.second->VecInd() < 0) ){
+	branch.second->FillVectorStore();
+      }
+      else if( ( branch.second->IsAnaObject() && !branch.second->IsVector() ) 
+	       || ( branch.second->IsVector() && (branch.second->VecInd() >= 0) ) ){
+	branch.second->CalcDoubleValue();
+      }
+    }
+
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::fillStandardTree" << std::endl;
     m_treeMngr->FillTree((std::string)pattern);
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::fillStandardTree" << std::endl;

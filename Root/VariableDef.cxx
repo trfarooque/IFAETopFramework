@@ -110,33 +110,6 @@ bool VariableDef::IsAnaObject(int varType){
     return _isAnaObj;
 }
 
-/*
-void VariableDef::SetAOValues(){
-
-  m_ao_val_vec->clear(); 
-  m_ao_val = 0.;
-
-  if(!m_isAnaObject){std::cout<<" Error : SetAOValue called on non-AnalysisObject type variable"<< std::endl; return;}
-  if(m_isVector){
-
-    AOVector* aovec = (AOVector*)(m_in_address);
-    if(m_vec_ind == -1){
-      for(AnalysisObject* aobj : *aovec){
-	m_ao_val_vec->push_back(aobj->GetMoment(m_moment));
-      }
-    }
-    else if( m_vec_ind < aovec.size() ){
-      m_ao_val = aobj->GetMoment(m_moment);
-  }//AOVector
-  else{
-    AnalysisObject* aobj = (AnalysisObject*)(m_in_address);
-    m_ao_val = aobj->GetMoment(m_moment);
-  }
-  return;
-}
-*/
-
-//_____________________________________________________________________________________
 //
 void VariableDef::FillVectorStore(){
 
@@ -153,7 +126,6 @@ void VariableDef::FillVectorStore(){
 //
 void VariableDef::CalcDoubleValue(){
     m_val_store = 0.;
-    
     if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return;}
     
     if( (m_varType == VariableType::DOUBLE)){
@@ -173,7 +145,6 @@ void VariableDef::CalcDoubleValue(){
             std::cout<<"Error : Please provide vector index to obtain value from VariableDef" << std::endl;
             return;
         }
-        
         if(m_varType == VariableType::VECDOUBLE){
             if( (int)((std::vector<double>*)m_address)->size() > m_vec_ind ){
                 m_val_store = ((std::vector<double>*)m_address)->at(m_vec_ind);
@@ -190,7 +161,8 @@ void VariableDef::CalcDoubleValue(){
             }
         }
 	else if(m_varType == VariableType::VECAO){
-          if( (int)((AOVector*)m_address)->size() > m_vec_ind ){
+	  AOVector* aovec = (AOVector*)m_address;
+          if( (int)(aovec->size()) > m_vec_ind ){
 	    m_val_store = (double)( ((AOVector*)m_address)->at(m_vec_ind)->GetMoment(m_moment) );
 	  }
 	}

@@ -1,3 +1,7 @@
+2016-03-04 Trisha Farooque <farooque@cern.ch>
+	- Tree filling from AnalysisObjects
+	- Tree filling from vectors of AnalysisObjects and of primitive types
+	- Cleanup in TreeManager
 2016-03-03 Trisha Farooque <farooque@cern.ch>
 	- TH1D filling from AnalysisObjects and AOVectors added
 2016-02-24 Trisha Farooque <farooque@cern.ch>
