@@ -22,9 +22,9 @@ public:
     // Member functions
     OutputManager( OptionsBase *opt );
     OutputManager( const OutputManager &q );
-    ~OutputManager();
+    virtual ~OutputManager();
     
-    bool SetSystVector( SystManager::SystVector *sysVector );
+    virtual bool SetSystVector( SystManager::SystVector *sysVector );
     //________________________
     // Inline functions
     inline bool SetData( OutputData *data ){ m_data = data; return true;}

@@ -52,6 +52,27 @@ OutputTreeManager::~OutputTreeManager()
 
 
 //-----------------------------TREE-SPECIFIC METHODS-------------------------------
+bool OutputTreeManager::SetSystVector( SystManager::SystVector *sysVector ){
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::SetSystVector()" << std::endl;
+    OutputManager::SetSystVector( sysVector );   
+
+    AddStandardBranch( m_weightVarName, "Nominal weight", "D", &(m_data -> o_eventWeight_Nom) );
+    if(m_sysVector){
+      for( const auto &sys : *m_sysVector ){
+	if(sys.second -> IsPrimitive()){
+	  std::string branchName = m_weightVarName + "_" + std::string(sys.second -> Name());
+	  AddStandardBranch( branchName, sys.second -> Title(), sys.second -> VarTypeString(), sys.second -> Address() );
+	} 
+	else {
+	  std::cout << "<!> In OutputTreeManager::SetSystVector(): you are not allowed to use non-primitive types for systematic weights yet ... You can kindly ask :-)" << std::endl;
+	}
+      }
+    }
+
+    return true;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputTreeManager::SetSystVector()" << std::endl;
+}
+
 //______________________________________________________________________________________
 //
 bool OutputTreeManager::BookStandardTree( const TString &pattern, const TString &title){

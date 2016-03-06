@@ -31,7 +31,7 @@ public:
     OutputTreeManager(OptionsBase *opt);
     OutputTreeManager( const OutputTreeManager &q );
     ~OutputTreeManager();
-    
+    virtual bool SetSystVector(SystManager::SystVector *sysVector);
     //________________________
     // Inline functions
     inline bool SetData( OutputData *data ){ m_data = data; return true;}
