@@ -1,3 +1,6 @@
+2016-03-05 - Trisha Farooque <farooque@cern.ch>
+	- Split OutputManager into OutputHistManager and OutputTreeManager
+	- Fixed weight calculation in systematics loop
 2016-03-04 Trisha Farooque <farooque@cern.ch>
 	- Tree filling from AnalysisObjects
 	- Tree filling from vectors of AnalysisObjects and of primitive types

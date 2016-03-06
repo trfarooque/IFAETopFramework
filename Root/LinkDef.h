@@ -6,6 +6,9 @@
 #include "IFAETopFramework/NtupleData.h"
 #include "IFAETopFramework/OutputData.h"
 #include "IFAETopFramework/NtupleReader.h"
+#include "IFAETopFramework/OutputManager.h"
+#include "IFAETopFramework/OutputHistManager.h"
+#include "IFAETopFramework/OutputTreeManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/SampleInfo.h"
 #include "IFAETopFramework/SelectorBase.h"
@@ -24,6 +27,8 @@
 #pragma link C++ class NtupleReader+;
 #pragma link C++ class OptionsBase+;
 #pragma link C++ class OutputManager+;
+#pragma link C++ class OutputHistManager+;
+#pragma link C++ class OutputTreeManager+;
 #pragma link C++ class VariableDef+;
 #pragma link C++ class SampleInfo+;
 #pragma link C++ class SelectorBase+;
