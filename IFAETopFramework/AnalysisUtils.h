@@ -30,6 +30,12 @@ class AnalysisUtils{
 
   static std::string ReplaceString(const std::string& inputStr, const std::string& orig, const std::string& replacement);
 
+  static int ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim=" : "
+		      , bool blockformat=false);
+  static int ParseConfigFile_Blocks(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim=" : ");
+  static int ParseConfigFile_Lines(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim=" : ");
+
+
  protected:
   static  bool orderAscend(std::pair<int, double> p1, std::pair<int, double> p2 ){
     return valOrderAscend(p1.second, p2.second);

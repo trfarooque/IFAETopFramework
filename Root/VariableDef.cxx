@@ -15,7 +15,7 @@ VariableDef::VariableDef():
   m_isVector(true),
   m_isAnaObject(true),
   m_moment(""),
-  m_val_store(0.),
+  m_val_store(NULL),
   m_vec_store(NULL),
   m_fill_vec(false) 
 {}
@@ -23,7 +23,10 @@ VariableDef::VariableDef():
 //_____________________________________________________________________________________
 //
 VariableDef::~VariableDef()
-{}
+{ 
+  delete m_val_store;
+  delete m_vec_store;
+}
 
 //_____________________________________________________________________________________
 //
@@ -45,9 +48,9 @@ VariableDef::VariableDef( VariableDef &q ){
 
 //_____________________________________________________________________________________
 //
-TString VariableDef::GetVarTypeString(int varType){
+std::string VariableDef::GetVarTypeString(int varType) const{
     
-    TString _varTypeString = "";
+  std::string _varTypeString = "";
     
     if(varType == VariableType::INT)               {_varTypeString = "I";}
     else if(varType == VariableType::FLOAT)        {_varTypeString = "F";}
@@ -67,7 +70,7 @@ TString VariableDef::GetVarTypeString(int varType){
 
 //_____________________________________________________________________________________
 //
-VariableDef::VariableType VariableDef::GetVarType(TString varTypeString){
+VariableDef::VariableType VariableDef::GetVarType(const std::string& varTypeString) const{
     VariableType _varType;
     if(varTypeString == "I")         {_varType = VariableType::INT;}
     else if(varTypeString == "F")    {_varType = VariableType::FLOAT;}
@@ -87,14 +90,14 @@ VariableDef::VariableType VariableDef::GetVarType(TString varTypeString){
 
 //_____________________________________________________________________________________
 //
-bool VariableDef::IsPrimitive(int varType){
+bool VariableDef::IsPrimitive(int varType) const{
     
     bool _isPrimitive = false;
     _isPrimitive = (varType == VariableType::INT || varType == VariableType::FLOAT || varType == VariableType::DOUBLE);
     return _isPrimitive;
 }
 
-bool VariableDef::IsVector(int varType){
+bool VariableDef::IsVector(int varType) const{
     
     bool _isVector = false;
     _isVector = ( (varType == VariableType::VECINT) || (varType == VariableType::VECFLOAT) || (varType == VariableType::VECDOUBLE)
@@ -103,7 +106,7 @@ bool VariableDef::IsVector(int varType){
     return _isVector;
 }
 
-bool VariableDef::IsAnaObject(int varType){
+bool VariableDef::IsAnaObject(int varType) const{
     
     bool _isAnaObj = false;
     _isAnaObj = ( (varType == VariableType::AOBJ) || (varType == VariableType::VECAO) );
@@ -125,20 +128,20 @@ void VariableDef::FillVectorStore(){
 //_____________________________________________________________________________________
 //
 void VariableDef::CalcDoubleValue(){
-    m_val_store = 0.;
+    *m_val_store = 0.;
     if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return;}
     
     if( (m_varType == VariableType::DOUBLE)){
-        m_val_store = *(double*)(m_address);
+        *m_val_store = *(double*)(m_address);
     }
     else if(m_varType == VariableType::FLOAT){
-        m_val_store = (double)(*(float*)(m_address));
+        *m_val_store = (double)(*(float*)(m_address));
     }
     else if(m_varType == VariableType::INT){
-        m_val_store = (double)(*(int*)(m_address));
+        *m_val_store = (double)(*(int*)(m_address));
     }
     else if(m_varType == VariableType::AOBJ){
-      m_val_store = ((AnalysisObject*)(m_address))->GetMoment(m_moment);
+      *m_val_store = ((AnalysisObject*)(m_address))->GetMoment(m_moment);
     } 
     else{
         if(m_vec_ind < 0){
@@ -147,23 +150,23 @@ void VariableDef::CalcDoubleValue(){
         }
         if(m_varType == VariableType::VECDOUBLE){
             if( (int)((std::vector<double>*)m_address)->size() > m_vec_ind ){
-                m_val_store = ((std::vector<double>*)m_address)->at(m_vec_ind);
+                *m_val_store = ((std::vector<double>*)m_address)->at(m_vec_ind);
             }
         }
         else if(m_varType == VariableType::VECFLOAT){
             if( (int)((std::vector<float>*)m_address)->size() > m_vec_ind ){
-                m_val_store = (double)( ((std::vector<float>*)m_address)->at(m_vec_ind) );
+                *m_val_store = (double)( ((std::vector<float>*)m_address)->at(m_vec_ind) );
             }
         }
         else if(m_varType == VariableType::VECINT){
             if( (int)((std::vector<int>*)m_address)->size() > m_vec_ind ){
-                m_val_store = (double)( ((std::vector<int>*)m_address)->at(m_vec_ind) );
+                *m_val_store = (double)( ((std::vector<int>*)m_address)->at(m_vec_ind) );
             }
         }
 	else if(m_varType == VariableType::VECAO){
 	  AOVector* aovec = (AOVector*)m_address;
           if( (int)(aovec->size()) > m_vec_ind ){
-	    m_val_store = (double)( ((AOVector*)m_address)->at(m_vec_ind)->GetMoment(m_moment) );
+	    *m_val_store = (double)( ((AOVector*)m_address)->at(m_vec_ind)->GetMoment(m_moment) );
 	  }
 	}
     }//Vector variables

@@ -1,13 +1,11 @@
 #include <sys/stat.h>
 #include <iostream>
+#include <fstream>
 #include "IFAETopFramework/AnalysisUtils.h"
 
 
 AnalysisUtils::AnalysisUtils(){}
 AnalysisUtils::~AnalysisUtils(){}
-
-
-
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Sorting utilities
@@ -184,4 +182,127 @@ bool AnalysisUtils::FileExists(const std::string& filename){
   struct stat buf;
   if (stat(filename.c_str(), &buf) != -1){ return true; }
   return false;
+}
+
+//______________________________________________________________________________________________________________________
+int AnalysisUtils::ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map
+				   , const std::string& delim, bool blockformat ){
+
+  int stat = 1;
+  if(blockformat){ stat = ParseConfigFile_Blocks(config_file, ret_map,  delim); }
+  else{ stat = ParseConfigFile_Lines(config_file, ret_map,  delim); }
+
+  return stat;
+
+}
+
+int AnalysisUtils::ParseConfigFile_Blocks(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim ){
+
+  ret_map.clear();
+  std::ifstream conf_stream(config_file);
+  if(!conf_stream){
+    std::cout<<"Error : configuration file "<<config_file<<" not found. Exiting."<<std::endl;
+    return -1;
+  }
+
+  std::string conf_line; 
+  bool begun = false;
+  int nset = -1;
+  while( getline(conf_stream, conf_line) ){
+    TrimString(conf_line);
+    if(conf_line == "BEGIN"){begun = true; continue;}
+    if(!begun){continue;}
+    if(conf_line == "END") break;
+    if( conf_line.empty() || (conf_line.find("#") == 0) ) continue;
+
+    if(conf_line == "NEW"){ 
+      nset++; 
+      std::map<std::string, std::string> varset;
+      ret_map.push_back(varset);
+    }
+    else{
+      std::string param; param.clear();
+      std::string paramString = conf_line;
+      std::string::size_type pos = ParseString(paramString, param, delim);
+      if(pos == std::string::npos){ 
+	std::cout<<" Could not read parameter value from line "<<conf_line<<std::endl;
+	std::cout<<" Format should be [PARAM] "<<delim<<" [VALUE]"<<std::endl;
+	continue;
+      }
+      TrimString(param);
+      ret_map.at(nset)[param] = paramString;
+    }
+  }
+
+  return nset+1;
+
+}
+
+int AnalysisUtils::ParseConfigFile_Lines(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim){
+
+  ret_map.clear();
+
+  std::map<int, std::string> paramSeq; paramSeq.clear();
+  std::ifstream conf_stream(config_file);
+  if(!conf_stream){
+    std::cout<<"Error : configuration file "<<config_file<<" not found. Exiting."<<std::endl;
+    return -1;
+  }
+
+  std::string conf_line;
+  while( conf_line != "BEGIN" ){  
+    getline(conf_stream, conf_line); 
+    TrimString(conf_line);
+  }
+  getline(conf_stream, conf_line);
+
+  //Header gives the sequence of configuration variables
+  std::string param; param.clear();
+  std::string paramString = conf_line;
+  int nparam = 0;
+  std::string::size_type pos = 0;
+  do{ 
+    pos = ParseString(paramString, param, delim);
+    TrimString(param);
+    paramSeq[nparam] = param;
+    nparam++;
+  }while(pos != std::string::npos);
+
+
+  int nkey = nparam;
+  int nline = 0;
+
+  std::map<std::string, std::string> keymap;
+  while( getline(conf_stream, conf_line) ){
+    TrimString(conf_line);
+    if(conf_line == "END") break;
+    if( conf_line.empty() || (conf_line.find("#") == 0) ) continue;
+
+    paramString = conf_line;
+    param = "";
+    nparam = 0;
+    pos = 0;
+    keymap.clear();
+
+    do{
+      pos = ParseString(paramString, param, delim);
+      TrimString(param);
+      if(nparam > nkey){
+	std::cout<<"Error: Number of parameters on line "<<nline<<" exceeds number of keys given in header"<<std::endl; 
+	break;
+      }
+      if(paramSeq.find(nparam) == paramSeq.end()){
+	std::cout<<"WARNING: "<<nline<<" : param "<<nparam<<" not specified"<<std::endl;
+	continue;
+      } 
+      keymap[ paramSeq[nparam] ] = param;
+      nparam++;
+    }while(pos != std::string::npos);//read all given parameters
+
+    ret_map.push_back(keymap);
+    nline++;
+  }//line loop
+
+  return nline;
+
 }

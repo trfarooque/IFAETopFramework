@@ -1,12 +1,10 @@
 #ifndef OUTPUTMANAGER_H
 #define OUTPUTMANAGER_H
 
-//ROOT libraries
-#include "TString.h"
-
 //Standard libraries
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 //IFAEFramework classes
@@ -14,7 +12,7 @@
 class OptionsBase;
 class OutputData;
 
-#include "IFAETopFramework/SystManager.h"
+#include "IFAETopFramework/WeightManager.h"
 class OutputManager {
     
 public:
@@ -24,16 +22,16 @@ public:
     OutputManager( const OutputManager &q );
     virtual ~OutputManager();
     
-    virtual bool SetSystVector( SystManager::SystVector *sysVector );
+    virtual bool SetSystMap( WeightManager::WeightMap *sysMap );
     //________________________
     // Inline functions
     inline bool SetData( OutputData *data ){ m_data = data; return true;}
     
 protected:
     OptionsBase *m_opt;
-    SystManager::SystVector *m_sysVector;
+    WeightManager::WeightMap *m_sysMap;
     OutputData *m_data;
-    std::map < TString, bool > *m_mapHasSyst;
+    std::map < std::string, bool > *m_mapHasSyst;
     std::string m_weightVarName;
 };
 

@@ -7,21 +7,20 @@
 #include "IFAETopFramework/OutputManager.h"
 #include "IFAETopFramework/OutputData.h"
 //ROOT libraries
-#include "TString.h"
 #include "TSystem.h"
 
 //______________________________________________________________________________________
 //
 OutputManager::OutputManager( OptionsBase* opt ):
 m_opt(opt),
-m_sysVector(0),
+m_sysMap(0),
 m_data(0),
 m_mapHasSyst(0),
 m_weightVarName("weight")
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputManager constructor" << std::endl;
     
-    m_mapHasSyst    = new std::map <TString,bool>();
+    m_mapHasSyst    = new std::map <std::string,bool>();
     m_mapHasSyst    -> clear();
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager constructor" << std::endl;
@@ -34,7 +33,7 @@ OutputManager::OutputManager( const OutputManager &q )
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager copy-constructor" << std::endl;
     
     m_opt           = q.m_opt;
-    m_sysVector     = q.m_sysVector;
+    m_sysMap        = q.m_sysMap;
     m_data          = q.m_data;
     m_mapHasSyst    = q.m_mapHasSyst;
     m_weightVarName = q.m_weightVarName;
@@ -53,10 +52,10 @@ OutputManager::~OutputManager()
 
 //______________________________________________________________________________________
 //
-bool OutputManager::SetSystVector( SystManager::SystVector *sysVector ){
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::SetSystVector()" << std::endl;
+bool OutputManager::SetSystMap( WeightManager::WeightMap *sysMap ){
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputManager::SetSystMap()" << std::endl;
     
-    m_sysVector = sysVector;
+    m_sysMap = sysMap;
     return true;
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::SetSystVector()" << std::endl;
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::SetSystMap()" << std::endl;
 }

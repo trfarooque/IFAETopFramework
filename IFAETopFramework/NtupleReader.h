@@ -22,8 +22,9 @@
 #include <map>
 
 #include "TChain.h"
-class OptionsBase;
+#include "IFAETopFramework/OptionsBase.h"
 class NtupleData;
+class WeightObject;
 
 class NtupleReader{
     
@@ -32,36 +33,28 @@ public:
     //
     // Standard C++ classes
     //
-    NtupleReader(OptionsBase* opt);
-    NtupleReader(const NtupleReader &);
-    virtual ~NtupleReader();//{ delete m_ntupData; }
+  NtupleReader( OptionsBase *opt, std::map<std::string, WeightObject*>* nomMap=NULL, std::map<std::string, WeightObject*>* sysMap=NULL);
+  NtupleReader(const NtupleReader &);
+  virtual ~NtupleReader();//{ delete m_ntupData; }
 
-    //
-    // Class specific functions
-    //
-    void Init();
-    void Finalise();
+  //
+  // Class specific functions
+  //
+  void Init(std::map<std::string, WeightObject*> *nomMap = NULL, std::map<std::string, WeightObject*> *sysMap = NULL);
+  void Finalise();
+  inline void SetNomComponentsMap(std::map<std::string, WeightObject*> *nomMap){ m_nomMap = nomMap; }
+  inline void SetSystComponentsMap(std::map<std::string, WeightObject*> *sysMap){ m_sysMap = sysMap; }
+
+  int SetAllBranchAddresses();    
+  int SetWeightBranchAddresses(const std::string &sj);
+
     
-    virtual int SetEventBranchAddresses();
+  int GetChainEntry(long entry) const ;
+  int ChainNEntries() const;
+  void ChainFromTextFile(TChain* ch, std::string infilename);
+  void ChainFromStrList(TChain* ch, std::string infilelist);
     
-    virtual int SetJetBranchAddresses(const std::string &sj);
-    virtual int SetFatJetBranchAddresses(int sfj_key, const std::string &sfj);
-    
-    virtual int SetLeptonBranchAddresses(const std::string &sj);
-    virtual int SetElectronBranchAddresses(const std::string &sj);
-    virtual int SetMuonBranchAddresses(const std::string &sj);
-    
-    virtual int SetMETBranchAddresses(const std::string &sj);
-    
-    virtual int SetWeightBranchAddresses(const std::string &sj);
-    virtual int SetTruthParticleBranchAddresses(const std::string &sj);
-    
-    int GetChainEntry(long entry) const ;
-    int ChainNEntries() const;
-    void ChainFromTextFile(TChain* ch, std::string infilename);
-    void ChainFromStrList(TChain* ch, std::string infilelist);
-    
-    ///virtual const NtupleData* Data() = 0;//{ return m_ntupData; }
+  //virtual const NtupleData* Data() const = 0;//{ return m_ntupData; }
 
     //NtupleReader needs to know:
     // the location and name of the chain to read (read here from given file name and tree name)
@@ -70,9 +63,17 @@ public:
     
  protected:
     
+    OptionsBase* m_opt;
+    TChain* m_chain;    //!
+    NtupleData* m_ntupData;
+    std::map<std::string, WeightObject*>* m_nomMap;
+    std::map<std::string, WeightObject*>* m_sysMap;
+
     int SetVariableToChain(const std::string& name, void* variable);
     
     template<typename T>int SetVariableToChain(const std::string& name, T** variable){
+
+      if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"NtupleReader::SetVariableToChain(T**) :: Setting "<<name<<" to "<<variable<<std::endl; }
       m_chain->SetBranchStatus(name.c_str(), 1);
       
       TBranch* branch = 0;
@@ -80,10 +81,7 @@ public:
       return stat;
     }
     
-    OptionsBase* m_opt;
-    TChain* m_chain;    //!
-    NtupleData* m_ntupData;
-    
+
 };
 
 

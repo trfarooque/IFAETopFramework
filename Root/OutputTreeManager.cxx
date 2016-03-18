@@ -8,7 +8,7 @@
 #include "IFAETopFramework/TreeManager.h"
 #include "IFAETopFramework/AnalysisObject.h"
 //ROOT libraries
-#include "TString.h"
+#include <string>
 #include "TSystem.h"
 
 //______________________________________________________________________________________
@@ -52,15 +52,15 @@ OutputTreeManager::~OutputTreeManager()
 
 
 //-----------------------------TREE-SPECIFIC METHODS-------------------------------
-bool OutputTreeManager::SetSystVector( SystManager::SystVector *sysVector ){
+bool OutputTreeManager::SetSystMap( WeightManager::WeightMap *sysMap ){
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::SetSystVector()" << std::endl;
-    OutputManager::SetSystVector( sysVector );   
+    OutputManager::SetSystMap( sysMap );   
 
     AddStandardBranch( m_weightVarName, "Nominal weight", "D", &(m_data -> o_eventWeight_Nom) );
-    if(m_sysVector){
-      for( const auto &sys : *m_sysVector ){
+    if(m_sysMap){
+      for( const auto &sys : *m_sysMap ){
 	if(sys.second -> IsPrimitive()){
-	  std::string branchName = m_weightVarName + "_" + std::string(sys.second -> Name());
+	  std::string branchName = m_weightVarName + "_" + sys.second -> Name();
 	  AddStandardBranch( branchName, sys.second -> Title(), sys.second -> VarTypeString(), sys.second -> Address() );
 	} 
 	else {
@@ -75,16 +75,16 @@ bool OutputTreeManager::SetSystVector( SystManager::SystVector *sysVector ){
 
 //______________________________________________________________________________________
 //
-bool OutputTreeManager::BookStandardTree( const TString &pattern, const TString &title){
+bool OutputTreeManager::BookStandardTree( const std::string &pattern, const std::string &title){
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::bookStandardTree" << std::endl;
     
     //Book a tree with the given name
-    m_treeMngr->BookTree((std::string)pattern, (std::string)title);
+    m_treeMngr->BookTree( pattern, title );
     
     //Loop over the list of standard branches and add those branches to the tree
     for ( const auto branch : *m_stdBranchDef ){
-        m_treeMngr->AddBranchToTree((std::string)pattern, *(branch.second));
+      m_treeMngr->AddBranchToTree( pattern, *(branch.second) );
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Added branch : " << branch.first << std::endl;
     }
     
@@ -94,7 +94,7 @@ bool OutputTreeManager::BookStandardTree( const TString &pattern, const TString 
 
 //______________________________________________________________________________________
 //
-bool OutputTreeManager::FillStandardTree( const TString &pattern ){
+bool OutputTreeManager::FillStandardTree( const std::string &pattern ){
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::fillStandardTree" << std::endl;
     for ( const auto branch : *m_stdBranchDef ){
@@ -107,16 +107,16 @@ bool OutputTreeManager::FillStandardTree( const TString &pattern ){
       }
     }
 
-    m_treeMngr->FillTree((std::string)pattern);
+    m_treeMngr->FillTree(pattern);
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputTreeManager::fillStandardTree" << std::endl;
     return true;
 }
 
 //______________________________________________________________________________________
 //
-bool OutputTreeManager::SaveStandardTree( const TString &outputName ){
+bool OutputTreeManager::SaveStandardTree( const std::string &outputName ){
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::SaveStandardTree" << std::endl;
-    TFile *f = new TFile(outputName,"recreate");
+    TFile *f = new TFile(outputName.c_str(),"recreate");
     std::vector<std::string> treeList = m_treeMngr->TreeKeyList();
     for( const auto treeName : treeList ){
         f -> cd();

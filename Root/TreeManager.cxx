@@ -32,13 +32,15 @@ void TreeManager::AddBranchToTree(const std::string& tname, VariableDef& bVar){
     if(!m_tree[tname]){std::cout<<"TREE "<<tname<<" was not found. Could not add branch"<<std::endl; return;}
     
     if(bVar.IsPrimitive()){
-      m_tree[tname]->Branch(bVar.Name(), bVar.Address(), bVar.Name() + "/" + bVar.VarTypeString());
+      std::string leaf = bVar.Name() + "/" + bVar.VarTypeString();
+      m_tree[tname]->Branch(bVar.Name().c_str(), bVar.Address(), leaf.c_str());
     }
     else if( ( bVar.IsVector() && (bVar.VecInd()>=0) ) || ( bVar.IsAnaObject() && !bVar.IsVector() ) ){
-      m_tree[tname]->Branch(bVar.Name(),bVar.ValStore(), bVar.Name() + "/D" );
+      std::string leaf = bVar.Name() + "/D";
+      m_tree[tname]->Branch(bVar.Name().c_str(),bVar.ValStore(), leaf.c_str() );
     }
     else if( bVar.IsAnaObject() && bVar.IsVector() && (bVar.VecInd()<0) ){
-      m_tree[tname]->Branch(bVar.Name(),"std::vector<double>",bVar.VecStore() );
+      m_tree[tname]->Branch(bVar.Name().c_str(),"std::vector<double>",bVar.VecStore() );
     }
     else if( !bVar.IsAnaObject() && bVar.IsVector() && (bVar.VecInd()<0) ){
         TString typeVar = "";
@@ -50,7 +52,7 @@ void TreeManager::AddBranchToTree(const std::string& tname, VariableDef& bVar){
         else if(bVar.VarType()==VariableDef::VECDOUBLE) typeVar = "std::vector<double>";
         else if(bVar.VarType()==VariableDef::VECVECDOUBLE) typeVar = "std::vector<std::vector<double> >";
 	else{ std::cerr << "<!> Error in TreeManager::AddBranchToTree(): the variable type is not recognized !!" << std::endl; }
-	m_tree[tname]->Branch(bVar.Name(),typeVar,bVar.Address() );
+	m_tree[tname]->Branch(bVar.Name().c_str(),typeVar,bVar.Address() );
     }
     
     return;
@@ -83,7 +85,7 @@ void TreeManager::SetBranchToTree(const std::string& tname, VariableDef& bVar, c
     
     if(!m_tree[tname]){std::cout<<"TREE "<<tname<<" was not found. Could not set branch"<<std::endl; return;}
     
-    std::string _branchName = (inputVarName == "") ? inputVarName : (std::string)bVar.Name();
+    std::string _branchName = (inputVarName == "") ? inputVarName : bVar.Name();
     _branchName = "b_" + _branchName;
     m_branches[tname][_branchName] = NULL;
     m_tree[tname]->SetBranchAddress( _branchName.c_str(), bVar.Address(), &(m_branches[tname][_branchName])  );

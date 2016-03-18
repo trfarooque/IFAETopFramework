@@ -1,20 +1,19 @@
 #ifndef OUTPUTHISTMANAGER_H
 #define OUTPUTHISTMANAGER_H
 
-//ROOT libraries
-#include "TString.h"
-
 //Standard libraries
 #include <map>
 #include <set>
 #include <vector>
+#include <string>
 
 //IFAEFramework classes
-#include "IFAETopFramework/SystManager.h"
+//#include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/HistManager.h"
 #include "IFAETopFramework/OutputManager.h"
+#include "IFAETopFramework/AnalysisObject.h"
 
 class OutputData;
 
@@ -58,8 +57,8 @@ public:
     
     //_________________________
     // Typedefs
-    typedef std::map < TString, h1Def* > StdTH1;
-    typedef std::map < TString, h2Def* > StdTH2;
+    typedef std::map < std::string, h1Def* > StdTH1;
+    typedef std::map < std::string, h2Def* > StdTH2;
     
     //________________________
     // Member functions
@@ -79,23 +78,23 @@ public:
     
     //___________________________________________________
     //
-    template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min, const double max,
-						const TString &title, const TString &variableType,
+    template< typename T > bool AddStandardTH1( const std::string &name, const double width, const double min, const double max,
+						const std::string &title, const std::string &variableType,
 						const bool hasSyst, T *t,  const int vec_ind = -1, const std::string& moment="", const int hopt=0) {
 
       return AddStandardTH1(name, width, min, max, NULL, title, variableType, hasSyst, t, vec_ind, moment, hopt);
     }
     
-    template< typename T > bool AddStandardTH1( const TString &name, const std::vector<double>* edges,
-						const TString &title, const TString &variableType,
+    template< typename T > bool AddStandardTH1( const std::string &name, const std::vector<double>* edges,
+						const std::string &title, const std::string &variableType,
 						const bool hasSyst, T *t, const int vec_ind = -1, const std::string& moment="", const int hopt=0) {
       return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, hasSyst, t, vec_ind, moment, hopt);
 
     }
     
-    bool BookStandardTH1( const TString &pattern, const bool hasSyst = false);
-    bool FillStandardTH1( const TString &name );
-    bool SaveStandardTH1( const TString&, const bool newFile = true);
+    bool BookStandardTH1( const std::string &pattern, const bool hasSyst = false);
+    bool FillStandardTH1( const std::string &name );
+    bool SaveStandardTH1( const std::string&, const bool newFile = true);
     
     //
     //___________________________________________________________
@@ -104,10 +103,10 @@ public:
     //
     //___________________________________________________
     //
-    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+    template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const double widthX, const double minX, const double maxX,
 							      const double widthY, const double minY, const double maxY,
-							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY, 
 							      const int vec_indX = -1, const int vec_indY = -1, 
 							      const std::string& momentX = "", const std::string& momentY = "") {
@@ -115,11 +114,11 @@ public:
 			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, momentX, momentY);
     }
     
-    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+    template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const double widthX, const double minX, const double maxX,
 							      const std::vector<double>* edgesY,
-							      const TString &titleX, const TString &titleY,
-							      const TString &variableTypeX, const TString &variableTypeY,
+							      const std::string &titleX, const std::string &titleY,
+							      const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
 							      const int vec_indX = -1, const int vec_indY = -1,
 							      const std::string& momentX = "", const std::string& momentY = "") {
@@ -127,9 +126,9 @@ public:
                               titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, momentX, momentY);
     }
     
-    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+    template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
-							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
 							      const int vec_indX = -1, const int vec_indY = -1,
 							      const std::string& momentX = "", const std::string& momentY = "") {
@@ -137,20 +136,20 @@ public:
                               titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, momentX, momentY);
         
     }
-    bool BookStandardTH2( const TString &pattern, const bool hasSyst = false);
-    bool FillStandardTH2( const TString &name );
-    bool SaveStandardTH2( const TString&, const bool newFile = true );
+    bool BookStandardTH2( const std::string &pattern, const bool hasSyst = false);
+    bool FillStandardTH2( const std::string &name );
+    bool SaveStandardTH2( const std::string&, const bool newFile = true );
     
     //
     // Light TProfile interface
     //
-    bool StoreTProfile( const TString &nameX, const TString &nameY, const bool hasSyst = false );
+    bool StoreTProfile( const std::string &nameX, const std::string &nameY, const bool hasSyst = false );
     
 private:
     
-    template< typename T > bool AddStandardTH1( const TString &name, const double width, const double min, const double max,
+    template< typename T > bool AddStandardTH1( const std::string &name, const double width, const double min, const double max,
 						const std::vector<double>* edges, 
-						const TString &title, const TString &variableType,
+						const std::string &title, const std::string &variableType,
 						const bool hasSyst, T *t, 
 						const int vec_ind = -1, const std::string& moment="", const int hopt = 0) {
         
@@ -171,7 +170,7 @@ private:
         
         VariableDef _var(name, title, variableType, t, vec_ind, moment);
         
-        std::map< TString , h1Def*>::iterator it = m_stdTH1Def -> find(name);
+        std::map< std::string , h1Def*>::iterator it = m_stdTH1Def -> find(name);
         if(it != m_stdTH1Def->end()){
             m_stdTH1Def->at(name)->var = _var;
         }
@@ -182,13 +181,13 @@ private:
         return true;
     }
     
-    bool AddStandardTH1(const TString &name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst = false, const int hopt = 0);
+    bool AddStandardTH1(const std::string &name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst = false, const int hopt = 0);
     
-    template< typename TX, typename TY > bool AddStandardTH2( const TString &nameX, const TString &nameY,
+    template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const double widthX, const double minX, const double maxX,
 							      const double widthY, const double minY, const double maxY,
 							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
-							      const TString &titleX, const TString &titleY, const TString &variableTypeX, const TString &variableTypeY,
+							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
 							      const int vec_indX = -1, const int vec_indY = -1,
 							      const std::string& momentX = "", const std::string& momentY = "") {
@@ -202,7 +201,7 @@ private:
         if( !tX ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the tX pointer (" << tX << "). Please check !" << std::endl;
         if( !tY ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the tY pointer (" << tY << "). Please check !" << std::endl;
         
-        TString name = nameY + "_vs_" + nameX;
+        std::string name = nameY + "_vs_" + nameX;
         bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, edgesX, edgesY, hasSyst);
         if(!added) {
             std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::endl;
@@ -210,17 +209,8 @@ private:
         }
         
         VariableDef _varX(nameX,titleX, variableTypeX, tX, vec_indX, momentX);
-	if( (vec_indX < 0) && _varX.IsVector() ){ 
-	  std::cerr<< "ERROR: Vector loop for TH2 is not supported. Please provide non-negative vector index. "<<std::endl; 
-	  return false;
-	}
         VariableDef _varY(nameY,titleY, variableTypeY, tY, vec_indY, momentY);
-	if( (vec_indY < 0) && _varY.IsVector() ){ 
-	  std::cerr<< "ERROR: Vector loop for TH2 is not supported. Please provide non-negative vector index. "<<std::endl; 
-	  return false;
-	}
-        
-        std::map< TString , h2Def*>::iterator it = m_stdTH2Def -> find(name);
+        std::map< std::string , h2Def*>::iterator it = m_stdTH2Def -> find(name);
         if(it != m_stdTH2Def->end()){
             m_stdTH2Def->at(name)->varX = _varX;
             m_stdTH2Def->at(name)->varY = _varY;
@@ -230,11 +220,94 @@ private:
         return true;
     }
     
-    bool AddStandardTH2(const TString &name, const double widthX, const double minX, const double maxX,
+    bool AddStandardTH2(const std::string &name, const double widthX, const double minX, const double maxX,
                         const double widthY, const double minY, const double maxY, 
                         const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false);
     
-    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const TString &histName, const double weight, const std::string& moment="");
+    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const std::string &histName, const double weight, const std::string& moment="");
+    bool FillTH2FromOneVector(const double& flatVal, void* t, const VariableDef::VariableType type
+			    , const std::string &histName, const double weight,  const std::string& vecAxis="Y", const std::string& moment="");
+
+    bool FillTH2PairwiseFromVectors( void* tX, void* tY
+				     , VariableDef::VariableType typeX, VariableDef::VariableType typeY
+				     , const std::string &histName, const double weight
+				     , const std::string& momentX="", const std::string& momentY="");
+
+
+    template<typename TX, typename TY> bool FillTH2PairwiseFromPrimitiveVectors( vector<TX>* tX, vector<TY>* tY
+									, const std::string &histName, const double weight){
+      if( tX->size() != tY->size() ){ 
+	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromPrimitiveVectors - the given vectors are of different sizes" <<std::endl; 
+	return false;
+      }
+
+      for(auto valX : *tX){ 
+	for(auto valY : *tY){ 
+	  m_histMngr -> FillTH2D(histName, (double)valX, (double)valY, weight );
+	}
+      }
+      return true;
+
+    }
+
+    template<typename TX, typename TY> bool FillTH2PairwiseFromAOVectors( vector<TX>* tX, vector<TY>* tY
+									, const std::string &histName, const double weight
+									, const std::string& momentX="Pt", const std::string& momentY="Pt"){
+      if( tX->size() != tY->size() ){ 
+	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromAOVectors - the given vectors are of different sizes" <<std::endl; 
+	return false;
+      }
+
+      double valX = 0.; double valY = 0.;
+      for(auto compX : *tX){
+	valX = ((AnalysisObject*)compX)->GetMoment(momentX); 
+	for(auto compY : *tY){
+	  valY = ((AnalysisObject*)compY)->GetMoment(momentY);
+	  m_histMngr -> FillTH2D(histName, valX, valY, weight );
+	}
+      }
+      return true;
+
+    }
+
+    template<typename TX, typename TY> bool FillTH2PairwiseFromVectorsAOX( vector<TX>* tX, vector<TY>* tY
+									   , const std::string &histName, const double weight
+									   , const std::string& momentX="Pt"){
+      if( tX->size() != tY->size() ){ 
+	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromAOVectors - the given vectors are of different sizes" <<std::endl; 
+	return false;
+      }
+
+      double valX = 0.;
+      for(auto compX : *tX){
+	valX = ((AnalysisObject*)compX)->GetMoment(momentX); 
+	for(auto valY : *tY){
+	  m_histMngr -> FillTH2D(histName, valX, (double)valY, weight );
+	}
+      }
+      return true;
+
+    }
+
+    template<typename TX, typename TY> bool FillTH2PairwiseFromVectorsAOY( vector<TX>* tX, vector<TY>* tY
+									   , const std::string &histName, const double weight
+									   , const std::string& momentY="Pt"){
+      if( tX->size() != tY->size() ){ 
+	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromAOVectors - the given vectors are of different sizes" <<std::endl; 
+	return false;
+      }
+
+      double valY = 0.;
+      for(auto valX : *tX){
+	for(auto compY : *tY){
+	  valY = ((AnalysisObject*)compY)->GetMoment(momentY); 
+	  m_histMngr -> FillTH2D(histName, (double)valX, valY, weight );
+	}
+      }
+      return true;
+
+    }
+
 
 private:
     StdTH1 *m_stdTH1Def;
@@ -243,7 +316,7 @@ private:
     
     HistManager *m_histMngr;
     
-    std::set < TString > *m_vecH2ToProfile;
+    std::set < std::string > *m_vecH2ToProfile;
     
 };
 

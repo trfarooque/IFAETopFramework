@@ -1,16 +1,14 @@
 #ifndef OUTPUTTREEMANAGER_H
 #define OUTPUTTREEMANAGER_H
 
-//ROOT libraries
-#include "TString.h"
-
 //Standard libraries
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 //IFAEFramework classes
-#include "IFAETopFramework/SystManager.h"
+//#include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/OutputManager.h"
@@ -24,14 +22,14 @@ public:
 
     //_________________________
     // Typedefs
-    typedef std::map < TString, VariableDef* > StdBranches;
+    typedef std::map < std::string, VariableDef* > StdBranches;
     
     //________________________
     // Member functions
     OutputTreeManager(OptionsBase *opt);
     OutputTreeManager( const OutputTreeManager &q );
     ~OutputTreeManager();
-    virtual bool SetSystVector(SystManager::SystVector *sysVector);
+    virtual bool SetSystMap(WeightManager::WeightMap *sysMap);
     //________________________
     // Inline functions
     inline bool SetData( OutputData *data ){ m_data = data; return true;}
@@ -43,7 +41,7 @@ public:
     // TREE-SPECIFIC FUNCTIONS
     //
     //
-    template< typename T > bool AddStandardBranch( const TString &name,  const TString &title, const TString &variableType,
+    template< typename T > bool AddStandardBranch( const std::string &name,  const std::string &title, const std::string &variableType,
 						   T *t, const int vec_ind = -1, const std::string moment="") {
         
         if(m_opt -> MsgLevel() == Debug::DEBUG){
@@ -56,15 +54,15 @@ public:
 	bool fill_vec = false;
 	if( variableType == "VAO" && (vec_ind < 0) ){fill_vec = true;}
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind, moment, fill_vec);
-        m_stdBranchDef -> insert( std::pair < TString, VariableDef* >( name, _var ) );
+        m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( name, _var ) );
         
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
         
         return true;
     }
-    bool BookStandardTree( const TString &pattern, const TString &title);
-    bool FillStandardTree( const TString &name );
-    bool SaveStandardTree( const TString& );
+    bool BookStandardTree( const std::string &pattern, const std::string &title);
+    bool FillStandardTree( const std::string &name );
+    bool SaveStandardTree( const std::string& );
     
     
 private:

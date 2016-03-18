@@ -9,7 +9,9 @@
 #include "IFAETopFramework/OutputManager.h"
 #include "IFAETopFramework/OutputHistManager.h"
 #include "IFAETopFramework/OutputTreeManager.h"
+#include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/VariableDef.h"
+#include "IFAETopFramework/WeightObject.h"
 #include "IFAETopFramework/SampleInfo.h"
 #include "IFAETopFramework/SelectorBase.h"
 #include "IFAETopFramework/AnalysisObject.h"
@@ -29,7 +31,9 @@
 #pragma link C++ class OutputManager+;
 #pragma link C++ class OutputHistManager+;
 #pragma link C++ class OutputTreeManager+;
+#pragma link C++ class WeightManager+;
 #pragma link C++ class VariableDef+;
+#pragma link C++ class WeightObject+;
 #pragma link C++ class SampleInfo+;
 #pragma link C++ class SelectorBase+;
 #pragma link C++ class AnalysisObject+;

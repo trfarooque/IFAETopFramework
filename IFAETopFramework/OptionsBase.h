@@ -50,7 +50,10 @@ public:
 
     inline const std::string& StrSampleName() const { return m_str_sampleName; }
     inline const std::string& StrSampleID() const { return m_str_sampleID; }
+    inline const std::string& StrNominalName() const { return m_str_nomName; }
     inline const std::string& StrSysName() const { return m_str_sysName; }
+    inline const std::string& NominalConfigList() const { return m_str_nom_configList; }
+    inline const std::string& SysConfigList() const { return m_str_sys_configList; }
     inline const std::string& StrAnaType() const { return m_str_anaType; }
 
     inline SampleName::sample SampleName() const { return m_sampleName; }
@@ -85,7 +88,9 @@ protected:
     AnaType::ana m_anaType;
     LeptonChannel::lepch m_leptonChannel;
 
-    std::string m_str_sampleName,m_str_sampleID,m_str_sysName,m_str_anaType,m_str_leptonChannel;
+    std::string m_str_sampleName,m_str_sampleID,m_str_nomName,m_str_sysName
+      ,m_str_nom_configList,m_str_sys_configList,m_str_anaType,m_str_leptonChannel;
+
     std::string m_inputTree,m_outputTree,m_inputFile,m_outputFile,m_outputFolder;
 
     int m_skipEvents, m_nEvents, m_pickEvent;
