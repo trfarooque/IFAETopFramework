@@ -28,8 +28,7 @@ m_str_sampleName(""),//used to define the enum
 m_str_sampleID("UNDEFINED"),
 m_str_nomName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
-m_str_nom_configList(""),
-m_str_sys_configList(""),
+m_str_wgt_configList(""),
 m_str_anaType(""),
 m_str_leptonChannel(""),
 m_inputTree(""),
@@ -68,8 +67,7 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_str_sampleID       = q.m_str_sampleID;
     m_str_nomName        = q.m_str_nomName;
     m_str_sysName        = q.m_str_sysName;
-    m_str_nom_configList = q.m_str_nom_configList;
-    m_str_sys_configList = q.m_str_sys_configList;
+    m_str_wgt_configList = q.m_str_wgt_configList;
     m_str_anaType        = q.m_str_anaType;
     m_str_leptonChannel  = q.m_str_leptonChannel;
     
@@ -244,65 +242,62 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         m_str_sampleName = temp_val;
     }
     else if( temp_arg.find("--SAMPLEID") != std::string::npos ){
-        m_str_sampleID = temp_val;
+      m_str_sampleID = temp_val;
     }
     else if( temp_arg.find("--NOMINALNAME") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        m_str_nomName = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      m_str_nomName = temp_val;
     }
-
+    
     else if( temp_arg.find("--SYSNAME") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        m_str_sysName = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      m_str_sysName = temp_val;
     }
-
-    else if( temp_arg.find("--NOMINALCONFIGLIST") != std::string::npos ){
-        m_str_nom_configList = temp_val;
-    }
-    else if( temp_arg.find("--SYSCONFIGLIST") != std::string::npos ){
-        m_str_sys_configList = temp_val;
+    
+    else if( temp_arg.find("--WEIGHTCONFIGS") != std::string::npos ){
+      m_str_wgt_configList = temp_val;
     }
     else if( temp_arg.find("--ANATYPE") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
-        else if ( temp_val.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
-        else if ( temp_val.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
-        else{ std::cout<<"Unknown analysis type"<<std::endl; }
-        m_str_anaType = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      if ( temp_val.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
+      else if ( temp_val.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
+      else if ( temp_val.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
+      else{ std::cout<<"Unknown analysis type"<<std::endl; }
+      m_str_anaType = temp_val;
     }
     else if( temp_arg.find("--LEPTONCHANNEL") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
-        else if ( temp_val.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
-        else{ std::cout<<"Unknown lepton type"<<std::endl; }
-        m_str_leptonChannel = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      if ( temp_val.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
+      else if ( temp_val.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
+      else{ std::cout<<"Unknown lepton type"<<std::endl; }
+      m_str_leptonChannel = temp_val;
     }
     else if( temp_arg.find("--INPUTTREE") != std::string::npos ){
-        m_inputTree = temp_val;
+      m_inputTree = temp_val;
     }
     else if( temp_arg.find("--OUTPUTTREE") != std::string::npos ){
-        m_outputTree = temp_val;
+      m_outputTree = temp_val;
     }
     else if( temp_arg.find("--INPUTFILE") != std::string::npos ){
-        m_inputFile = temp_val;
+      m_inputFile = temp_val;
     }
     else if( temp_arg.find("--OUTPUTFILE") != std::string::npos ){
-        m_outputFile = temp_val;
+      m_outputFile = temp_val;
     }
     else if( temp_arg.find("--OUTPUTFOLDER") != std::string::npos ){
-        m_outputFolder = temp_val;
+      m_outputFolder = temp_val;
     }
     else if( temp_arg.find("--NEVENTS") != std::string::npos ){
-        m_nEvents = atoi(temp_val.c_str());
+      m_nEvents = atoi(temp_val.c_str());
     }
     else if( temp_arg.find("--SKIPEVENTS") != std::string::npos ){
-        m_skipEvents = atoi(temp_val.c_str());
+      m_skipEvents = atoi(temp_val.c_str());
     }
     else if( temp_arg.find("--PICKEVENT") != std::string::npos ){
-        m_pickEvent = atoi(temp_val.c_str());
+      m_pickEvent = atoi(temp_val.c_str());
     }
     else {
-        return false;
+      return false;
     }
     return true;
 }
@@ -328,8 +323,7 @@ void OptionsBase::PrintOptions()
     std::cout << " m_sysName            = " << m_sysName << std::endl;
     std::cout << " m_str_nomName        = " << m_str_nomName << std::endl;
     std::cout << " m_str_sysName        = " << m_str_sysName << std::endl;
-    std::cout << " m_str_nom_configList = " << m_str_nom_configList << std::endl;
-    std::cout << " m_str_sys_configList = " << m_str_sys_configList << std::endl;
+    std::cout << " m_str_wgt_configList = " << m_str_wgt_configList << std::endl;
     std::cout << " m_anaType            = " << m_anaType << std::endl;
     std::cout << " m_str_anaType        = " << m_str_anaType << std::endl;
     std::cout << " m_leptonChannel      = " << m_leptonChannel << std::endl;

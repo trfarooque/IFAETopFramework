@@ -28,17 +28,187 @@ WeightManager::WeightManager( const WeightManager& q){
 
 WeightManager::~WeightManager(){
 
-  for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ delete nom.second;  }
-  m_nomMap -> clear();
-  delete m_nomMap;
+  if(m_nomMap){
+    for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ delete nom.second;  }
+    m_nomMap -> clear();
+    delete m_nomMap;
+  }
+  if(m_systMap){
+    for(std::pair<std::string, WeightObject*> syst : *m_systMap){ delete syst.second;  }
+    m_systMap -> clear();
+    delete m_systMap;
+  }
 
-  for(std::pair<std::string, WeightObject*> syst : *m_systMap){ delete syst.second;  }
-  m_systMap -> clear();
-  delete m_systMap;
 
 }
 
-//_________________________________________________________________________________
+bool WeightManager::AddAllWeights(){
+
+  bool stat = true;
+  if(m_opt->StrNominalName() != ""){
+    stat = stat && AddWeightsFromString(m_opt -> StrNominalName(), true);
+  }
+  if(m_opt->ComputeWeightSys() && (m_opt->StrSysName() != "") ){
+    stat = stat && AddWeightsFromString(m_opt -> StrSysName(), false);
+  }
+  if(m_opt->WeightsConfigList() != ""){
+    stat = stat && AddWeightsFromConfig(m_opt -> WeightsConfigList());
+  }
+
+  //================ Quick loop to check that the affected nominal component for each systematic truly exists ========
+  if(m_systMap){
+    for(std::pair<std::string, WeightObject*> sys : *m_systMap){ 
+      const std::string& replace = sys.second->AffectedComponent();
+      if( (replace == "ALL") || (replace == "NONE") ) continue;
+      if( m_nomMap->find( replace ) == m_nomMap->end()){ 
+	std::cout<< "WeightManager::ComputeSystematicWeight() --> ERROR : affected nominal component "<< replace << " does not exist "<<std::endl;
+	stat = false; break;
+      }
+    }
+  }
+
+  return stat;
+}
+
+bool WeightManager::ComputeAllWeights(){
+
+  bool stat = ComputeNominalWeight();
+  if( m_opt->ComputeWeightSys() ){ 
+    bool stat_sys = ComputeSystematicWeights();
+    stat = stat && stat_sys;
+  }
+  return stat;
+
+}
+
+//________________________________________________________________________________________________________
+//
+bool WeightManager::ComputeNominalWeight(){
+  bool stat = true;
+  m_outData -> o_eventWeight_Nom = 1.;
+
+  for( std::pair<std::string, double> in_nom : *(m_ntupData->d_nominal_weight_components) ){
+    if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " input nominal weight component ("<<in_nom.first<<") = "<<in_nom.second<<std::endl; }
+    m_outData -> o_eventWeight_Nom *= in_nom.second;
+  }
+  for( std::pair<std::string, double> proc_nom : *(m_outData->o_nominal_weight_components) ){
+    if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " proc nominal weight component ("<<proc_nom.first<<") = "<<proc_nom.second<<std::endl; }
+    m_outData -> o_eventWeight_Nom *= proc_nom.second;
+  }
+
+  if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " Calculated nominal weight = "<< m_outData -> o_eventWeight_Nom <<std::endl; }
+
+  return stat;
+
+}
+
+bool WeightManager::ComputeSystematicWeights(){
+  bool stat = true;
+  if(m_systMap == NULL){ 
+    std::cout<<" WARNING : WeightManager::ComputeSystematicsWeights was called with empty systematics map "<<std::endl;
+    return false;
+  }
+  for(std::pair<std::string, WeightObject*> sys : *m_systMap){ 
+    stat = ComputeSystematicWeight(sys.second);
+  }
+
+  return stat;
+
+}
+
+
+//--------------------------------------------------------------------------------
+bool WeightManager::ComputeSystematicWeight(const std::string& name){
+  
+  WeightMap::iterator it = m_systMap -> find(name);
+  if(it == m_systMap->end()){
+    std::cout << "WeightManager::ComputeSystematicWeight() --> ERROR : Weight "<<name<<" not found in map"<<std::endl;
+    return false;
+  }
+  bool stat = ComputeSystematicWeight(it->second); 
+  
+  return stat;
+  
+}
+
+bool WeightManager::SetNominalComponent(const std::string& name, double value ){
+  bool stat = SetWeightComponent(name, value, true); 
+  return stat;
+}
+
+bool WeightManager::SetSystematicComponent(const std::string& name, double value ){
+  bool stat = SetWeightComponent(name, value, false); 
+  return stat;
+}
+
+
+
+//==========================================================================================
+bool WeightManager::UpdateNominalComponent(const std::string& name, double value){
+
+  //------------------------------------------- Update the nominal weight --------------------------
+  std::map<std::string, double>* weightValMap = m_outData -> o_nominal_weight_components;
+  std::map<std::string, double>::iterator it = weightValMap -> find(name);
+  if(it == weightValMap -> end()){ 
+    std::cout << "WeightManager::UpdateNominalComponent() --> ERROR: Weight component " << name << " not found in map in OutputData " << std::endl;
+    return false;
+  }
+
+  double old_value = it->second;
+  it->second = value;
+
+  double old_nomWeight = m_outData->o_eventWeight_Nom;
+  //(The weights have pointers to the map value, so this should actually be fairly easy). 
+  if((old_value > 0.) || (old_value < 0.)){
+    double new_nomWeight = (old_nomWeight/old_value)*value;
+    m_outData->o_eventWeight_Nom = new_nomWeight;
+  }
+  else{ ComputeNominalWeight(); }
+  //------------------------------------------------------------------------------------------------
+
+  if(m_systMap){
+    //------------------------------------------- Update all affected systematic weights ------------------
+    for(std::pair<std::string, WeightObject*> sys : *m_systMap){
+      if( sys.second -> AffectedComponent() == name ){ continue; }
+
+      double old_sysWeight = m_outData->o_eventWeight_Systs->at(name);
+      if((old_value > 0.) || (old_value < 0.)){
+	double new_sysWeight = (old_sysWeight/old_value)*value;
+	m_outData->o_eventWeight_Systs->at(name) = new_sysWeight;
+      }
+      else{ ComputeSystematicWeight(name); }
+
+    }
+  }
+ 
+  return true;
+}
+ 
+bool WeightManager::UpdateSystematicComponent(const std::string& name, double value){
+  
+  std::map<std::string, double>* weightValMap = m_outData -> o_syst_weight_components;
+  
+  std::map<std::string, double>::iterator it = weightValMap -> find(name);
+  if(it == weightValMap -> end()){ 
+    std::cout << "WeightManager::UpdateSystematicComponent() --> ERROR: Weight component " << name << " not found in map in OutputData " << std::endl;
+    return false;
+  }
+  
+  double old_value = it->second;
+  it->second = value;
+  
+  double old_sysWeight = m_outData->o_eventWeight_Systs->at(name);
+  //(The weights have pointers to the map value, so this should actually be fairly easy). 
+  if((old_value > 0.) || (old_value < 0.)){
+    double new_sysWeight = (old_sysWeight/old_value)*value;
+    m_outData->o_eventWeight_Systs->at(name) = new_sysWeight;
+  }
+  else{ ComputeSystematicWeight(name); }
+  
+  return true;
+}
+
+//==================================== PROTECTED METHODS =================================================
 bool WeightManager::AddNominal( const std::string &name, bool isInput, const std::string& branchName, const std::string& inputType ) {
   if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << "WeightManager::AddNominal adding nominal weight (" 
 						     << name << ")" << " isInput = " << isInput<<std::endl; }
@@ -86,15 +256,12 @@ bool WeightManager::AddSystematic( const std::string &name, const std::string& a
     double *t = &(m_outData -> o_eventWeight_Systs -> at(name));
 
     const std::string& _branch = (branchName == "") ? name : branchName;
-    WeightObject *sys = new WeightObject(name, t, isInput, _branch, inputType, affected_component);
+    WeightObject *sys = new WeightObject(name, t, isInput, _branch, inputType, false, affected_component);
     m_systMap -> insert ( std::pair < std::string, WeightObject* > ( name, sys ) );
     
   }
   return true;
 }
-
-
-//
 
 
 //____________________________________________________________________________
@@ -118,11 +285,12 @@ bool WeightManager::AddWeightsFromString(const std::string& inputStr, bool isNom
   return true;  
 }
 
-bool WeightManager::AddWeightsFromConfig(const std::string& inputStr, bool isNominal){
-
+bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
+  
   if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Adding weights from configuration files " << inputStr << std::endl;}
   std::string name           = "";
   bool isInput               = true;
+  bool isNominal             = true;
   std::string input_varType  = "D";
   std::string branchName     = "";
   std::string replace        = "";
@@ -146,9 +314,13 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr, bool isNom
     for( std::map<std::string, std::string> wgt_block : wgt_map ){
       name            = "";
       isInput         = true;
+      isNominal       = true;
       input_varType   = "D";
       branchName      = "";
       replace         = "";
+
+      if( wgt_block.find("ISNOMINAL") != wgt_block.end() ){ isNominal = AnalysisUtils::BoolValue(wgt_block["ISNOMINAL"], "ISNOMINAL"); }
+      if( !( m_opt->ComputeWeightSys() || isNominal) ){ continue; } //do not add systematic weights if ComputeWeightSys()==FALSE
 
       if( wgt_block.find("NAME") != wgt_block.end() ){ name = wgt_block["NAME"]; }
       else{ 
@@ -177,87 +349,47 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr, bool isNom
   return true;
 }
 
-//____________________________________________________________________________
-bool WeightManager::AddNominalsFromString(){
-
-  bool stat = AddWeightsFromString(m_opt -> StrNominalName() + ",", true);
-  return stat;  
-
-}
-
-bool WeightManager::AddNominalsFromConfig(){
-
-  //bool stat = AddWeightsFromConfig(m_opt -> NominalConfigList() + ",", true);
-  bool stat = AddWeightsFromConfig(m_opt -> NominalConfigList(), true);
-  return stat;  
-
-}
-
-bool WeightManager::AddSystematicsFromString(){
-
-  bool stat = AddWeightsFromString(m_opt -> StrSysName() + ",", false);
-  return stat;  
-
-}
-
-
-bool WeightManager::AddSystematicsFromConfig(){
-
-  //bool stat = AddWeightsFromConfig(m_opt -> SysConfigList() + ",", false);
-  bool stat = AddWeightsFromConfig(m_opt -> SysConfigList(), false);
-  return stat;  
-
-}
-
-//________________________________________________________________________________________________________
-//
-bool WeightManager::ComputeNominalWeights(){
-  bool stat = true;
-  m_outData -> o_eventWeight_Nom = 1.;
-
-  for( std::pair<std::string, double> in_nom : *(m_ntupData->d_nominal_weight_components) ){
-    if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " input nominal weight component ("<<in_nom.first<<") = "<<in_nom.second<<std::endl; }
-    m_outData -> o_eventWeight_Nom *= in_nom.second;
+bool WeightManager::ComputeSystematicWeight(WeightObject* sys){
+  
+  const std::string& name = sys->Name();
+  if( sys->IsInput() ){ m_outData->o_eventWeight_Systs->at(name) = m_ntupData->d_syst_weight_components->at(name); }
+  else{ m_outData->o_eventWeight_Systs->at(name) = m_outData->o_syst_weight_components->at(name); }
+  
+  const std::string& replace = sys->AffectedComponent();
+  if( replace == "ALL" ) return true; //no nominal component should be included
+  else if(replace == "NONE"){
+    m_outData->o_eventWeight_Systs->at(name) *= m_outData -> o_eventWeight_Nom;
   }
-  for( std::pair<std::string, double> proc_nom : *(m_outData->o_nominal_weight_components) ){
-    if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " proc nominal weight component ("<<proc_nom.first<<") = "<<proc_nom.second<<std::endl; }
-    m_outData -> o_eventWeight_Nom *= proc_nom.second;
-  }
-
-  if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " Calculated nominal weight = "<< m_outData -> o_eventWeight_Nom <<std::endl; }
-
-  return stat;
-
-}
-
-bool WeightManager::ComputeSystematicWeights(){
-  bool stat = true;
-  for(std::pair<std::string, WeightObject*> sys : *m_systMap){ 
-    //Read in the systematic component
-    if(sys.second->IsInput()){ m_outData->o_eventWeight_Systs->at(sys.first) = m_ntupData->d_syst_weight_components->at(sys.first); }
-    else{ m_outData->o_eventWeight_Systs->at(sys.first) = m_outData->o_syst_weight_components->at(sys.first); }
-
-    if( sys.second->AffectedComponent() == "ALL" ) continue; //no nominal component should be included
-    WeightMap::iterator it = m_nomMap->find( sys.second->AffectedComponent() );
-    if( it != m_nomMap->end()){ 
-      double affected_nom = (it->second->IsInput()) ? m_ntupData->d_nominal_weight_components->at(it->first)
-	: m_outData->o_nominal_weight_components->at(it->first);
-      m_outData->o_eventWeight_Systs->at(sys.first) *= m_outData -> o_eventWeight_Nom / affected_nom;
+  else{
+    WeightMap::iterator nom_it = m_nomMap->find( replace );
+    if( (nom_it == m_nomMap->end()) ){ 
+      std::cout<< "WeightManager::ComputeSystematicWeight() --> ERROR : affected nominal component "<< replace << " does not exist "<<std::endl;
     }
-
+    else{
+      double affected_nom = ( (nom_it->second)->IsInput() ) ? m_ntupData->d_nominal_weight_components->at( replace )
+	: m_outData->o_nominal_weight_components->at( replace );
+      m_outData->o_eventWeight_Systs->at(name) *= m_outData -> o_eventWeight_Nom / affected_nom;
+    }
   }
 
-  return stat;
-
+  return true;
+  
 }
 
-bool WeightManager::ComputeAllWeights(){
+bool WeightManager::SetWeightComponent(const std::string& name, double value, bool nominal ){
 
-  bool stat = ComputeNominalWeights();
-  if( m_opt->ComputeWeightSys() ){ 
-    bool stat_sys = ComputeSystematicWeights();
-    stat = stat && stat_sys;
+  std::map<std::string, double>* weightValMap = NULL;
+  if(nominal){ weightValMap = m_outData -> o_nominal_weight_components; }
+  else{ weightValMap = m_outData -> o_syst_weight_components; }
+
+  std::map<std::string, double>::iterator it = weightValMap -> find(name);
+  if(it == weightValMap -> end()){ 
+    std::cout << "WeightManager::SetWeightComponent() --> ERROR: Weight component " << name << " not found in map in OutputData " << std::endl;
+    return false;
   }
-  return (stat);
 
+  it->second = value;
+
+  return true;
 }
+

@@ -69,7 +69,11 @@ void NtupleReader::Init(std::map<std::string, WeightObject*> *nomMap, std::map<s
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::Init()" << std::endl;
 
     if(nomMap){ m_nomMap = nomMap; }
-    if(sysMap){ m_nomMap = sysMap; }
+    if(sysMap){ m_sysMap = sysMap; }
+
+    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "NtupleReader::Init() ; m_nomMap = " << m_nomMap << " ; m_sysMap = " << m_sysMap << std::endl;
+
+
 
     m_chain = new TChain(m_opt->InputTree().c_str());
     
@@ -162,35 +166,42 @@ int NtupleReader::SetWeightBranchAddresses(const string &){
 
     if(m_opt->MsgLevel() == Debug::DEBUG) std::cout << "Entering NtupleReader::SetWeightBranchAddresses()" << std::endl;
 
-    for( std::pair<std::string, WeightObject*> nom : *m_nomMap ){
-      if(!nom.second->IsInput()) continue;
-      const std::string& name = nom.second->Name();
-      const std::string& branchName = nom.second->BranchName();
-      if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout << "Setting weight branch " << name << " to branch " << branchName << std::endl; }
+    if(m_nomMap){
+      for( std::pair<std::string, WeightObject*> nom : *m_nomMap ){
+	if(!nom.second->IsInput()) continue;
+	const std::string& name = nom.second->Name();
+	const std::string& branchName = nom.second->BranchName();
+	if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout << "Setting weight branch " << name << " to branch " << branchName << std::endl; }
 
-      std::cout<<" m_ntupData == " << m_ntupData << std::endl; 
-      std::cout<<" m_ntupData->d_nominal_weight_components == " << m_ntupData->d_nominal_weight_components << std::endl; 
-      if( m_ntupData->d_nominal_weight_components->find(name) == m_ntupData->d_nominal_weight_components->end() ){
-	std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
-		  << " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
-	continue;
-      }      
-      SetVariableToChain(branchName, &(m_ntupData->d_nominal_weight_components->at(name)) );
-    }
+	std::cout<<" m_ntupData == " << m_ntupData << std::endl; 
+	std::cout<<" m_ntupData->d_nominal_weight_components == " << m_ntupData->d_nominal_weight_components << std::endl; 
+	if( m_ntupData->d_nominal_weight_components->find(name) == m_ntupData->d_nominal_weight_components->end() ){
+	  std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
+		    << " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
+	  continue;
+	}      
+	SetVariableToChain(branchName, &(m_ntupData->d_nominal_weight_components->at(name)) );
+      }
+
+    }//if the nominal weights map exists
 
     //_____________________________________________________________________________
-    for( std::pair<std::string, WeightObject*> sys : *m_sysMap ){
-      if(!sys.second->IsInput()) continue;
-      const std::string& name = sys.second->Name();
-      const std::string& branchName = sys.second->BranchName();
+    if(m_sysMap){
+
+      for( std::pair<std::string, WeightObject*> sys : *m_sysMap ){
+	if(!sys.second->IsInput()) continue;
+	const std::string& name = sys.second->Name();
+	const std::string& branchName = sys.second->BranchName();
       
-      if( m_ntupData->d_syst_weight_components->find(name) == m_ntupData->d_syst_weight_components->end() ){
-	std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name 
-		  << " does not exist in the list of input systematics weight branches. Please chack!!! " << std::endl;
-	continue;
-      }      
-      SetVariableToChain(branchName, &(m_ntupData->d_syst_weight_components->at(name)) );
-    }
+	if( m_ntupData->d_syst_weight_components->find(name) == m_ntupData->d_syst_weight_components->end() ){
+	  std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name 
+		    << " does not exist in the list of input systematics weight branches. Please chack!!! " << std::endl;
+	  continue;
+	}      
+	SetVariableToChain(branchName, &(m_ntupData->d_syst_weight_components->at(name)) );
+      }
+
+    }//if the systematic weights map exists
 
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::SetWeightBranchAddresses()" << std::endl;
 

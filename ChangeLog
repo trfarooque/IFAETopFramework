@@ -1,3 +1,7 @@
+2016-03-20 - Trisha Farooque <farooque@cern.ch>
+	- New WeightManager replaces SystManager
+	- Automated reading of nominal and systematics weights
+	- Automated handling of weight computations
 2016-03-05 - Trisha Farooque <farooque@cern.ch>
 	- Split OutputManager into OutputHistManager and OutputTreeManager
 	- Fixed weight calculation in systematics loop
