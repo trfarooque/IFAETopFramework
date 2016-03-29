@@ -11,16 +11,27 @@ public:
     
     enum VariableType{
         INT=1,
+        PTRINT=1,
         FLOAT,
+        PTRFLOAT,
         DOUBLE,
+        PTRDOUBLE,
         VECINT,
+        PTRVECINT,
         VECFLOAT,
+        PTRVECFLOAT,
         VECDOUBLE,
+        PTRVECDOUBLE,
         VECVECINT,
+        PTRVECVECINT,
         VECVECFLOAT,
+        PTRVECVECFLOAT,
         VECVECDOUBLE,
+        PTRVECVECDOUBLE,
 	AOBJ,
-	VECAO
+	PTRAOBJ,
+	VECAO,
+	PTRVECAO
     };
     
     //
@@ -33,11 +44,13 @@ public:
     //
     // Class functions
     //
-    std::string GetVarTypeString(int varType) const;
-    VariableType GetVarType(const std::string& varTypeString) const;
-    bool IsPrimitive(int varType) const;
-    bool IsAnaObject(int varType) const;
-    bool IsVector(int varType) const;
+    static std::string GetVarTypeString(int varType);
+    static VariableType GetVarType(const std::string& varTypeString);
+    static bool IsPrimitive(int varType);
+    static bool IsAnaObject(int varType);
+    static bool IsVector(int varType);
+    static bool IsPointer(int varType);
+
     void CalcDoubleValue();
     void FillVectorStore();
         
@@ -51,6 +64,7 @@ public:
     inline void* Address() const{ return m_address; }
     inline int VecInd() const{ return m_vec_ind; }
     inline bool IsPrimitive() const{ return m_isPrimitive; }
+    inline bool IsPointer() const{ return m_isPointer; }
     inline bool IsVector() const{ return m_isVector; }
     inline bool IsAnaObject() const{ return m_isAnaObject; }
     inline const std::string& Moment() const{ return m_moment; }    
@@ -92,6 +106,7 @@ public:
       m_fill_vec(fill_vec) 
     {
         m_isPrimitive = IsPrimitive(varType);
+        m_isPointer = IsPointer(varType);
 	m_isVector = IsVector(varType);
 	m_isAnaObject = IsAnaObject(varType);
 	if(m_fill_vec){
@@ -122,6 +137,7 @@ public:
     {
 	VariableType varType = GetVarType(varTypeString);
         m_isPrimitive = IsPrimitive(varType);
+        m_isPointer = IsPointer(varType);
 	m_isVector = IsVector(varType);
 	m_isAnaObject = IsAnaObject(varType);
         SetAddress(t);
@@ -134,10 +150,9 @@ public:
 	}
     }
     
-    
     template< typename T > void SetAddress( T *t ){ m_address = (void*)t; }
 
-private:
+protected:
     //
     // Data members
     //
@@ -148,6 +163,7 @@ private:
     int m_vec_ind;
     void *m_address;
     bool m_isPrimitive;
+    bool m_isPointer;
     bool m_isVector;
     bool m_isAnaObject;
 

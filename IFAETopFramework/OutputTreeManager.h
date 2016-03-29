@@ -52,7 +52,7 @@ public:
         }
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
 	bool fill_vec = false;
-	if( variableType == "VAO" && (vec_ind < 0) ){fill_vec = true;}
+	if( ((variableType == "VAO") || (variableType == "PVAO"))  && (vec_ind < 0) ){fill_vec = true;}
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind, moment, fill_vec);
         m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( name, _var ) );
         
@@ -61,7 +61,7 @@ public:
         return true;
     }
     bool BookStandardTree( const std::string &pattern, const std::string &title);
-    bool FillStandardTree( const std::string &name );
+    bool FillStandardTree( const std::string &name, const bool updateStores=true );
     bool SaveStandardTree( const std::string& );
     
     

@@ -45,10 +45,15 @@ class WeightManager{
   bool UpdateSystematicComponent(const std::string& name, double value);
 
  protected:
+  
+  bool AddWeight( const std::string &name, const std::string& title="", bool isNominal=true, 
+		  bool isInput=true, const std::string& branchName="",
+		  const std::string& affected_component="",
+		  const std::string& inputType="D", int vec_ind=-1);
 
-  bool AddNominal( const std::string &name, bool isInput=true, const std::string& branchName="", const std::string& inputType="D" );
-  bool AddSystematic( const std::string &name, const std::string& affected_component=""
-		      , bool isInput=true, const std::string& branchName="", const std::string& inputType="D" );
+  //bool AddNominal( const std::string &name, bool isInput=true, const std::string& branchName="", const std::string& inputType="D" );
+  //bool AddSystematic( const std::string &name, const std::string& affected_component=""
+  //		      , bool isInput=true, const std::string& branchName="", const std::string& inputType="D" );
 
   bool AddWeightsFromString(const std::string& inputStr, bool isNominal=false);
   bool AddWeightsFromConfig( const std::string& inputStr );

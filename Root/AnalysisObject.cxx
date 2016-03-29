@@ -41,23 +41,25 @@ void AnalysisObject::Reset(){
 //_______________________________________________________________________
 //
 void AnalysisObject::SetMoment(const std::string &name,const double value){
-    if (IsKnownMoment(name)){
-        //The moment is already in the map ... you should use UpdateMoment function
-        std::cout << "<!> WARNING in AnalysisObject::SetMoment(): The moment \"" << name << "\" is already used and set. Please use UpdateMoment function instead." << std::endl;
-        return;
-    }
-    m_moments.insert(std::pair<std::string,double>(name,value));
+
+  if(IsKnownMoment(name)){
+    //The moment is already in the map ... you should use UpdateMoment function
+    std::cout << "<!> WARNING in AnalysisObject::SetMoment(): The moment \"" << name << "\" is already used and set. Please use UpdateMoment function instead." << std::endl;
+    return;
+  }
+  if(IsKinematicMoment(name)){ std::cerr<<" AnalysisObject::SetMoment() --> ERROR Please use TLorentzVector::SetPtEtaPhiM() to set kinematic moment "<<name<<std::endl;}
+  m_moments.insert(std::pair<std::string,double>(name,value));
 }
 
 //_______________________________________________________________________
 //
 void AnalysisObject::UpdateMoment(const std::string &name,const double value){
-    if (!IsKnownMoment(name)){
-        //The moment is not in the map ... you should use SetMoment function
-        std::cout << "<!> WARNING in AnalysisObject::UpdateMoment(): The moment \"" << name << "\" is not known. Please use SetMoment function instead." << std::endl;
-        return;
-    }
-    m_moments[name] = value;
+  if (!IsKnownMoment(name)){
+    //The moment is not in the map ... you should use SetMoment function
+    std::cout << "<!> WARNING in AnalysisObject::UpdateMoment(): The moment \"" << name << "\" is not known. Please use SetMoment function instead." << std::endl;
+    return;
+  }
+  m_moments[name] = value;
 }
 
 //_______________________________________________________________________
@@ -68,12 +70,21 @@ double AnalysisObject::GetMoment(const std::string &name) const
     else if(name == "Eta"){ return Eta(); }
     else if(name == "Phi"){ return Phi(); }
     else if(name == "M"){ return M(); }
+    else if(name == "E"){ return E(); }
     else{
       std::map<std::string,double>::const_iterator it=m_moments.find(name);
       if (it!=m_moments.end()){ return it->second; }
     }
-    std::cout << " >>>>> FATAL in AnalysisObject::GetMoment(''" <<  name << "''): unknown moment !" << std::endl;
+    std::cerr << " >>>>> FATAL in AnalysisObject::GetMoment(''" <<  name << "''): unknown moment !" << std::endl;
     return -1;
+}
+
+//_______________________________________________________________________
+//
+bool AnalysisObject::IsKinematicMoment(const std::string &name) const
+{
+    if( (name == "Pt") || (name == "Eta") || (name == "Phi") || (name == "M") || (name == "E") ){ return true; }
+    return false;
 }
 
 //_______________________________________________________________________
@@ -82,6 +93,7 @@ bool AnalysisObject::IsKnownMoment(const std::string &name) const
 {
     std::map<std::string,double>::const_iterator it=m_moments.find(name);
     if (it!=m_moments.end()) return true;
+
     return false;
 }
 

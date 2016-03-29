@@ -3,74 +3,85 @@
 //__________________________________________________________
 //
 OutputData::OutputData():
+  o_D_weight_components(NULL),
+  o_F_weight_components(NULL),
+  o_vecD_weight_components(NULL),
+  o_vecF_weight_components(NULL),
   o_eventWeight_Nom(0.),
   o_eventWeight_Systs(NULL)
 {
   o_eventWeight_Systs = new std::map<std::string, double>;
-  o_nominal_weight_components = new std::map<std::string, double>;
-  o_syst_weight_components = new std::map<std::string, double>;
-
 }
 
 //__________________________________________________________
 //
 OutputData::OutputData( const OutputData & q){
-    o_eventWeight_Nom = q.o_eventWeight_Nom;
-    o_eventWeight_Systs = q.o_eventWeight_Systs;
+  o_D_weight_components      = q.o_D_weight_components;
+  o_F_weight_components      = q.o_F_weight_components;
+  o_vecD_weight_components   = q.o_vecD_weight_components;
+  o_vecF_weight_components   = q.o_vecF_weight_components;
+  o_eventWeight_Nom          = q.o_eventWeight_Nom;
+  o_eventWeight_Systs        = q.o_eventWeight_Systs;
 }
 
 //__________________________________________________________
 //
 OutputData::~OutputData()
 {
-  delete o_eventWeight_Systs;
-  delete o_nominal_weight_components;
-  delete o_syst_weight_components;
-
-}
-
-
-//__________________________________________________________
-//
-bool OutputData::InsertNomComponent(const std::string& name) const{
- 
-  if( o_nominal_weight_components->find(name) != o_nominal_weight_components->end() ){
-    std::cerr << "<!> ERROR in OuputData::InsertNomComponent:  nominal weight (" << name << ") exists already. Please chack !!" << std::endl;
-    return false;
+  if(o_eventWeight_Systs){
+    delete o_eventWeight_Systs;
   }
-  o_nominal_weight_components->insert(std::pair<std::string, double>( name, 0.) );
-
-  return true;
-}
-
-bool OutputData::InsertSystComponent(const std::string& name) const{
- 
-  if( o_syst_weight_components->find(name) != o_syst_weight_components->end() ){
-    std::cerr << "<!> ERROR in OutputData::InsertSystComponent:  systematics weight (" << name << ") exists already. Please chack !!" << std::endl;
-    return false;
+  if(o_D_weight_components){
+    delete o_D_weight_components;
   }
-  o_syst_weight_components->insert(std::pair<std::string, double>( name, 0.) );
-
-  return true;
-}
-
-bool OutputData::InsertSystWeight(const std::string& name) const{
- 
-  if( o_eventWeight_Systs->find(name) != o_eventWeight_Systs->end() ){
-    std::cerr << "<!> ERROR in OutputData::InsertSystWeight:  systematics weight (" << name << ") exists already. Please chack !!" << std::endl;
-    return false;
+  if(o_F_weight_components){
+    delete o_F_weight_components;
   }
-  o_eventWeight_Systs->insert(std::pair<std::string, double>( name, 0.) );
+  if(o_vecD_weight_components){
+    for(std::pair<std::string, std::vector<double>* > wgt : *o_vecD_weight_components){
+      wgt.second->clear(); delete wgt.second;
+    }
+    o_vecD_weight_components->clear();
+    delete o_vecD_weight_components;
+  }
 
-  return true;
+  if(o_vecF_weight_components){
+    for(std::pair<std::string, std::vector<float>* > wgt : *o_vecF_weight_components){
+      wgt.second->clear(); delete wgt.second;
+    }
+    o_vecF_weight_components->clear();
+    delete o_vecF_weight_components;
+  }
+
+
 }
 
 //__________________________________________________________
 //
 void OutputData::ClearOutputData()
 {
-    o_eventWeight_Nom = 0;
-    for ( std::pair < std::string, double > component : *o_eventWeight_Systs ) o_eventWeight_Systs -> at(component.first) = 0.;
+  o_eventWeight_Nom = 0;
+  if(o_eventWeight_Systs){
+    for ( std::pair < std::string, double > wgt : *o_eventWeight_Systs ) wgt.second = 0.;
+  }
+  if(o_D_weight_components){
+    for ( std::pair < std::string, double > wgt : *o_D_weight_components ) wgt.second = 0.;
+  }
+  if(o_F_weight_components){
+    for ( std::pair < std::string, float > wgt : *o_F_weight_components ) wgt.second = 0.;
+  }
+  if(o_vecD_weight_components){
+    for(std::pair<std::string, std::vector<double>* > comp : *o_vecD_weight_components){
+      for(double& el : *comp.second){ el = 0.; }
+    }
+  }  
+  if(o_vecF_weight_components){
+    for(std::pair<std::string, std::vector<float>* > comp : *o_vecF_weight_components){
+      for(float& el : *comp.second){ el = 0.; }
+    }
+  }  
+  return;
+
 }
 
 //__________________________________________________________

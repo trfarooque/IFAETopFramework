@@ -93,7 +93,7 @@ public:
     }
     
     bool BookStandardTH1( const std::string &pattern, const bool hasSyst = false);
-    bool FillStandardTH1( const std::string &name );
+    bool FillStandardTH1( const std::string &name, const bool updateStores = true );
     bool SaveStandardTH1( const std::string&, const bool newFile = true);
     
     //
@@ -137,13 +137,19 @@ public:
         
     }
     bool BookStandardTH2( const std::string &pattern, const bool hasSyst = false);
-    bool FillStandardTH2( const std::string &name );
+    bool FillStandardTH2( const std::string &name, const bool updateStores = true );
     bool SaveStandardTH2( const std::string&, const bool newFile = true );
     
     //
     // Light TProfile interface
     //
     bool StoreTProfile( const std::string &nameX, const std::string &nameY, const bool hasSyst = false );
+
+    //
+    //Update all the VariableDef stores associated to standard histograms. Use judiciously - 
+    //this is most useful when the number of selection regions far exceeds the actual number of distributions
+    bool UpdateStores();
+
     
 private:
     

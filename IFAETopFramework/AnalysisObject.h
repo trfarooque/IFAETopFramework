@@ -21,6 +21,7 @@ public:
     void UpdateMoment( const std::string &key, const double value );
     double GetMoment(const std::string &name) const;
     bool IsKnownMoment(const std::string &name) const;
+    bool IsKinematicMoment(const std::string &name) const;
     AnalysisObject& operator=(const AnalysisObject& q);
     AnalysisObject operator+(const AnalysisObject& q) const;
     
