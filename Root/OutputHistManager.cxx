@@ -52,9 +52,27 @@ OutputHistManager::OutputHistManager( const OutputHistManager &q ) :
 OutputHistManager::~OutputHistManager()
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager destructor" << std::endl;
+
+
+    for( std::pair<std::string, h1Def*> hist : *m_stdTH1Def ){
+      delete hist.second->var;
+      delete hist.second;
+    }
     delete m_stdTH1Def;
+
+    for( std::pair<std::string, h1Def*> hist : *m_stdTProfileDef ){
+      delete hist.second->var;
+      delete hist.second;
+    }
     delete m_stdTProfileDef;
+
+    for( std::pair<std::string, h2Def*> hist : *m_stdTH2Def ){
+      delete hist.second->varX;
+      delete hist.second->varY;
+      delete hist.second;
+    }
     delete m_stdTH2Def;
+
     delete m_histMngr;
     delete m_vecH2ToProfile;
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager destructor" << std::endl;
@@ -81,6 +99,7 @@ bool OutputHistManager::AddStandardTH1(const std::string &name, const double wid
     }
     
     h1Def *hist = new h1Def();
+    hist -> var = NULL;
     hist -> width = width;
     hist -> min = min;
     hist -> max = max;
@@ -114,16 +133,16 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
     //
     for ( const auto h1 : *m_stdTH1Def ){
         
-      std::string histName = pattern + "_" + h1.second->var.Name();
+      std::string histName = pattern + "_" + h1.second->var->Name();
       
       const double* ptr_edges = (h1.second -> edges != NULL) ? &( h1.second->edges->at(0) ) : NULL;
       int nbins = ( (h1.second -> edges != NULL) && (h1.second -> edges->size() > 0) )? h1.second->edges->size() - 1 : 0;
       
       if(nbins > 0){        
-	  m_histMngr -> BookTH1D( histName, h1.second->var.Title(), nbins, ptr_edges);
+	  m_histMngr -> BookTH1D( histName, h1.second->var->Title(), nbins, ptr_edges);
         }
 	else{
-	  m_histMngr -> BookTH1D( histName, h1.second->var.Title(), h1.second->width, h1.second->min, h1.second->max);
+	  m_histMngr -> BookTH1D( histName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
 	}
 	if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt(histName, h1.second->hopt); }
 
@@ -136,10 +155,10 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
                 for (const auto &sys : *m_sysMap) {
 		  std::string systHistName = histName + "_" + sys.second->Name();
 		  if(nbins > 0){  
-		    m_histMngr -> BookTH1D( systHistName, h1.second->var.Title(), nbins, ptr_edges);
+		    m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), nbins, ptr_edges);
 		  }
 		  else{
-		    m_histMngr -> BookTH1D( systHistName, h1.second->var.Title(), h1.second->width, h1.second->min, h1.second->max);
+		    m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
 		  }
 		  if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt( systHistName, h1.second->hopt ); }
 		  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
@@ -164,15 +183,23 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
     }
     
     for ( const std::pair < TString, OutputHistManager::h1Def* > h1 : *m_stdTH1Def ){
-        
+
         //
         // Nominal histogram filling
         //
-      std::string histName = pattern + "_" + h1.second->var.Name();
+      std::string histName = pattern + "_" + h1.second->var->Name();
         
-      if( !h1.second->var.IsVector() || (h1.second->var.VecInd() >= 0) ){
-	if(updateStores){ h1.second->var.CalcDoubleValue(); }
-	m_histMngr -> FillTH1D(histName, h1.second->var.GetDoubleValue(), m_data->o_eventWeight_Nom);
+      if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
+
+	if(m_opt -> MsgLevel() == Debug::DEBUG){
+	  std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" ADDRESS = "<<h1.second->var->Address()
+		   <<" VALSTORE = "<<h1.second->var->ValStore()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
+	}
+	if(updateStores){ h1.second->var->CalcDoubleValue(); }
+	if(m_opt -> MsgLevel() == Debug::DEBUG){
+	  std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
+	}
+	m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), m_data->o_eventWeight_Nom);
       } 
       else {
 
@@ -180,8 +207,8 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
 	// histogram is filled with all the components of the vector
 	// Otherwise, just fills the histogram with the given component
 
-	FillTH1FromVector( h1.second->var.Address(),
-			   h1.second->var.VarType(), histName, m_data->o_eventWeight_Nom, h1.second->var.Moment() );
+	FillTH1FromVector( h1.second->var->Address(),
+			   h1.second->var->VarType(), histName, m_data->o_eventWeight_Nom, h1.second->var->Moment() );
       }
       if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
@@ -195,11 +222,11 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
 	  for (const auto sys : *m_sysMap) {
 	    std::string systHistName = histName + "_" + sys.second->Name();
 
-	    if( !h1.second->var.IsVector() || (h1.second->var.VecInd() >= 0) ){
-	      m_histMngr -> FillTH1D(systHistName, h1.second->var.GetDoubleValue(), sys.second->GetWeightValue());
+	    if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
+	      m_histMngr -> FillTH1D(systHistName, h1.second->var->GetDoubleValue(), sys.second->GetWeightValue());
 	    } else {
-	      FillTH1FromVector( h1.second->var.Address(),
-				 h1.second->var.VarType(), systHistName, sys.second->GetWeightValue(), h1.second->var.Moment());
+	      FillTH1FromVector( h1.second->var->Address(),
+				 h1.second->var->VarType(), systHistName, sys.second->GetWeightValue(), h1.second->var->Moment());
 	    }
 	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
 	  }
@@ -297,10 +324,12 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
     }
     
     h2Def *hist = new h2Def();
+    hist -> varX = NULL;
     hist -> widthX = widthX;
     hist -> minX = minX;
     hist -> maxX = maxX;
     hist -> edgesX = edgesX;
+    hist -> varY = NULL;
     hist -> widthY = widthY;
     hist -> minY = minY;
     hist -> maxY = maxY;
@@ -331,8 +360,8 @@ bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool 
     
     for ( const auto h2 : *m_stdTH2Def ){
         
-      std::string histName = pattern + "_" + h2.second->varY.Name() + "_vs_" + h2.second->varX.Name();
-      std::string histTitle = h2.second->varY.Title() + " vs " + h2.second->varX.Title();
+      std::string histName = pattern + "_" + h2.second->varY->Name() + "_vs_" + h2.second->varX->Name();
+      std::string histTitle = h2.second->varY->Title() + " vs " + h2.second->varX->Title();
 
       const double* ptr_edgesX = (h2.second -> edgesX != NULL) ? &( h2.second->edgesX->at(0) ) : NULL;
       int nbinsX = ( (h2.second -> edgesX != NULL) && (h2.second -> edgesX->size() > 0) ) ? h2.second -> edgesX->size() - 1 : 0;
@@ -410,27 +439,27 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
       //
       // Nominal histogram filling
       //
-      std::string histName = pattern + "_" + h2.second->varY.Name() + "_vs_" + h2.second->varX.Name();
-      bool bX_flat =  !h2.second->varX.IsVector() || (h2.second->varX.VecInd() >= 0) ; 
-      bool bY_flat =  !h2.second->varY.IsVector() || (h2.second->varY.VecInd() >= 0) ; 
-      if( updateStores && bX_flat ){ h2.second->varX.CalcDoubleValue(); }
-      if( updateStores && bY_flat ){ h2.second->varY.CalcDoubleValue(); }
+      std::string histName = pattern + "_" + h2.second->varY->Name() + "_vs_" + h2.second->varX->Name();
+      bool bX_flat =  !h2.second->varX->IsVector() || (h2.second->varX->VecInd() >= 0) ; 
+      bool bY_flat =  !h2.second->varY->IsVector() || (h2.second->varY->VecInd() >= 0) ; 
+      if( updateStores && bX_flat ){ h2.second->varX->CalcDoubleValue(); }
+      if( updateStores && bY_flat ){ h2.second->varY->CalcDoubleValue(); }
       if( bX_flat && bY_flat ){
-	m_histMngr -> FillTH2D(histName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), m_data->o_eventWeight_Nom);
+	m_histMngr -> FillTH2D(histName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), m_data->o_eventWeight_Nom);
       }
       else if( bX_flat && !bY_flat){
-	FillTH2FromOneVector(h2.second->varX.GetDoubleValue(), h2.second->varY.Address(), h2.second->varY.VarType() 
-			     , histName, m_data->o_eventWeight_Nom, "Y", h2.second->varY.Moment());
+	FillTH2FromOneVector(h2.second->varX->GetDoubleValue(), h2.second->varY->Address(), h2.second->varY->VarType() 
+			     , histName, m_data->o_eventWeight_Nom, "Y", h2.second->varY->Moment());
       }
       else if( !bX_flat && bY_flat){
-	FillTH2FromOneVector(h2.second->varY.GetDoubleValue(), h2.second->varX.Address(), h2.second->varX.VarType() 
-			     , histName, m_data->o_eventWeight_Nom, "X", h2.second->varX.Moment());
+	FillTH2FromOneVector(h2.second->varY->GetDoubleValue(), h2.second->varX->Address(), h2.second->varX->VarType() 
+			     , histName, m_data->o_eventWeight_Nom, "X", h2.second->varX->Moment());
       }
       else{
 
-	FillTH2PairwiseFromVectors(h2.second->varX.Address(), h2.second->varY.Address()
-				   , h2.second->varX.VarType() , h2.second->varY.VarType() 
-				   , histName, m_data->o_eventWeight_Nom, h2.second->varX.Moment(), h2.second->varY.Moment());
+	FillTH2PairwiseFromVectors(h2.second->varX->Address(), h2.second->varY->Address()
+				   , h2.second->varX->VarType() , h2.second->varY->VarType() 
+				   , histName, m_data->o_eventWeight_Nom, h2.second->varX->Moment(), h2.second->varY->Moment());
 
       }
 
@@ -447,25 +476,25 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
 	    std::string systHistName = histName + "_" + sys.second->Name();
 
 	    if( bX_flat && bY_flat ){
-	      m_histMngr -> FillTH2D(systHistName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), sys.second->GetWeightValue());
+	      m_histMngr -> FillTH2D(systHistName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), sys.second->GetWeightValue());
 	    }
 	    else if( bX_flat && !bY_flat){
-	      FillTH2FromOneVector(h2.second->varX.GetDoubleValue(), h2.second->varY.Address(), h2.second->varY.VarType() 
-				   , systHistName, sys.second->GetWeightValue(), "Y", h2.second->varY.Moment());
+	      FillTH2FromOneVector(h2.second->varX->GetDoubleValue(), h2.second->varY->Address(), h2.second->varY->VarType() 
+				   , systHistName, sys.second->GetWeightValue(), "Y", h2.second->varY->Moment());
 	    }
 	    else if( !bX_flat && bY_flat){
-	      FillTH2FromOneVector(h2.second->varY.GetDoubleValue(), h2.second->varX.Address(), h2.second->varX.VarType() 
-				   , systHistName, sys.second->GetWeightValue(), "X", h2.second->varX.Moment());
+	      FillTH2FromOneVector(h2.second->varY->GetDoubleValue(), h2.second->varX->Address(), h2.second->varX->VarType() 
+				   , systHistName, sys.second->GetWeightValue(), "X", h2.second->varX->Moment());
 	    }
 	    else{
 
-	      FillTH2PairwiseFromVectors(h2.second->varX.Address(), h2.second->varY.Address()
-					 , h2.second->varX.VarType() , h2.second->varY.VarType() 
-					 , systHistName, sys.second->GetWeightValue(), h2.second->varX.Moment(), h2.second->varY.Moment());
+	      FillTH2PairwiseFromVectors(h2.second->varX->Address(), h2.second->varY->Address()
+					 , h2.second->varX->VarType() , h2.second->varY->VarType() 
+					 , systHistName, sys.second->GetWeightValue(), h2.second->varX->Moment(), h2.second->varY->Moment());
 
 	    }
 
-	    m_histMngr -> FillTH2D(systHistName, h2.second->varX.GetDoubleValue(), h2.second->varY.GetDoubleValue(), sys.second->GetWeightValue());
+	    m_histMngr -> FillTH2D(systHistName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), sys.second->GetWeightValue());
 	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
 	  }
 	}
@@ -676,12 +705,12 @@ bool OutputHistManager::StoreTProfile( const std::string &nameX, const std::stri
 bool OutputHistManager::UpdateStores(){
 
   for ( const std::pair < TString, OutputHistManager::h1Def* > h1 : *m_stdTH1Def ){
-    if( !h1.second->var.IsVector() || (h1.second->var.VecInd() >= 0) ){ h1.second->var.CalcDoubleValue(); }
+    if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){ h1.second->var->CalcDoubleValue(); }
   }
 
   for ( const auto h2 : *m_stdTH2Def ){
-    if( !h2.second->varX.IsVector() || (h2.second->varX.VecInd() >= 0) ){ h2.second->varX.CalcDoubleValue(); }
-    if( !h2.second->varY.IsVector() || (h2.second->varY.VecInd() >= 0) ){ h2.second->varY.CalcDoubleValue(); }
+    if( !h2.second->varX->IsVector() || (h2.second->varX->VecInd() >= 0) ){ h2.second->varX->CalcDoubleValue(); }
+    if( !h2.second->varY->IsVector() || (h2.second->varY->VecInd() >= 0) ){ h2.second->varY->CalcDoubleValue(); }
   }
 
   return true;

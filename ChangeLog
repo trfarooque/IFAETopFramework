@@ -5,6 +5,8 @@
 	- More clean up in TreeManager
 	- Check for branches already set in NtupleReader
 	- UpdateWeight and SetWeight functions in WeightManager
+	- VariableDefs inside OutputHistManager put on stack (stable and distinct address pointers)
+	- Clean up in OutputHistManager and OutputTreeManager destructors
 2016-03-20 - Trisha Farooque <farooque@cern.ch>
 	- New WeightManager replaces SystManager
 	- Automated reading of nominal and systematics weights

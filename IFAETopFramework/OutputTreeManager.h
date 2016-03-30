@@ -63,7 +63,8 @@ public:
     bool BookStandardTree( const std::string &pattern, const std::string &title);
     bool FillStandardTree( const std::string &name, const bool updateStores=true );
     bool SaveStandardTree( const std::string& );
-    
+
+    bool UpdateStores();    
     
 private:
     

@@ -32,7 +32,7 @@ public:
     //________________________
     // Structs to make the code readable
     struct h1Def{
-      VariableDef var;
+      VariableDef* var;
       double width;
       double min;
       double max;
@@ -42,12 +42,12 @@ public:
     };
     
     struct h2Def{
-      VariableDef varX;
+      VariableDef* varX;
       double widthX;
       double minX;
       double maxX;
       const std::vector<double>* edgesX;
-      VariableDef varY;
+      VariableDef* varY;
       double widthY;
       double minY;
       double maxY;
@@ -174,7 +174,7 @@ private:
             return false;
         }
         
-        VariableDef _var(name, title, variableType, t, vec_ind, moment);
+        VariableDef* _var = new VariableDef(name, title, variableType, t, vec_ind, moment);
         
         std::map< std::string , h1Def*>::iterator it = m_stdTH1Def -> find(name);
         if(it != m_stdTH1Def->end()){
@@ -214,8 +214,8 @@ private:
             return false;
         }
         
-        VariableDef _varX(nameX,titleX, variableTypeX, tX, vec_indX, momentX);
-        VariableDef _varY(nameY,titleY, variableTypeY, tY, vec_indY, momentY);
+        VariableDef*  _varX = new VariableDef(nameX,titleX, variableTypeX, tX, vec_indX, momentX);
+        VariableDef* _varY = new VariableDef(nameY,titleY, variableTypeY, tY, vec_indY, momentY);
         std::map< std::string , h2Def*>::iterator it = m_stdTH2Def -> find(name);
         if(it != m_stdTH2Def->end()){
             m_stdTH2Def->at(name)->varX = _varX;

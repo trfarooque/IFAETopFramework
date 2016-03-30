@@ -110,11 +110,11 @@ public:
 	m_isVector = IsVector(varType);
 	m_isAnaObject = IsAnaObject(varType);
 	if(m_fill_vec){
-	  m_vec_store = new std::vector<double>;
+	  m_vec_store = new std::vector<double>();
 	  m_vec_store->clear(); 
 	}
 	else{
-	  m_val_store = new double;
+	  m_val_store = new double();
 	}
         SetAddress(t);
     }
@@ -142,12 +142,10 @@ public:
 	m_isAnaObject = IsAnaObject(varType);
         SetAddress(t);
 	if(m_fill_vec){
-	  m_vec_store = new std::vector<double>;
+	  m_vec_store = new std::vector<double>();
 	  m_vec_store->clear(); 
 	}
-	else{
-	  m_val_store = new double;
-	}
+	else{ m_val_store = new double(); }
     }
     
     template< typename T > void SetAddress( T *t ){ m_address = (void*)t; }

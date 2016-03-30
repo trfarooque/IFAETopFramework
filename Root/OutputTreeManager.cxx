@@ -46,6 +46,10 @@ OutputTreeManager::OutputTreeManager( const OutputTreeManager &q ) :
 OutputTreeManager::~OutputTreeManager()
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager destructor" << std::endl;
+
+    for(std::pair<std::string, VariableDef*> branch : *m_stdBranchDef){
+      delete branch.second;
+    }
     delete m_stdBranchDef;
     delete m_treeMngr;
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputTreeManager destructor" << std::endl;
@@ -133,6 +137,22 @@ bool OutputTreeManager::BookStandardTree( const std::string &pattern, const std:
     return true;
 }
 
+//______________________________________________________________________________________
+//
+bool OutputTreeManager::UpdateStores(  ){
+
+    for ( const auto branch : *m_stdBranchDef ){
+      if( branch.second->IsAnaObject() && branch.second->IsVector() && (branch.second->VecInd() < 0) ){
+	branch.second->FillVectorStore();
+      }
+      else if( ( branch.second->IsAnaObject() && !branch.second->IsVector() ) 
+	       || ( branch.second->IsVector() && (branch.second->VecInd() >= 0) ) ){
+	branch.second->CalcDoubleValue();
+      }
+    }
+
+  return true;
+}
 //______________________________________________________________________________________
 //
 bool OutputTreeManager::FillStandardTree( const std::string &pattern, const bool updateStores ){
