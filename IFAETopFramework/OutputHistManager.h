@@ -53,6 +53,7 @@ public:
       double maxY;
       const std::vector<double>* edgesY;
       bool hasSyst;
+      bool pairwise;
     };
     
     //_________________________
@@ -106,12 +107,13 @@ public:
     template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const double widthX, const double minX, const double maxX,
 							      const double widthY, const double minY, const double maxY,
-							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
+							      const std::string &titleX, const std::string &titleY, 
+							      const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY, 
-							      const int vec_indX = -1, const int vec_indY = -1, 
+							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise=true, 
 							      const std::string& momentX = "", const std::string& momentY = "") {
       return AddStandardTH2(nameX, nameY, widthX, minX, maxX, widthY, minY, maxY, NULL, NULL, 
-			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, momentX, momentY);
+			    titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, pairwise, momentX, momentY);
     }
     
     template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
@@ -120,20 +122,22 @@ public:
 							      const std::string &titleX, const std::string &titleY,
 							      const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
-							      const int vec_indX = -1, const int vec_indY = -1,
+							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise=true, 
 							      const std::string& momentX = "", const std::string& momentY = "") {
         return AddStandardTH2(nameX, nameY, widthX, minX, maxX, 0., 0., 0., NULL, edgesY,
-                              titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, momentX, momentY);
+                              titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY,
+			      vec_indX, vec_indY, pairwise, momentX, momentY);
     }
     
     template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
 							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
-							      const int vec_indX = -1, const int vec_indY = -1,
+							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise=true, 
 							      const std::string& momentX = "", const std::string& momentY = "") {
         return AddStandardTH2(nameX, nameY, 0., 0., 0., 0., 0., 0., edgesX, edgesY,
-                              titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, vec_indX, vec_indY, momentX, momentY);
+                              titleX, titleY, variableTypeX, variableTypeY, hasSyst, tX, tY, 
+			      vec_indX, vec_indY, pairwise, momentX, momentY);
         
     }
     bool BookStandardTH2( const std::string &pattern, const bool hasSyst = false);
@@ -195,7 +199,7 @@ private:
 							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
 							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
-							      const int vec_indX = -1, const int vec_indY = -1,
+							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise = true,  
 							      const std::string& momentX = "", const std::string& momentY = "") {
         //
         // Don't do it if there is no systematics
@@ -208,7 +212,7 @@ private:
         if( !tY ) std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): I cannot access the tY pointer (" << tY << "). Please check !" << std::endl;
         
         std::string name = nameY + "_vs_" + nameX;
-        bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, edgesX, edgesY, hasSyst);
+        bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, edgesX, edgesY, hasSyst, pairwise);
         if(!added) {
             std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::endl;
             return false;
@@ -228,92 +232,67 @@ private:
     
     bool AddStandardTH2(const std::string &name, const double widthX, const double minX, const double maxX,
                         const double widthY, const double minY, const double maxY, 
-                        const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false);
+                        const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false, const bool pairwise = true);
     
     bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const std::string &histName, const double weight, const std::string& moment="");
     bool FillTH2FromOneVector(const double& flatVal, void* t, const VariableDef::VariableType type
 			    , const std::string &histName, const double weight,  const std::string& vecAxis="Y", const std::string& moment="");
 
-    bool FillTH2PairwiseFromVectors( void* tX, void* tY
-				     , VariableDef::VariableType typeX, VariableDef::VariableType typeY
-				     , const std::string &histName, const double weight
-				     , const std::string& momentX="", const std::string& momentY="");
+    bool FillTH2FromVectors( void* tX, void* tY
+			     , VariableDef::VariableType typeX, VariableDef::VariableType typeY
+			     , const std::string &histName, const double weight, const bool pairwise=true
+			     , const std::string& momentX="", const std::string& momentY="");
+    
 
-
-    template<typename TX, typename TY> bool FillTH2PairwiseFromPrimitiveVectors( vector<TX>* tX, vector<TY>* tY
-									, const std::string &histName, const double weight){
-      if( tX->size() != tY->size() ){ 
-	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromPrimitiveVectors - the given vectors are of different sizes" <<std::endl; 
+    template<typename TX, typename TY> bool FillTH2FromPrimitiveVectors( vector<TX>* tX, vector<TY>* tY
+									 , const std::string &histName, const double weight, bool pairwise=true, bool same=false){
+      if(pairwise && ( tX->size() != tY->size() ) ){ 
+	std::cout << "ERROR in OutputHistManager::FillTH2FromPrimitiveVectors - histogram cannot be filled pairwise using vectors of different sizes" <<std::endl; 
 	return false;
       }
 
+      //Looping over two vectors
+      //If they are the same vectors, then diagonal elements should not be filled
+      //If filling pairwise only, off-diagonal elements are not to be filled
+
+      int iX = 0;
       for(auto valX : *tX){ 
-	for(auto valY : *tY){ 
-	  m_histMngr -> FillTH2D(histName, (double)valX, (double)valY, weight );
-	}
-      }
-      return true;
-
-    }
-
-    template<typename TX, typename TY> bool FillTH2PairwiseFromAOVectors( vector<TX>* tX, vector<TY>* tY
-									, const std::string &histName, const double weight
-									, const std::string& momentX="Pt", const std::string& momentY="Pt"){
-      if( tX->size() != tY->size() ){ 
-	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromAOVectors - the given vectors are of different sizes" <<std::endl; 
-	return false;
-      }
-
-      double valX = 0.; double valY = 0.;
-      for(auto compX : *tX){
-	valX = ((AnalysisObject*)compX)->GetMoment(momentX); 
-	for(auto compY : *tY){
-	  valY = ((AnalysisObject*)compY)->GetMoment(momentY);
-	  m_histMngr -> FillTH2D(histName, valX, valY, weight );
-	}
-      }
-      return true;
-
-    }
-
-    template<typename TX, typename TY> bool FillTH2PairwiseFromVectorsAOX( vector<TX>* tX, vector<TY>* tY
-									   , const std::string &histName, const double weight
-									   , const std::string& momentX="Pt"){
-      if( tX->size() != tY->size() ){ 
-	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromAOVectors - the given vectors are of different sizes" <<std::endl; 
-	return false;
-      }
-
-      double valX = 0.;
-      for(auto compX : *tX){
-	valX = ((AnalysisObject*)compX)->GetMoment(momentX); 
+	int iY = 0;
 	for(auto valY : *tY){
-	  m_histMngr -> FillTH2D(histName, valX, (double)valY, weight );
+	  if( (pairwise && (iX!=iY) ) || ( same && (iY <= iX) ) ){ iY++; continue; }
+	  m_histMngr -> FillTH2D(histName, (double)valX, (double)valY, weight );
+	  iY++;
 	}
+	iX++;
       }
       return true;
 
     }
 
-    template<typename TX, typename TY> bool FillTH2PairwiseFromVectorsAOY( vector<TX>* tX, vector<TY>* tY
-									   , const std::string &histName, const double weight
-									   , const std::string& momentY="Pt"){
-      if( tX->size() != tY->size() ){ 
-	std::cout << "ERROR in OutputHistManager::FillTH2PairwiseFromAOVectors - the given vectors are of different sizes" <<std::endl; 
-	return false;
-      }
-
-      double valY = 0.;
-      for(auto valX : *tX){
-	for(auto compY : *tY){
-	  valY = ((AnalysisObject*)compY)->GetMoment(momentY); 
-	  m_histMngr -> FillTH2D(histName, (double)valX, valY, weight );
+    template<typename T> bool FillTH2FromFlatAndAOVectors( AOVector* tAO, vector<T>* tPrim
+							   , const std::string &histName, const double weight, bool pairwise=true
+							   , const std::string& moment="Pt", const std::string& ao_axis = "Y"){
+      int iPrim = 0;
+      for(auto val : *tPrim){ 
+	int iAO = 0; 
+	for(auto compAO : *tAO){
+	  if( (pairwise && (iAO != iPrim) ) ){ iAO++; continue; }
+	  double valAO = ((AnalysisObject*)(compAO))->GetMoment(moment);
+	  if(ao_axis=="Y") m_histMngr -> FillTH2D(histName, (double)val, valAO, weight );
+	  else if(ao_axis =="X") m_histMngr -> FillTH2D(histName, valAO, (double)val, weight );
+	  else{ std::cerr << " OutputHistManager::FillTH2FromFlatAndAOVectors --> ERROR : Axis "<<ao_axis<<" is not recognised "<<std::endl; }
+	  iAO++;
 	}
+	iPrim++;
       }
       return true;
-
+      
     }
-
+    
+    bool FillTH2FromAOVectors( AOVector* tX, AOVector* tY
+			       , const std::string &histName, const double weight, const bool pairwise=true
+			       , const std::string& momentX="Pt", const std::string& momentY="Pt");
+    
 
 private:
     StdTH1 *m_stdTH1Def;

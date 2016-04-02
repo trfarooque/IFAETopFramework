@@ -1,3 +1,6 @@
+2016-04-02 - Trisha Farooque <farooque@cern.ch> 
+	- TH2D filling from vectors; including various kinds of looping
+	- Some clean up of OutputHistManager
 2016-03-29 - Trisha Farooque <farooque@cern.ch>
 	- Common configuration file for all weight objects
 	- Multiple types (double, float, vectors of doubles and floats ) supported for weight variables

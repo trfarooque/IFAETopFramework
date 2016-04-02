@@ -250,31 +250,23 @@ bool OutputHistManager::FillTH1FromVector( void* t, const VariableDef::VariableT
   if( (type == VariableDef::PTRVECDOUBLE) || (type == VariableDef::VECDOUBLE) ){
     std::vector < double >* vec = (type == VariableDef::PTRVECDOUBLE) ? 
       *(std::vector<double>**)t : (std::vector<double>*)t;
-    for ( double value : *vec ){
-      m_histMngr -> FillTH1D(histName, value, weight);
-    }
+    for ( double value : *vec ){ m_histMngr -> FillTH1D(histName, value, weight); }
 
   }
   else if( (type == VariableDef::PTRVECFLOAT) || (type == VariableDef::VECFLOAT) ){
     std::vector < float >* vec = (type == VariableDef::PTRVECFLOAT) ? 
       *(std::vector<float>**)t : (std::vector<float>*)t;
-    for ( double value : *vec ){
-      m_histMngr -> FillTH1D(histName, value, weight);
-    }
+    for ( double value : *vec ){ m_histMngr -> FillTH1D(histName, value, weight); }
   }
   else if( (type == VariableDef::PTRVECINT) || (type == VariableDef::VECINT) ){
     std::vector < int >* vec = (type == VariableDef::PTRVECINT) ? 
       *(std::vector<int>**)t : (std::vector<int>*)t;
-    for ( double value : *vec ){
-      m_histMngr -> FillTH1D(histName, value, weight);
-    }
+    for ( double value : *vec ){ m_histMngr -> FillTH1D(histName, value, weight); }
   }
   else if( (type == VariableDef::PTRVECAO) || (type == VariableDef::VECAO) ){
     AOVector* vec = (type == VariableDef::PTRVECAO) ? 
       *(AOVector**)t : (AOVector*)t;
-    for ( AnalysisObject* obj : *vec ){
-      m_histMngr -> FillTH1D(histName, obj->GetMoment(moment), weight);
-    }
+    for ( AnalysisObject* obj : *vec ){ m_histMngr -> FillTH1D(histName, obj->GetMoment(moment), weight); }
   }
   else {
     std::cerr << "<!> ERROR in OutputHistManager::FillTH1FromVector: the object type is unknown. Please check." << std::endl;
@@ -303,10 +295,9 @@ bool OutputHistManager::SaveStandardTH1( const std::string &outputName, const bo
 //______________________________________________________________________________________
 //
 bool OutputHistManager::AddStandardTH2( const std::string &name, const double widthX, const double minX, const double maxX,
-				    const double widthY, const double minY, const double maxY, 
-				    const std::vector<double>* edgesX, const std::vector<double>* edgesY,
-				    const bool hasSyst){
-    
+					const double widthY, const double minY, const double maxY, 
+					const std::vector<double>* edgesX, const std::vector<double>* edgesY,
+					const bool hasSyst, const bool pairwise){
     //
     // INTERNAL FUNCTION
     //
@@ -320,7 +311,8 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
         std::cout << "  widthY  = " << widthY << std::endl;
         std::cout << "  minY    = " << minY << std::endl;
         std::cout << "  maxY    = " << maxY << std::endl;
-        std::cout << "  hasSyst= " << hasSyst << std::endl;
+        std::cout << "  hasSyst = " << hasSyst << std::endl;
+        std::cout << "  pairwise = " << pairwise << std::endl;
     }
     
     h2Def *hist = new h2Def();
@@ -335,6 +327,7 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
     hist -> maxY = maxY;
     hist -> edgesY = edgesY;
     hist -> hasSyst = hasSyst;
+    hist -> pairwise = pairwise;
     
     m_stdTH2Def -> insert( std::pair < std::string, h2Def* >( name, hist ) );
     
@@ -457,9 +450,9 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
       }
       else{
 
-	FillTH2PairwiseFromVectors(h2.second->varX->Address(), h2.second->varY->Address()
-				   , h2.second->varX->VarType() , h2.second->varY->VarType() 
-				   , histName, m_data->o_eventWeight_Nom, h2.second->varX->Moment(), h2.second->varY->Moment());
+	FillTH2FromVectors(h2.second->varX->Address(), h2.second->varY->Address()
+			   , h2.second->varX->VarType() , h2.second->varY->VarType() 
+			   , histName, m_data->o_eventWeight_Nom, h2.second->pairwise, h2.second->varX->Moment(), h2.second->varY->Moment());
 
       }
 
@@ -488,13 +481,12 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
 	    }
 	    else{
 
-	      FillTH2PairwiseFromVectors(h2.second->varX->Address(), h2.second->varY->Address()
-					 , h2.second->varX->VarType() , h2.second->varY->VarType() 
-					 , systHistName, sys.second->GetWeightValue(), h2.second->varX->Moment(), h2.second->varY->Moment());
+	      FillTH2FromVectors(h2.second->varX->Address(), h2.second->varY->Address()
+				 , h2.second->varX->VarType() , h2.second->varY->VarType() 
+				 , systHistName, sys.second->GetWeightValue(), h2.second->pairwise, h2.second->varX->Moment(), h2.second->varY->Moment());
 
 	    }
 
-	    m_histMngr -> FillTH2D(systHistName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), sys.second->GetWeightValue());
 	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
 	  }
 	}
@@ -506,10 +498,16 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
 
 //__________________________________________________________________________________________
 //
-bool OutputHistManager::FillTH2PairwiseFromVectors( void* tX, void* tY
-						    , VariableDef::VariableType typeX, VariableDef::VariableType typeY
-						    , const std::string &histName, const double weight
-						    , const std::string& momentX, const std::string& momentY){
+bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
+					    , VariableDef::VariableType typeX, VariableDef::VariableType typeY
+					    , const std::string &histName, const double weight, const bool pairwise
+					    , const std::string& momentX, const std::string& momentY){
+  bool same = (tX == tY);
+  if( same && (typeX != typeY) ){
+    std::cerr << " OutputHistManager::FillTH2FromVectors --> different types for same vector "<<tX << std::endl;
+    return false;
+  }
+
   std::vector<double>* vecD_X = NULL;
   std::vector<float>* vecF_X = NULL;
   std::vector<int>* vecI_X = NULL;
@@ -541,55 +539,55 @@ bool OutputHistManager::FillTH2PairwiseFromVectors( void* tX, void* tY
   //-----------------------------------------
 
   if( vecD_X && vecD_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecD_X, vecD_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecD_X, vecD_Y, histName, weight, pairwise, same);
   }
   else if( vecD_X && vecF_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecD_X, vecF_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecD_X, vecF_Y, histName, weight, pairwise  );
   }
   else if( vecD_X && vecI_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecD_X, vecI_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecD_X, vecI_Y, histName, weight, pairwise  );
   }
   else if( vecD_X && vecAO_Y ){
-    FillTH2PairwiseFromVectorsAOY( vecD_X, vecAO_Y, histName, weight, momentY );
+    FillTH2FromFlatAndAOVectors(  vecAO_Y, vecD_X, histName, weight, pairwise, momentY, "Y" );
   }
   //---------------
   if( vecF_X && vecD_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecF_X, vecD_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecF_X, vecD_Y, histName, weight, pairwise  );
   }
   else if( vecF_X && vecF_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecF_X, vecF_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecF_X, vecF_Y, histName, weight, pairwise, same  );
   }
   else if( vecF_X && vecI_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecF_X, vecI_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecF_X, vecI_Y, histName, weight, pairwise  );
   }
   else if( vecF_X && vecAO_Y ){
-    FillTH2PairwiseFromVectorsAOY( vecF_X, vecAO_Y, histName, weight, momentY );
+    FillTH2FromFlatAndAOVectors( vecAO_Y, vecF_X, histName, weight, pairwise , momentY, "Y" );
   }
   //---------------
   if( vecI_X && vecD_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecI_X, vecD_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecI_X, vecD_Y, histName, weight, pairwise  );
   }
   else if( vecI_X && vecF_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecI_X, vecF_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecI_X, vecF_Y, histName, weight, pairwise  );
   }
   else if( vecI_X && vecI_Y ){
-    FillTH2PairwiseFromPrimitiveVectors( vecI_X, vecI_Y, histName, weight );
+    FillTH2FromPrimitiveVectors( vecI_X, vecI_Y, histName, weight, pairwise, same );
   }
   else if( vecI_X && vecAO_Y ){
-    FillTH2PairwiseFromVectorsAOY( vecI_X, vecAO_Y, histName, weight, momentY );
+    FillTH2FromFlatAndAOVectors( vecAO_Y, vecI_X, histName, weight, pairwise , momentY, "Y" );
   }
   //-----------
   if( vecAO_X && vecD_Y ){
-    FillTH2PairwiseFromVectorsAOX( vecAO_X, vecD_Y, histName, weight, momentX );
+    FillTH2FromFlatAndAOVectors( vecAO_X, vecD_Y, histName, weight, pairwise , momentX, "X" );
   }
   else if( vecAO_X && vecF_Y ){
-    FillTH2PairwiseFromVectorsAOX( vecAO_X, vecF_Y, histName, weight, momentX );
+    FillTH2FromFlatAndAOVectors( vecAO_X, vecF_Y, histName, weight, pairwise , momentX, "X" );
   }
   else if( vecAO_X && vecI_Y ){
-    FillTH2PairwiseFromVectorsAOX( vecAO_X, vecI_Y, histName, weight, momentX );
+    FillTH2FromFlatAndAOVectors( vecAO_X, vecI_Y, histName, weight, pairwise , momentX, "X" );
   }
   else if( vecAO_X && vecAO_Y ){
-    FillTH2PairwiseFromAOVectors( vecAO_X, vecAO_Y, histName, weight, momentX, momentY );
+    FillTH2FromAOVectors( vecAO_X, vecAO_Y, histName, weight, pairwise , momentX, momentY );
   }
 
   return true;
@@ -646,6 +644,32 @@ bool OutputHistManager::FillTH2FromOneVector(const double& flatVal, void* t, con
 
   return true;
 }
+
+bool OutputHistManager::FillTH2FromAOVectors( AOVector* tX, AOVector* tY
+					      , const std::string &histName, const double weight, const bool pairwise
+					      , const std::string& momentX, const std::string& momentY){
+  if( pairwise && (tX->size() != tY->size()) ){ 
+    std::cout << "ERROR in OutputHistManager::FillTH2FromAOVectors - histograms cannot filled pairwise from vectors of different sizes" <<std::endl; 
+    return false;
+  }
+
+  double valX = 0.; double valY = 0.;
+  int iX = 0;
+  for(AnalysisObject* compX : *tX){
+    valX = compX->GetMoment(momentX); 
+    int iY = 0;
+    for(AnalysisObject* compY : *tY){
+      if( ( (tX == tY) && !pairwise && (iY <= iX) ) || ( pairwise && (iX != iY) ) ){ iY++; continue; }
+      valY = compY->GetMoment(momentY);
+      m_histMngr -> FillTH2D(histName, valX, valY, weight );
+      iY++;
+    }
+    iX++;
+  }
+  return true;
+
+}
+
 
 //________________________________________________________________________________________
 //
