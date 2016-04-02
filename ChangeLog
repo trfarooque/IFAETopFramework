@@ -1,3 +1,31 @@
+2016-04-02 - Trisha Farooque <farooque@cern.ch> 
+	- TH2D filling from vectors; including various kinds of looping
+	- Some clean up of OutputHistManager
+2016-03-29 - Trisha Farooque <farooque@cern.ch>
+	- Common configuration file for all weight objects
+	- Multiple types (double, float, vectors of doubles and floats ) supported for weight variables
+	- Differentiating between objects and pointers to objects in OutputManager
+	- More clean up in TreeManager
+	- Check for branches already set in NtupleReader
+	- UpdateWeight and SetWeight functions in WeightManager
+	- VariableDefs inside OutputHistManager put on stack (stable and distinct address pointers)
+	- Clean up in OutputHistManager and OutputTreeManager destructors
+2016-03-20 - Trisha Farooque <farooque@cern.ch>
+	- New WeightManager replaces SystManager
+	- Automated reading of nominal and systematics weights
+	- Automated handling of weight computations
+2016-03-05 - Trisha Farooque <farooque@cern.ch>
+	- Split OutputManager into OutputHistManager and OutputTreeManager
+	- Fixed weight calculation in systematics loop
+2016-03-04 Trisha Farooque <farooque@cern.ch>
+	- Tree filling from AnalysisObjects
+	- Tree filling from vectors of AnalysisObjects and of primitive types
+	- Cleanup in TreeManager
+2016-03-03 Trisha Farooque <farooque@cern.ch>
+	- TH1D filling from AnalysisObjects and AOVectors added
+2016-02-24 Trisha Farooque <farooque@cern.ch>
+	- NtupleData now private data member of NtupleReader
+	- SetVariableChain function added to NtupleReader
 2016-01-26 Trisha Farooque <farooque@cern.ch>
 	- Added options to force replacement of histograms in ReadTH1(/2/3) and CloneTH1(/2/3) in HistManager
 	- More informative error printouts in HistManager

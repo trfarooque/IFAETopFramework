@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "IFAETopFramework/OptionsBase.h"
+#include "IFAETopFramework/AnalysisUtils.h"
 
 //_____________________________________________________________________________________________
 //
@@ -25,7 +26,9 @@ m_leptonChannel(LeptonChannel::ELEC),//enum
 
 m_str_sampleName(""),//used to define the enum
 m_str_sampleID("UNDEFINED"),
+m_str_nomName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
+m_str_wgt_configList(""),
 m_str_anaType(""),
 m_str_leptonChannel(""),
 m_inputTree(""),
@@ -56,14 +59,17 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_add_overflow              = q.m_add_overflow;
     
     m_sampleName        = q.m_sampleName;
-    m_str_sampleID      = q.m_str_sampleID;
     m_sysName           = q.m_sysName;
     m_anaType           = q.m_anaType;
     m_leptonChannel     = q.m_leptonChannel;
     
-    m_str_sampleName    = q.m_str_sampleName;
-    m_str_sysName       = q.m_str_sysName;
-    m_str_leptonChannel = q.m_str_leptonChannel;
+    m_str_sampleName     = q.m_str_sampleName;
+    m_str_sampleID       = q.m_str_sampleID;
+    m_str_nomName        = q.m_str_nomName;
+    m_str_sysName        = q.m_str_sysName;
+    m_str_wgt_configList = q.m_str_wgt_configList;
+    m_str_anaType        = q.m_str_anaType;
+    m_str_leptonChannel  = q.m_str_leptonChannel;
     
     m_inputTree         = q.m_inputTree;
     m_outputTree        = q.m_outputTree;
@@ -138,46 +144,66 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else{std::cout<<"Unknown debug option"<<std::endl;}
     }
     else if( temp_arg.find("--ISDATA") != std::string::npos ){
+      m_isData = AnalysisUtils::BoolValue(temp_val, "ISDATA");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) 	m_isData = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_isData = false;
         else{std::cout<<"Unknown ISDATA option"<<std::endl;}
+      */
     }
     else if( temp_arg.find("--COMPUTEWEIGHTSYS") != std::string::npos ){
+      m_computeWeightSys = AnalysisUtils::BoolValue(temp_val, "COMPUTEWEIGHTSYS");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) 	m_computeWeightSys = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_computeWeightSys = false;
         else{std::cout<<"Unknown COMPUTEWEIGHTSYS option"<<std::endl;}
+      */
     }
     else if( temp_arg.find("--ONLYDUMPSYSTHISTOGRAMS") != std::string::npos ){
+      m_onlyDumpSystHistograms = AnalysisUtils::BoolValue(temp_val, "ONLYDUMPSYSTHISTOGRAMS");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) 	m_onlyDumpSystHistograms = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_onlyDumpSystHistograms = false;
         else{std::cout<<"Unknown ONLYDUMPSYSTHISTOGRAMS option"<<std::endl;}
+      */
     }
 
     else if( temp_arg.find("--DOBLIND") != std::string::npos ){
+      m_doBlind = AnalysisUtils::BoolValue(temp_val, "DOBLIND");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) 	m_doBlind = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_doBlind = false;
         else{std::cout<<"Unknown DOBLIND option"<<std::endl;}
+      */
     }
 
     else if( temp_arg.find("--ADDUNDERFLOW") != std::string::npos ){
+      m_add_underflow = AnalysisUtils::BoolValue(temp_val, "ADDUNDERFLOW");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) 	m_add_underflow = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_add_underflow = false;
         else{std::cout<<"Unknown ADDUNDERFLOW option"<<std::endl;}
+      */
     }
 
     else if( temp_arg.find("--ADDOVERFLOW") != std::string::npos ){
+      m_add_overflow = AnalysisUtils::BoolValue(temp_val, "ADDOVERFLOW");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) 	m_add_overflow = true;
         else if ( temp_val.find("FALSE") != std::string::npos) 	m_add_overflow = false;
         else{std::cout<<"Unknown ADDOVERFLOW option"<<std::endl;}
+      */
     }
 
     else if( temp_arg.find("--TEXTFILELIST") != std::string::npos ){
+      m_textFileList = AnalysisUtils::BoolValue(temp_val, "TEXTFILELIST");
+      /*
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("TRUE") != std::string::npos) {
             m_textFileList = true;
@@ -186,6 +212,7 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         } else {
             std::cout<<"Unknown TEXTFILELIST option"<<std::endl;
         }
+      */
     }
     else if( temp_arg.find("--SAMPLENAME") != std::string::npos ){
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
@@ -215,58 +242,62 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         m_str_sampleName = temp_val;
     }
     else if( temp_arg.find("--SAMPLEID") != std::string::npos ){
-        m_str_sampleID = temp_val;
+      m_str_sampleID = temp_val;
     }
+    else if( temp_arg.find("--NOMINALNAME") != std::string::npos ){
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      m_str_nomName = temp_val;
+    }
+    
     else if( temp_arg.find("--SYSNAME") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("NOMINAL") != std::string::npos){
-            m_sysName = SysName::NOMINAL;
-        } else {
-            std::cout<<"Unknown systematics name"<<std::endl;
-        }
-        m_str_sysName = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      m_str_sysName = temp_val;
+    }
+    
+    else if( temp_arg.find("--WEIGHTCONFIGS") != std::string::npos ){
+      m_str_wgt_configList = temp_val;
     }
     else if( temp_arg.find("--ANATYPE") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
-        else if ( temp_val.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
-        else if ( temp_val.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
-        else{ std::cout<<"Unknown analysis type"<<std::endl; }
-        m_str_anaType = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      if ( temp_val.find("HSG8") != std::string::npos) m_anaType = AnaType::HSG8;
+      else if ( temp_val.find("SUSY") != std::string::npos) m_anaType = AnaType::SUSY;
+      else if ( temp_val.find("VLQ") != std::string::npos) m_anaType = AnaType::VLQ;
+      else{ std::cout<<"Unknown analysis type"<<std::endl; }
+      m_str_anaType = temp_val;
     }
     else if( temp_arg.find("--LEPTONCHANNEL") != std::string::npos ){
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
-        else if ( temp_val.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
-        else{ std::cout<<"Unknown lepton type"<<std::endl; }
-        m_str_leptonChannel = temp_val;
+      std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
+      if ( temp_val.find("ELECTRON") != std::string::npos) m_leptonChannel = LeptonChannel::ELEC;
+      else if ( temp_val.find("MUON") != std::string::npos) m_leptonChannel = LeptonChannel::MUON;
+      else{ std::cout<<"Unknown lepton type"<<std::endl; }
+      m_str_leptonChannel = temp_val;
     }
     else if( temp_arg.find("--INPUTTREE") != std::string::npos ){
-        m_inputTree = temp_val;
+      m_inputTree = temp_val;
     }
     else if( temp_arg.find("--OUTPUTTREE") != std::string::npos ){
-        m_outputTree = temp_val;
+      m_outputTree = temp_val;
     }
     else if( temp_arg.find("--INPUTFILE") != std::string::npos ){
-        m_inputFile = temp_val;
+      m_inputFile = temp_val;
     }
     else if( temp_arg.find("--OUTPUTFILE") != std::string::npos ){
-        m_outputFile = temp_val;
+      m_outputFile = temp_val;
     }
     else if( temp_arg.find("--OUTPUTFOLDER") != std::string::npos ){
-        m_outputFolder = temp_val;
+      m_outputFolder = temp_val;
     }
     else if( temp_arg.find("--NEVENTS") != std::string::npos ){
-        m_nEvents = atoi(temp_val.c_str());
+      m_nEvents = atoi(temp_val.c_str());
     }
     else if( temp_arg.find("--SKIPEVENTS") != std::string::npos ){
-        m_skipEvents = atoi(temp_val.c_str());
+      m_skipEvents = atoi(temp_val.c_str());
     }
     else if( temp_arg.find("--PICKEVENT") != std::string::npos ){
-        m_pickEvent = atoi(temp_val.c_str());
+      m_pickEvent = atoi(temp_val.c_str());
     }
     else {
-        return false;
+      return false;
     }
     return true;
 }
@@ -290,7 +321,9 @@ void OptionsBase::PrintOptions()
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
     std::cout << " m_str_sampleID       = " << m_str_sampleID << std::endl;
     std::cout << " m_sysName            = " << m_sysName << std::endl;
+    std::cout << " m_str_nomName        = " << m_str_nomName << std::endl;
     std::cout << " m_str_sysName        = " << m_str_sysName << std::endl;
+    std::cout << " m_str_wgt_configList = " << m_str_wgt_configList << std::endl;
     std::cout << " m_anaType            = " << m_anaType << std::endl;
     std::cout << " m_str_anaType        = " << m_str_anaType << std::endl;
     std::cout << " m_leptonChannel      = " << m_leptonChannel << std::endl;
