@@ -1,4 +1,3 @@
-#include <iostream>
 #include <iomanip>
 
 #include "IFAETopFramework/AnalysisObject.h"
@@ -9,6 +8,7 @@ AnalysisObject::AnalysisObject():
 TLorentzVector()
 {
     m_moments.clear();
+    m_gen_moments.clear();
 }
 
 //_______________________________________________________________________
@@ -16,19 +16,22 @@ TLorentzVector()
 AnalysisObject::~AnalysisObject()
 {
     m_moments.clear();
+    m_gen_moments.clear();
 }
 
 //_______________________________________________________________________
 //
 AnalysisObject::AnalysisObject( const AnalysisObject& q ):
 TLorentzVector(q),
-m_moments(q.m_moments)
+m_moments(q.m_moments),
+m_gen_moments(q.m_gen_moments)
 {}
 
 AnalysisObject::AnalysisObject( const TLorentzVector& tlv ) : 
   TLorentzVector(tlv)
 {  
   m_moments.clear(); 
+  m_gen_moments.clear(); 
 }
 
 //_______________________________________________________________________
@@ -36,6 +39,7 @@ AnalysisObject::AnalysisObject( const TLorentzVector& tlv ) :
 void AnalysisObject::Reset(){
   SetPtEtaPhiE(0.,0.,0.,0.);
   m_moments.clear();
+  m_gen_moments.clear();
 }
 
 //_______________________________________________________________________
@@ -81,6 +85,23 @@ double AnalysisObject::GetMoment(const std::string &name) const
 
 //_______________________________________________________________________
 //
+void* AnalysisObject::GetGeneralMoment(const std::string &name) const
+{
+  if(IsKinematicMoment(name)){
+    std::cerr<<"AnalysisObject::GetGeneralMoment()-->ERROR: Kinematic moments can be accessed directly or through GetMoment()"<<std::endl;
+    return NULL;
+  }
+  
+  std::map<std::string,void*>::const_iterator it=m_gen_moments.find(name);
+  if (it!=m_gen_moments.end()){ return it->second; }
+
+  std::cerr << " >>>>> FATAL in AnalysisObject::GetMoment(''" <<  name << "''): unknown moment !" << std::endl;
+  return NULL;
+
+}
+
+//_______________________________________________________________________
+//
 bool AnalysisObject::IsKinematicMoment(const std::string &name) const
 {
     if( (name == "Pt") || (name == "Eta") || (name == "Phi") || (name == "M") || (name == "E") ){ return true; }
@@ -99,10 +120,22 @@ bool AnalysisObject::IsKnownMoment(const std::string &name) const
 
 //_______________________________________________________________________
 //
+bool AnalysisObject::IsKnownGeneralMoment(const std::string &name) const
+{
+    std::map<std::string,void*>::const_iterator it=m_gen_moments.find(name);
+    if (it!=m_gen_moments.end()) return true;
+
+    return false;
+}
+
+
+//_______________________________________________________________________
+//
 AnalysisObject &AnalysisObject::operator=(const AnalysisObject& q) {
     if (this!=&q) {
         TLorentzVector::operator=(q);
         m_moments=q.m_moments;
+        m_gen_moments=q.m_gen_moments;
     }
     return *this;
 }

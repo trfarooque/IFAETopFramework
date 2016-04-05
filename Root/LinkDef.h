@@ -13,6 +13,7 @@
 #include "IFAETopFramework/SampleInfo.h"
 #include "IFAETopFramework/SelectorBase.h"
 #include "IFAETopFramework/TreeManager.h"
+#include "IFAETopFramework/TRFManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/WeightObject.h"
@@ -35,6 +36,7 @@
 #pragma link C++ class SampleInfo+;
 #pragma link C++ class SelectorBase+;
 #pragma link C++ class TreeManager+;
+#pragma link C++ class TRFManager+;
 #pragma link C++ class VariableDef+;
 #pragma link C++ class WeightManager+;
 #pragma link C++ class WeightObject+;
