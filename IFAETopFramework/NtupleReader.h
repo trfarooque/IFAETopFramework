@@ -46,7 +46,7 @@ public:
   inline void SetSystComponentsMap(std::map<std::string, WeightObject*> *sysMap){ m_sysMap = sysMap; }
 
   int SetAllBranchAddresses();    
-  int SetWeightBranchAddresses(const std::string &sj);
+  int SetWeightBranchAddresses();
   int SetWeightBranchAddress(WeightObject* wgt);
 
     

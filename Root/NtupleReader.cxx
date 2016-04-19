@@ -184,7 +184,7 @@ int NtupleReader::SetVariableToChain(const std::string& name, void* variable){
 int NtupleReader::SetAllBranchAddresses(){
 
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Begin NtupleReader::SetAllBranchAddresses() " << std::endl;
-    int stat = SetWeightBranchAddresses("");
+    int stat = SetWeightBranchAddresses();
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "End NtupleReader::SetAllBranchAddresses() " << std::endl;
 
     return stat;
@@ -208,7 +208,7 @@ int NtupleReader::SetWeightBranchAddress(WeightObject* wgt){
     stat = SetVariableToChain(branchName, &(m_ntupData->d_D_weight_components->at(branchName)) );
   }
   else if(varType == VariableDef::FLOAT){
-    if( m_ntupData->d_D_weight_components->find(branchName) == m_ntupData->d_D_weight_components->end() ){
+    if( m_ntupData->d_F_weight_components->find(branchName) == m_ntupData->d_F_weight_components->end() ){
       std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
 		<< " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
     }
@@ -251,7 +251,7 @@ int NtupleReader::SetWeightBranchAddress(WeightObject* wgt){
 
 }
 
-int NtupleReader::SetWeightBranchAddresses(const string &){
+int NtupleReader::SetWeightBranchAddresses(){
 
   if(m_opt->MsgLevel() == Debug::DEBUG) std::cout << "Entering NtupleReader::SetWeightBranchAddresses()" << std::endl;
   int stat = 0;

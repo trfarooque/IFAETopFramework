@@ -50,7 +50,7 @@ bool TRFManager::ComputeTRFWeights(const AOVector &jets, const std::string& btag
  return stat;
 }
 
-bool TRFManager::PassBtagRequirement(const int /*evt_DT_nbjets*/, const bool /*isIncl*/, const int /*req_nbjets*/, AOVector& /*jets*/){
+bool TRFManager::UpdateTRFWeights(const int /*njets*/, const bool /*isIncl*/, const int /*req_nbjets*/){
 
   return true;
 

@@ -68,39 +68,42 @@ bool WeightManager::AddAllWeights(){
   }
 
   if(m_opt->MsgLevel() == Debug::DEBUG){
+    Print();
+  }
 
-    std::cout<<" Printing nominal weights :: m_nomMap = "<<m_nomMap<<std::endl;
-    if(m_nomMap){
-      std::cout << "=====================================================" << std::endl;
-      std::cout << "Nominal weights list" << std::endl;
-      std::cout << "=====================================================" << std::endl;
-      std::cout << std::endl;
-      for ( const std::pair < std::string, WeightObject* > nom : *m_nomMap ){
-	std::cout << nom.first << std::endl;
-      }
-      std::cout << std::endl;
-      std::cout << "=====================================================" << std::endl;
+  return stat;
+}
+
+void WeightManager::Print() const{
+
+
+  std::cout<<" Printing nominal weights :: m_nomMap = "<<m_nomMap<<std::endl;
+  if(m_nomMap){
+    std::cout << "=====================================================" << std::endl;
+    std::cout << "Nominal weights list" << std::endl;
+    std::cout << "=====================================================" << std::endl;
+    std::cout << std::endl;
+    for ( const std::pair < std::string, WeightObject* > nom : *m_nomMap ){
+      std::cout << nom.first << std::endl;
     }
-
-
-    std::cout<<" Printing systematic weights :: m_systMap = "<<m_systMap<<std::endl;
-    if(m_systMap){
-      std::cout << "=====================================================" << std::endl;
-      std::cout << "Systematics list" << std::endl;
-      std::cout << "=====================================================" << std::endl;
-      std::cout << std::endl;
-      for ( const std::pair < std::string, WeightObject* > sys : *m_systMap ){
-	std::cout << sys.first << std::endl;
-      }
-      std::cout << std::endl;
-      std::cout << "=====================================================" << std::endl;
-    }
-
-
+    std::cout << std::endl;
+    std::cout << "=====================================================" << std::endl;
   }
 
 
-  return stat;
+  std::cout<<" Printing systematic weights :: m_systMap = "<<m_systMap<<std::endl;
+  if(m_systMap){
+    std::cout << "=====================================================" << std::endl;
+    std::cout << "Systematics list" << std::endl;
+    std::cout << "=====================================================" << std::endl;
+    std::cout << std::endl;
+    for ( const std::pair < std::string, WeightObject* > sys : *m_systMap ){
+      std::cout << sys.first << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "=====================================================" << std::endl;
+  }
+  return;
 }
 
 bool WeightManager::ComputeAllWeights(){
@@ -267,7 +270,7 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
     else if(inputType == "F"){
       std::map<std::string, float>* &valMap = (isInput) ? m_ntupData -> d_F_weight_components : m_outData -> o_F_weight_components;
       if(valMap == NULL){ valMap = new std::map<std::string, float>; }
-      if( valMap->find(_branch) == valMap->end() ){
+      if( valMap->find(_branch) != valMap->end() ){
 	std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
 	return false;
       }

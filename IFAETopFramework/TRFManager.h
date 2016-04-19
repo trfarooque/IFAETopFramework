@@ -20,8 +20,11 @@ class TRFManager{
   virtual bool ComputeTRFWeights(const std::vector<double>* /*jet_pt*/, const std::vector<double>* /*jet_eta*/
 				 , const std::vector<double>* /*jet_btagw*/, const std::vector<int>* /*jet_truthlabel*/);
   virtual bool ComputeTRFWeights(const std::vector<AnalysisObject*> &jets, const std::string& btagw_name, const std::string& truthlabel_name);
-  
-  bool PassBtagRequirement(const int /*evt_DT_nbjets*/, const bool /*isIncl*/, const int /*req_nbjets*/, std::vector<AnalysisObject*>& /*jets*/);
+
+  //This function will read in the correct b-tag weight components, corresponding to the required b-jet multiplicity, into the 
+  //OutputData map. It will then call the UpdateNominalComponent and UpdateSystematicComponent functions of WeightManager to 
+  //properly update all event weights.  
+  virtual bool UpdateTRFWeights(const int /*njets*/, const bool /*isIncl*/, const int /*req_nbjets*/);
 
 
  protected:

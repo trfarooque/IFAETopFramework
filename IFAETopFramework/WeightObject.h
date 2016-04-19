@@ -35,9 +35,10 @@ public:
     inline const std::string& GetComponentTypeStr() const{ return m_var_component->VarTypeString(); } 
     inline void* GetComponentAddress() const{ return m_var_component->Address(); }
     inline void* GetWeightAddress() const{ return m_var_weight->Address(); }
+    inline void* GetComponentValStore() const{ return m_var_component->ValStore(); }
+    inline void* GetWeightValStore() const{ return m_var_weight->ValStore(); }
 
- 
-    //
+     //
     //Setter functions
     //
 

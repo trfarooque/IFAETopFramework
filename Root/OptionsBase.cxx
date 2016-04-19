@@ -145,80 +145,34 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
     }
     else if( temp_arg.find("--ISDATA") != std::string::npos ){
       m_isData = AnalysisUtils::BoolValue(temp_val, "ISDATA");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) 	m_isData = true;
-        else if ( temp_val.find("FALSE") != std::string::npos) 	m_isData = false;
-        else{std::cout<<"Unknown ISDATA option"<<std::endl;}
-      */
     }
     else if( temp_arg.find("--COMPUTEWEIGHTSYS") != std::string::npos ){
       m_computeWeightSys = AnalysisUtils::BoolValue(temp_val, "COMPUTEWEIGHTSYS");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) 	m_computeWeightSys = true;
-        else if ( temp_val.find("FALSE") != std::string::npos) 	m_computeWeightSys = false;
-        else{std::cout<<"Unknown COMPUTEWEIGHTSYS option"<<std::endl;}
-      */
     }
     else if( temp_arg.find("--ONLYDUMPSYSTHISTOGRAMS") != std::string::npos ){
       m_onlyDumpSystHistograms = AnalysisUtils::BoolValue(temp_val, "ONLYDUMPSYSTHISTOGRAMS");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) 	m_onlyDumpSystHistograms = true;
-        else if ( temp_val.find("FALSE") != std::string::npos) 	m_onlyDumpSystHistograms = false;
-        else{std::cout<<"Unknown ONLYDUMPSYSTHISTOGRAMS option"<<std::endl;}
-      */
     }
 
     else if( temp_arg.find("--DOBLIND") != std::string::npos ){
       m_doBlind = AnalysisUtils::BoolValue(temp_val, "DOBLIND");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) 	m_doBlind = true;
-        else if ( temp_val.find("FALSE") != std::string::npos) 	m_doBlind = false;
-        else{std::cout<<"Unknown DOBLIND option"<<std::endl;}
-      */
     }
 
     else if( temp_arg.find("--ADDUNDERFLOW") != std::string::npos ){
       m_add_underflow = AnalysisUtils::BoolValue(temp_val, "ADDUNDERFLOW");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) 	m_add_underflow = true;
-        else if ( temp_val.find("FALSE") != std::string::npos) 	m_add_underflow = false;
-        else{std::cout<<"Unknown ADDUNDERFLOW option"<<std::endl;}
-      */
     }
 
     else if( temp_arg.find("--ADDOVERFLOW") != std::string::npos ){
       m_add_overflow = AnalysisUtils::BoolValue(temp_val, "ADDOVERFLOW");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) 	m_add_overflow = true;
-        else if ( temp_val.find("FALSE") != std::string::npos) 	m_add_overflow = false;
-        else{std::cout<<"Unknown ADDOVERFLOW option"<<std::endl;}
-      */
     }
 
     else if( temp_arg.find("--TEXTFILELIST") != std::string::npos ){
       m_textFileList = AnalysisUtils::BoolValue(temp_val, "TEXTFILELIST");
-      /*
-        std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
-        if ( temp_val.find("TRUE") != std::string::npos) {
-            m_textFileList = true;
-        } else if ( temp_val.find("FALSE") != std::string::npos){
-            m_textFileList = false;
-        } else {
-            std::cout<<"Unknown TEXTFILELIST option"<<std::endl;
-        }
-      */
     }
     else if( temp_arg.find("--SAMPLENAME") != std::string::npos ){
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         //DATA
         if ( temp_val.find("DATA") != std::string::npos){              m_sampleName = SampleName::DATA;        }
-        //BACKAGROUNDS
+        //BACKGROUNDS
         else if ( temp_val.find("TTBARBB") != std::string::npos){      m_sampleName = SampleName::TTBARBB;     }
         else if ( temp_val.find("TTBARCC") != std::string::npos){      m_sampleName = SampleName::TTBARCC;     }
         else if ( temp_val.find("TTBARLIGHT") != std::string::npos){   m_sampleName = SampleName::TTBARLIGHT;  }
