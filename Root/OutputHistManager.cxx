@@ -192,10 +192,14 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
       if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
 
 	if(m_opt -> MsgLevel() == Debug::DEBUG){
-	  std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" ADDRESS = "<<h1.second->var->Address()
-		   <<" VALSTORE = "<<h1.second->var->ValStore()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
+	  std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" ADDRESS = "<<h1.second->var->Address()<<std::endl;
+	  std::cout<<" VALSTORE = "<<h1.second->var->ValStore()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
 	}
-	if(updateStores){ h1.second->var->CalcDoubleValue(); }
+	if(updateStores){ 
+	  std::cout<<"About to Calculate Double Value"<<std::endl;
+	  h1.second->var->CalcDoubleValue();
+	  std::cout<<"Successfully Calculated Double Value"<<std::endl;
+	}
 	if(m_opt -> MsgLevel() == Debug::DEBUG){
 	  std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
 	}
