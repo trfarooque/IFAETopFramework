@@ -30,7 +30,7 @@ SampleInfo::SampleInfo( const std::string& sampleID, const std::string &configFi
 
 
 SampleInfo::SampleInfo( OptionsBase *opt, const std::string &configFile ):
-  SampleInfo(m_opt -> StrSampleID(), configFile)
+  SampleInfo(opt -> StrSampleID(), configFile)
 { m_opt = opt; }
 
 
@@ -55,6 +55,8 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
 
   while( getline(infile, fLine) ){
     AnalysisUtils::TrimString(fLine);
+    std::cout<<" fLine = "<< fLine << std::endl;
+    std::cout<<" sampleID = "<<sampleID << std::endl;
     if( fLine.empty() || (fLine.find(sampleID) == std::string::npos) ) continue;
     paramString = fLine;
     do{
