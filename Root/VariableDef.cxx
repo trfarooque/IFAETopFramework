@@ -221,12 +221,8 @@ void VariableDef::CalcDoubleValue(){
       }
 
       else if( (m_varType == VariableType::PTRVECAO) || (m_varType == VariableType::VECAO) ){
-	std::cout<<"Accessing a PTRVECAO m_vec_ind = "<<m_vec_ind<<std::endl;
-	std::cout<<" (m_varType == VariableType::PTRVECAO) = "<<(m_varType == VariableType::PTRVECAO)<<std::endl;
 	const AOVector* aovec = (m_varType == VariableType::PTRVECAO) 
 	  ? *(AOVector**)m_address : (AOVector*)m_address;
-	std::cout<<"Accessed PTRVECAO aovec = "<<aovec<<std::endl;
-	std::cout<<" Size of aovec = "<<aovec->size()<<std::endl;
 	if( (int)(aovec->size()) > m_vec_ind ){
 	  *m_val_store = (double)(aovec->at(m_vec_ind)->GetMoment(m_moment));
 	}
