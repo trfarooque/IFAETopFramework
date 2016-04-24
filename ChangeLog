@@ -1,3 +1,8 @@
+2016-04-24 - Trisha Farooque <farooque@lxplus.cern.ch>
+	- Clean up to Output[Hist,Tree]Manager for hadnling of weights
+	- New functions in OutputTreeManager to steer adding of weight branches
+	- Bug fix in OutputHistManager for some variable types
+
 2016-04-04 - Trisha Farooque <farooque@cern.ch>
 	- Pointer moments for AnalysisObjects
 

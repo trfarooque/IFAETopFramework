@@ -8,7 +8,7 @@
 #include <string>
 
 //IFAEFramework classes
-//#include "IFAETopFramework/WeightManager.h"
+#include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/HistManager.h"
@@ -63,13 +63,14 @@ public:
     
     //________________________
     // Member functions
-    OutputHistManager(OptionsBase *opt);
+    OutputHistManager(OptionsBase *opt, OutputData* data=NULL, WeightManager::WeightMap *sysMap=NULL);
     OutputHistManager( const OutputHistManager &q );
     ~OutputHistManager();
     
     //________________________
     // Inline functions
     inline HistManager* HistMngr(){ return m_histMngr; }
+    inline void SetSystMap( WeightManager::WeightMap *sysMap ){ m_sysMap = sysMap; }
     
     //
     //___________________________________________________________
@@ -300,6 +301,8 @@ private:
     StdTH2 *m_stdTH2Def;
     
     HistManager *m_histMngr;
+    WeightManager::WeightMap *m_sysMap;
+    std::map < std::string, bool > *m_mapHasSyst;
     
     std::set < std::string > *m_vecH2ToProfile;
     

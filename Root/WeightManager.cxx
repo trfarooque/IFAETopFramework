@@ -122,6 +122,11 @@ bool WeightManager::ComputeAllWeights(){
 bool WeightManager::ComputeNominalWeight(){
   bool stat = true;
   m_outData -> o_eventWeight_Nom = 1.;
+  if( m_opt -> IsData() ){ return stat; }
+  if(m_nomMap == NULL){ 
+    std::cout<<" WARNING : WeightManager::ComputeNominalWeights was called with empty nominal map "<<std::endl;
+    return false;
+  }
 
   //Read all input components and update the value held by weight
   for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ 

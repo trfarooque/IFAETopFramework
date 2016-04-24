@@ -1,22 +1,24 @@
 //Standard includes
 #include <iostream>
-#include <string>
 
 //IFAETopFramework includes
 #include "IFAETopFramework/OutputHistManager.h"
 #include "IFAETopFramework/OutputData.h"
 #include "IFAETopFramework/HistManager.h"
+#include "IFAETopFramework/WeightManager.h"
 //ROOT libraries
 #include "TSystem.h"
 
 //______________________________________________________________________________________
 //
-OutputHistManager::OutputHistManager( OptionsBase* opt):
-  OutputManager(opt),
+OutputHistManager::OutputHistManager( OptionsBase* opt, OutputData* data, WeightManager::WeightMap *sysMap):
+  OutputManager(opt, data),
   m_stdTH1Def(0),
   m_stdTProfileDef(0),
   m_stdTH2Def(0),
   m_histMngr(0),
+  m_sysMap(sysMap),
+  m_mapHasSyst(0),
   m_vecH2ToProfile(0)
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputHistManager constructor" << std::endl;
@@ -25,8 +27,13 @@ OutputHistManager::OutputHistManager( OptionsBase* opt):
     m_stdTProfileDef= new StdTH1();
     m_stdTH2Def     = new StdTH2();
     m_histMngr      = new HistManager(  m_opt->AddUnderflow(), m_opt->AddOverflow() );
+
+    m_mapHasSyst    = new std::map <std::string,bool>();
+    m_mapHasSyst    -> clear();
+
     m_vecH2ToProfile= new std::set < std::string >;
     m_vecH2ToProfile->clear();
+
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager constructor" << std::endl;
 }
@@ -38,11 +45,13 @@ OutputHistManager::OutputHistManager( const OutputHistManager &q ) :
 {
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager copy-constructor" << std::endl;
     
-    m_stdTH1Def     = q.m_stdTH1Def;
+    m_stdTH1Def        = q.m_stdTH1Def;
     m_stdTProfileDef   = q.m_stdTProfileDef;
-    m_stdTH2Def     = q.m_stdTH2Def;
-    m_histMngr      = q.m_histMngr;
-    m_vecH2ToProfile= q.m_vecH2ToProfile;
+    m_stdTH2Def        = q.m_stdTH2Def;
+    m_histMngr         = q.m_histMngr;
+    m_sysMap           = q.m_sysMap;
+    m_mapHasSyst       = q.m_mapHasSyst;
+    m_vecH2ToProfile   = q.m_vecH2ToProfile;
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager copy-constructor" << std::endl;
 }
@@ -74,6 +83,7 @@ OutputHistManager::~OutputHistManager()
     delete m_stdTH2Def;
 
     delete m_histMngr;
+    delete m_mapHasSyst;
     delete m_vecH2ToProfile;
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager destructor" << std::endl;
 }

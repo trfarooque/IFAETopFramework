@@ -8,7 +8,7 @@
 #include <vector>
 
 //IFAEFramework classes
-//#include "IFAETopFramework/WeightManager.h"
+#include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/OutputManager.h"
@@ -26,16 +26,18 @@ public:
     
     //________________________
     // Member functions
-    OutputTreeManager(OptionsBase *opt);
+    OutputTreeManager(OptionsBase *opt, OutputData* data=NULL);
     OutputTreeManager( const OutputTreeManager &q );
     ~OutputTreeManager();
-    virtual bool SetSystMap(WeightManager::WeightMap *sysMap);
+    //void SetWeightBranchName( const std::string &name, const bool add_nominal);
+    bool AddAllWeightBranches(  const std::string &name, WeightManager *wgtMngr, const bool add_components=true );
+    bool AddWeightBranches(const std::string& name, WeightManager::WeightMap *wgtMap, bool add_components=true );
+
     //________________________
     // Inline functions
-    inline bool SetData( OutputData *data ){ m_data = data; return true;}
     inline TreeManager* TreeMngr(){ return m_treeMngr; }
-    inline void SetWeightBranchName( const std::string &name ) { m_weightVarName = name; }
-    
+
+
     //
     //___________________________________________________________
     // TREE-SPECIFIC FUNCTIONS
@@ -56,7 +58,7 @@ public:
         VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind, moment, fill_vec);
         m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( name, _var ) );
         
-        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardTH1" << std::endl;
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardBranch" << std::endl;
         
         return true;
     }

@@ -14,8 +14,8 @@
 
 //______________________________________________________________________________________
 //
-OutputTreeManager::OutputTreeManager( OptionsBase* opt ):
-  OutputManager(opt),
+OutputTreeManager::OutputTreeManager( OptionsBase* opt, OutputData* data ):
+  OutputManager(opt, data),
   m_stdBranchDef(0),
   m_treeMngr(0)
 {
@@ -36,7 +36,6 @@ OutputTreeManager::OutputTreeManager( const OutputTreeManager &q ) :
     
     m_stdBranchDef  = q.m_stdBranchDef;
     m_treeMngr      = q.m_treeMngr;
-    m_weightVarName = q.m_weightVarName;
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputTreeManager copy-constructor" << std::endl;
 }
@@ -57,21 +56,44 @@ OutputTreeManager::~OutputTreeManager()
 
 
 //-----------------------------TREE-SPECIFIC METHODS-------------------------------
-bool OutputTreeManager::SetSystMap( WeightManager::WeightMap *sysMap ){
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::SetSystMap()" << std::endl;
-    OutputManager::SetSystMap( sysMap );   
+bool OutputTreeManager::AddAllWeightBranches( const std::string &name, WeightManager* wgtMngr, const bool add_components){
+  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputTreeManager::AddAllWeightBranches()" << std::endl;
 
-    AddStandardBranch( m_weightVarName, "Nominal weight", "D", &(m_data -> o_eventWeight_Nom) );
-    if(m_sysMap){
-      for( const auto &sys : *m_sysMap ){
-	std::string branchName = m_weightVarName + "_" + sys.second -> Name();
-	if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "OutputTreeManager::SetSystMap(); adding branch for weight "<<sys.second->Name() << std::endl;
-	AddStandardBranch( branchName, sys.second -> Title(), "D", sys.second -> GetWeightAddress() );
-      }
+  bool stat = true;
+  if(add_components){
+    WeightManager::WeightMap* nomMap = wgtMngr->NomMap();
+    if(nomMap == NULL){
+      std::cerr << "Error in OutputTreeManager::AddAllWeightBranches()  : Weight components cannot be added without a nominal weight map";
+      return false;
     }
+    stat = AddWeightBranches(name, nomMap, true);
+    if(!stat){ return stat; }
+  }
+  else{
+    AddStandardBranch( name, "Nominal weight", "D", &(m_data -> o_eventWeight_Nom) );
+  }
+  if( m_opt->ComputeWeightSys() ){
+    WeightManager::WeightMap* sysMap = wgtMngr->SystMap();
+    if(sysMap == NULL){
+      std::cerr << "Error in OutputTreeManager::AddAllWeightBranches()  : NULL systematics map found while ComputeWeightSys is TRUE. Please check" << std::endl;
+      return false;
+    }
+    stat = AddWeightBranches(name, sysMap, add_components);
+    if(!stat){ return stat; }
+  }
 
-    return true;
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputTreeManager::SetSystVector()" << std::endl;
+  return true;
+}    
+
+bool OutputTreeManager::AddWeightBranches(const std::string& name, WeightManager::WeightMap *wgtMap, const bool add_components){
+  for( const auto &wgt : *wgtMap ){
+    std::string branchName = name + "_" + wgt.second -> Name();
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "OutputTreeManager::AddWeightBranches(); adding branch for weight "<<wgt.second->Name() << std::endl;
+    if(add_components){ AddStandardBranch( branchName, wgt.second -> Title(), wgt.second -> GetComponentTypeStr(), wgt.second -> GetComponentAddress() ); }
+    else{ AddStandardBranch( branchName, wgt.second -> Title(), "D", wgt.second -> GetWeightAddress() ); }
+  }
+
+  return true;
 }
 
 //______________________________________________________________________________________
