@@ -18,6 +18,7 @@ VariableDef::VariableDef():
   m_moment(""),
   m_val_store(NULL),
   m_vec_store(NULL),
+  m_vec_size(0),
   m_fill_vec(false) 
 {}
 
@@ -45,6 +46,7 @@ VariableDef::VariableDef( VariableDef &q ){
     m_moment        = q.m_moment;
     m_val_store     = q.m_val_store;
     m_vec_store     = q.m_vec_store;
+    m_vec_size      = q.m_vec_size;
     m_fill_vec      = q.m_fill_vec;
 }
 
@@ -167,6 +169,7 @@ void VariableDef::FillVectorStore(){
 
   return;
 }
+
 //_____________________________________________________________________________________
 //
 void VariableDef::CalcDoubleValue(){
@@ -205,28 +208,33 @@ void VariableDef::CalcDoubleValue(){
       if( (m_varType == VariableType::VECDOUBLE) || (m_varType == VariableType::PTRVECDOUBLE) ){
 	const std::vector<double>& vecD = (m_varType == VariableType::PTRVECDOUBLE) 
 	  ? **((std::vector<double>**)m_address) : *((std::vector<double>*)m_address);
-	if( (int)vecD.size() > m_vec_ind ){ *m_val_store = vecD.at(m_vec_ind); }
+	m_vec_size = (int)vecD.size();
+	if( m_vec_size > m_vec_ind ){ *m_val_store = vecD.at(m_vec_ind); }
       }
       else if( (m_varType == VariableType::VECFLOAT) || (m_varType == VariableType::PTRVECFLOAT) ){
 	const std::vector<float>& vecF = (m_varType == VariableType::PTRVECFLOAT) 
 	  ? **((std::vector<float>**)m_address) : *((std::vector<float>*)m_address);
-
-	if( (int)vecF.size() > m_vec_ind ){ *m_val_store = (double)(vecF.at(m_vec_ind)); }
+	m_vec_size = (int)vecF.size();
+	if( m_vec_size > m_vec_ind ){ *m_val_store = (double)(vecF.at(m_vec_ind)); }
       }
       else if( (m_varType == VariableType::VECINT) || (m_varType == VariableType::PTRVECINT) ){
-	const std::vector<int>& vecF = (m_varType == VariableType::PTRVECINT) 
+	const std::vector<int>& vecI = (m_varType == VariableType::PTRVECINT) 
 	  ? **((std::vector<int>**)m_address) : *((std::vector<int>*)m_address);
 
-	if( (int)vecF.size() > m_vec_ind ){ *m_val_store = (double)(vecF.at(m_vec_ind)); }
+	m_vec_size = (int)vecI.size();
+	if( m_vec_size > m_vec_ind ){ *m_val_store = (double)(vecI.at(m_vec_ind)); }
       }
 
       else if( (m_varType == VariableType::PTRVECAO) || (m_varType == VariableType::VECAO) ){
 	const AOVector* aovec = (m_varType == VariableType::PTRVECAO) 
 	  ? *(AOVector**)m_address : (AOVector*)m_address;
-	if( (int)(aovec->size()) > m_vec_ind ){
+	m_vec_size = (int)(aovec->size());
+	if( m_vec_size > m_vec_ind ){
 	  *m_val_store = (double)(aovec->at(m_vec_ind)->GetMoment(m_moment));
 	}
       }
+      if(m_vec_ind > m_vec_size){ *m_val_store = 0.; }
+
 
     }//Vector variables
 

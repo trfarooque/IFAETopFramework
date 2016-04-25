@@ -71,6 +71,7 @@ public:
     inline double* ValStore() const{ return m_val_store; }
     inline std::vector<double>* VecStore() const{ return m_vec_store; }
     inline double GetDoubleValue() const{ return *m_val_store; }
+    inline int GetVecSize() const{ return m_vec_size; }
 
     //
     // Setter functions
@@ -168,6 +169,7 @@ protected:
     std::string m_moment; //for analysis objects;
     double* m_val_store; 
     std::vector<double>* m_vec_store; 
+    int m_vec_size;
     bool m_fill_vec;        
 };
 

@@ -87,7 +87,7 @@ bool OutputTreeManager::AddAllWeightBranches( const std::string &name, WeightMan
 
 bool OutputTreeManager::AddWeightBranches(const std::string& name, WeightManager::WeightMap *wgtMap, const bool add_components){
   for( const auto &wgt : *wgtMap ){
-    std::string branchName = name + "_" + wgt.second -> Name();
+    std::string branchName = (name == "")? wgt.second -> Name() : name + "_" + wgt.second -> Name();
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "OutputTreeManager::AddWeightBranches(); adding branch for weight "<<wgt.second->Name() << std::endl;
     if(add_components){ AddStandardBranch( branchName, wgt.second -> Title(), wgt.second -> GetComponentTypeStr(), wgt.second -> GetComponentAddress() ); }
     else{ AddStandardBranch( branchName, wgt.second -> Title(), "D", wgt.second -> GetWeightAddress() ); }

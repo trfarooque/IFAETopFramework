@@ -211,7 +211,9 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
 	if(m_opt -> MsgLevel() == Debug::DEBUG){
 	  std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
 	}
-	m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), m_data->o_eventWeight_Nom);
+	if( !h1.second->var->IsVector() || (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ){
+	  m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), m_data->o_eventWeight_Nom);
+	}
       } 
       else {
 
@@ -234,8 +236,8 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
 	  for (const auto sys : *m_sysMap) {
 	    std::string systHistName = histName + "_" + sys.second->Name();
 
-	    if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
-	      m_histMngr -> FillTH1D(systHistName, h1.second->var->GetDoubleValue(), sys.second->GetWeightValue());
+	    if( !h1.second->var->IsVector() || ( (h1.second->var->VecInd() >= 0) && (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ) ){
+		m_histMngr -> FillTH1D(systHistName, h1.second->var->GetDoubleValue(), sys.second->GetWeightValue());
 	    } else {
 	      FillTH1FromVector( h1.second->var->Address(),
 				 h1.second->var->VarType(), systHistName, sys.second->GetWeightValue(), h1.second->var->Moment());
@@ -449,6 +451,11 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
       bool bY_flat =  !h2.second->varY->IsVector() || (h2.second->varY->VecInd() >= 0) ; 
       if( updateStores && bX_flat ){ h2.second->varX->CalcDoubleValue(); }
       if( updateStores && bY_flat ){ h2.second->varY->CalcDoubleValue(); }
+
+      //Check whether the given indices for the variables are within range of the vectors
+      if(bX_flat && h2.second->varX->IsVector() && (h2.second->varX->VecInd() >= h2.second->varX->GetVecSize()) ){ continue; }
+      if(bY_flat && h2.second->varY->IsVector() && (h2.second->varY->VecInd() >= h2.second->varY->GetVecSize()) ){ continue; }
+
       if( bX_flat && bY_flat ){
 	m_histMngr -> FillTH2D(histName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), m_data->o_eventWeight_Nom);
       }
