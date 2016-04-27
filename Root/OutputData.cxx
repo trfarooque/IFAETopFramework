@@ -8,7 +8,8 @@ OutputData::OutputData():
   o_vecD_weight_components(NULL),
   o_vecF_weight_components(NULL),
   o_eventWeight_Nom(0.),
-  o_eventWeight_Systs(NULL)
+  o_eventWeight_Systs(NULL),
+  o_sel_decisions(NULL)
 {
   o_eventWeight_Systs = new std::map<std::string, double>;
 }
@@ -22,6 +23,7 @@ OutputData::OutputData( const OutputData & q){
   o_vecF_weight_components   = q.o_vecF_weight_components;
   o_eventWeight_Nom          = q.o_eventWeight_Nom;
   o_eventWeight_Systs        = q.o_eventWeight_Systs;
+  o_sel_decisions            = q.o_sel_decisions;
 }
 
 //__________________________________________________________
@@ -52,7 +54,7 @@ OutputData::~OutputData()
     o_vecF_weight_components->clear();
     delete o_vecF_weight_components;
   }
-
+  delete o_sel_decisions;
 
 }
 
@@ -80,6 +82,16 @@ void OutputData::ClearOutputData()
       for(float& el : *comp.second){ el = 0.; }
     }
   }  
+
+  /*
+    FIGURE OUT THE UNUSED VARIABLE WARNING
+   */
+  if(o_sel_decisions){
+    for(std::map<int, bool>::iterator selit = o_sel_decisions->begin();
+	selit != o_sel_decisions->end(); ++selit){ selit->second = false; }
+    //for ( std::pair < int, bool > selec : *o_sel_decisions ) selec.second = false;
+  }
+
   return;
 
 }
