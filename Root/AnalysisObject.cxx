@@ -27,6 +27,8 @@ m_moments(q.m_moments),
 m_gen_moments(q.m_gen_moments)
 {}
 
+//_______________________________________________________________________
+//
 AnalysisObject::AnalysisObject( const TLorentzVector& tlv ) : 
   TLorentzVector(tlv)
 {  
