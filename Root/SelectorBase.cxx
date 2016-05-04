@@ -12,15 +12,19 @@ m_opt(opt),
 m_outData(outData),
 m_selections(0),
 m_top_selections(0),
-m_map_sel_int_string(0)
+//m_top_sel_inds(0),
+m_map_sel_int_string(0),
+m_nPass(0)
 {
     m_selections         = new std::map < int, Selection >;
-    m_top_selections     = new std::vector< int >;
+    m_top_selections     = new std::map < int, Selection* >;
+    //m_top_sel_inds       = new std::vector < int >;
     m_map_sel_int_string = new std::map<int, std::string>;
 
-    m_selections        ->clear();
-    m_top_selections    ->clear();
-    m_map_sel_int_string->clear();
+    m_selections        -> clear();
+    m_top_selections    -> clear();
+    //m_top_sel_inds      -> clear();
+    m_map_sel_int_string-> clear();
 }
 
 //___________________________________________________________
@@ -31,6 +35,7 @@ SelectorBase::SelectorBase( const SelectorBase &q ){
     m_selections           = q.m_selections;
     m_top_selections       = q.m_top_selections; 
     m_map_sel_int_string   = q.m_map_sel_int_string;
+    m_nPass                = q.m_nPass;
 }
 
 //___________________________________________________________
@@ -43,10 +48,21 @@ SelectorBase::~SelectorBase(){
 
 //___________________________________________________________
 //
-bool SelectorBase::AddSelection( const int index, const std::string &name, const int parent_index, const bool has_histos, const bool has_trees ) {
+//___________________________________________________________
+//
+int SelectorBase::FindClosestAncestor(const int index) const{
+
+  int ancestor = GetParentIndex(index);
+  while( (ancestor >= 0) && (m_selections->find(ancestor) == m_selections->end()) ){ ancestor = GetParentIndex(ancestor); }
+
+  return ancestor;
+
+}
+
+bool SelectorBase::AddSelection( const int index, const std::string &name, const bool has_histos, const bool has_trees ) {
 
   if(m_opt->MsgLevel() == Debug::DEBUG){
-    std::cout<<" Adding Selection "<<index<<" with name "<<name<<" and parent index "<<parent_index<<std::endl;
+    std::cout<<" Adding Selection "<<index<<" with name "<<name<<std::endl;
   }
   std::pair< std::map<int, Selection>::iterator, bool > selit_pair = m_selections -> insert( std::pair< int, Selection >(index, Selection()) );
   if( selit_pair.second ) {
@@ -62,27 +78,26 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
     (selit_pair.first->second).has_histos = has_histos;
     (selit_pair.first->second).has_trees = has_trees;
     (selit_pair.first->second).flags = std::map<std::string, bool>();
-    (selit_pair.first->second).children = std::vector<int>();
+    (selit_pair.first->second).parent = GetParentIndex(index);
+    (selit_pair.first->second).descendants = std::vector<int>();
 
     (selit_pair.first->second).flags.clear();
-    (selit_pair.first->second).children.clear();
+    (selit_pair.first->second).descendants.clear();
 
-    if( parent_index >= 0 ){
-
-      std::map<int, Selection>::iterator par_it = m_selections -> find( parent_index );
-      if( par_it == m_selections->end() ){
-	std::cerr << " Error in SelectorBase::AddSelection -> The parent selection with index "
-		  << parent_index << " is not in the selection chain. Please add it first." << std::endl;
-	return false;
-      }
-
-      (par_it->second).children.push_back( index );
-
-    }//if selection has parent
-    else{
-      m_top_selections->push_back(index);
+    int _ancestor_index = FindClosestAncestor( index );
+    if( _ancestor_index >= 0 ){
+      Selection& _ancestor = m_selections->at(_ancestor_index);
+      if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"Adding descendant selection " << name << " to ancestor " << _ancestor.name 
+						      << "; current size of descendants =  " << _ancestor.descendants.size() << std::endl; }
+	(_ancestor).descendants.push_back( index );
+	if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"Added descendant selection " << name << " to parent " << _ancestor.name 
+							<< "; current size of descendants =  " << _ancestor.descendants.size() << std::endl; }
+    }//if selection has ancestor
+  
+    if(_ancestor_index < 0){
+      if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"Adding " << name << " as top selection " << std::endl; }
+      m_top_selections->insert( std::pair< int, Selection* >(index, &(selit_pair.first->second)) );
     }
-
     return true;
   }
   else{
@@ -96,9 +111,33 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
 
 //___________________________________________________________
 //
-//bool SelectorBase::AddFlag(const int index, const std::string& flag, const bool value){
-//;
-//}
+bool SelectorBase::AddFlag(const int index, const std::string& flag, const bool value){
+
+  bool stat = true;
+  std::map<int, Selection>::iterator selit = m_selections->find(index);
+  if( selit == m_selections->end() ){
+    std::cerr<<" Error in SelectorBase::AddFlag() --> Selection at index "<< index << "cannot be found"<<std::endl;
+    return false;
+  }
+  else{
+    stat = AddFlag(selit->second, flag, value); 
+  } 
+  return stat;
+
+}
+
+bool SelectorBase::AddFlag(Selection& sel, const std::string& flag, const bool value){
+
+  if( sel.flags.find(flag) != sel.flags.end() ){
+    std::cerr<<" Error in SelectorBase::AddFlag() --> Flag "<< flag << " already exists for selection "<< sel.name <<std::endl;
+    return false;
+  }
+  else{ sel.flags.insert( std::pair<std::string, bool>(flag, value) ); }
+
+  return true;
+
+}
+
 //___________________________________________________________
 //
 void SelectorBase::SetDecision( const int sel, const bool decision) {
@@ -130,7 +169,15 @@ bool SelectorBase::GetDecision( const int sel) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::PassSelection( const int /*sel*/) const {
+bool SelectorBase::GetDecision( const Selection& sel) const {
+
+  return *(sel.decision);
+
+}
+
+//___________________________________________________________
+//
+bool SelectorBase::PassSelection( const int /*sel*/ ) const {
   std::cout << "SelectorBase::PassSelection() is empty ... You should not be there !!" << std::endl;
   return false;
 }
@@ -147,8 +194,9 @@ bool SelectorBase::PassSelectionChain( ) const {
 
   }
   bool stat = true;
-  for(const int top_sel : *m_top_selections){
-    stat = PassSelectionNode(top_sel) || stat;
+  m_nPass = 0;
+  for(std::pair< int, Selection* > top_sel : *m_top_selections){
+    stat = PassSelectionNode( *(top_sel.second) ) || stat;
   }
 
   if( m_opt -> MsgLevel() == Debug::DEBUG ){
@@ -160,19 +208,131 @@ bool SelectorBase::PassSelectionChain( ) const {
 
 //___________________________________________________________
 //
+bool SelectorBase::RunSelectionChain( ) const {
+  if( m_opt -> MsgLevel() == Debug::DEBUG ){ 
+    std::cout << "Entering SelectorBase::RunSelectionChain m_top_selections->size() = " << m_top_selections->size() << std::endl; 
+    /*
+    for(std::pair<int, Selection> sel : *m_selections){
+      std::cout<<" selection = " << sel.second.name << " initial decision = " << *(sel.second.decision) 
+	       << " Ndescendants = " << sel.second.descendants.size() << std::endl;
+    }
+    */
+  }
+  bool stat = true; 
+  m_nPass = 0; 
+  for(std::pair< int, Selection* > top_sel : *m_top_selections){
+
+    if( m_opt -> MsgLevel() == Debug::DEBUG ){ 
+      std::cout<<" TOP selection = " << top_sel.second->name << " initial decision = " << *(top_sel.second->decision) 
+	       << " Ndescendants = " << top_sel.second->descendants.size() << std::endl;
+    }
+    stat = RunSelectionNode(*(top_sel.second)) || stat;
+  }
+
+  if( m_opt -> MsgLevel() == Debug::DEBUG ){
+    std::cout << "Exiting SelectorBase::RunSelectionChain " << std::endl; 
+  }
+  return stat;
+
+}
+
+//___________________________________________________________
+//
 bool SelectorBase::PassSelectionNode( const int node ) const {
 
-  bool pass_node = PassSelection(node);
-  *(m_selections->at(node).decision) = pass_node;
+  std::map<int, Selection>::iterator selit = m_selections->find(node);
+  if( selit == m_selections->end() ){
+    std::cerr<<" Error in SelectorBase::PassSelectionNode() --> Selection at index "<< node << "cannot be found"<<std::endl;
+    return false;
+  }
+  bool pass_node = PassSelectionNode(selit->second);
+ 
+  return pass_node;
+
+}
+
+//___________________________________________________________
+//
+bool SelectorBase::PassSelectionNode( const Selection& sel ) const {
+
+  bool pass_node = PassSelection(sel.selec_ind);
+ 
+  *(sel.decision) = pass_node;
   if(m_opt -> MsgLevel() == Debug::DEBUG){
-    std::cout<<" selection = " << m_selections->at(node).name << " pass_node = " << pass_node 
-	     << " decision = " << *(m_selections->at(node).decision) 
-	     << " GetDecision(node) = " << GetDecision(node) << std::endl;
+    std::cout<<"INFO SelectorBase::PassSelectionNode --> selection = " << sel.name << " pass_node = " << pass_node 
+	     << " decision = " << *(sel.decision) 
+	     << " GetDecision(sel) = " << GetDecision(sel) << " descendants = " << sel.descendants.size() << std::endl;
   }
   if( !pass_node ) return pass_node;
-
-  for( const int child : m_selections->at(node).children ){ PassSelectionNode(child); }
+  m_nPass++;
+  for( const int descendant : sel.descendants ){ PassSelectionNode(descendant); }
 
   return pass_node;
+
+}
+
+//___________________________________________________________
+//
+bool SelectorBase::RunSelectionNode( const int node ) const {
+
+  std::map<int, Selection>::iterator selit = m_selections->find(node);
+  if( selit == m_selections->end() ){
+    std::cerr<<" Error in SelectorBase::RunSelectionNode() --> Selection at index "<< node << "cannot be found"<<std::endl;
+    return false;
+  }
+  bool pass_node = RunSelectionNode(selit->second);
+
+  return pass_node;
+
+}
+
+//___________________________________________________________
+//
+bool SelectorBase::RunSelectionNode( const Selection& sel ) const {
+
+  if(m_opt -> MsgLevel() == Debug::DEBUG){
+    std::cout << " FIRST SelectorBase::RunSelectionNode() --> selection = " << sel.name 
+	      << " decision = " << *(sel.decision) 
+	      << " GetDecision(node) = " << GetDecision(sel)
+	      << " Number of descendants = " << sel.descendants.size()  
+	      << std::endl;
+
+  }
+
+  bool pass_node = PassSelection(sel.selec_ind);
+  *(sel.decision) = pass_node;
+  if(m_opt -> MsgLevel() == Debug::DEBUG){
+    std::cout << " SECOND SelectorBase::RunSelectionNode() --> selection = " << sel.name << " pass_node = " << pass_node 
+	      << " decision = " << *(sel.decision) 
+	      << " GetDecision(node) = " << GetDecision(sel)
+	      << " Number of descendants = " << sel.descendants.size()  
+	      << std::endl;
+
+  }
+  if( !pass_node ) return pass_node;
+  m_nPass++;
+
+  bool stat = RunOperations(sel);
+  if(!stat){ std::cerr << "ERROR in SelectorBase::RunSelectionNode() -> Failure to execute RunOperations on selection node " << sel.selec_ind << std::endl;}
+
+
+  for( const int descendant : sel.descendants ){ RunSelectionNode(descendant); }
+
+  return pass_node;
+
+}
+
+//___________________________________________________________
+//
+bool SelectorBase::RunOperations( const int node ) const {
+
+  std::map<int, Selection>::iterator selit = m_selections->find(node);
+  if( selit == m_selections->end() ){
+    std::cerr<<" Error in SelectorBase::RunOperations() --> Selection at index "<< node << "cannot be found"<<std::endl;
+    return false;
+  }
+  bool stat = RunOperations(selit->second);
+
+  return stat;
 
 }

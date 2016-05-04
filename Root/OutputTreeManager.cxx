@@ -114,26 +114,32 @@ bool OutputTreeManager::BookStandardTree( const std::string &pattern, const std:
 	if(bVar->VarType() == VariableDef::DOUBLE) _branch = _tree->Branch(bname,(double*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::FLOAT) _branch = _tree->Branch(bname,(float*)bVar->Address() ) ;
 	else if(bVar->VarType() == VariableDef::INT) _branch = _tree->Branch(bname,(int*)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::BOOL) _branch = _tree->Branch(bname,(bool*)bVar->Address() );
 																			    
 	else if(bVar->VarType() == VariableDef::PTRVECDOUBLE) _branch = _tree->Branch(bname,(std::vector<double>**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRVECFLOAT) _branch = _tree->Branch(bname,(std::vector<float>**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRVECINT) _branch = _tree->Branch(bname,(std::vector<int>**)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::PTRVECBOOL) _branch = _tree->Branch(bname,(std::vector<bool>**)bVar->Address() );
 
 	else if(bVar->VarType() == VariableDef::PTRVECVECDOUBLE) _branch = _tree->Branch(bname,(std::vector<std::vector<double> >**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRVECVECFLOAT) _branch = _tree->Branch(bname,(std::vector<std::vector<float> >**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRVECVECINT) _branch = _tree->Branch(bname,(std::vector<std::vector<int> >**)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::PTRVECVECBOOL) _branch = _tree->Branch(bname,(std::vector<std::vector<bool> >**)bVar->Address() );
 
 	else if(bVar->VarType() == VariableDef::VECDOUBLE) _branch = _tree->Branch(bname,(std::vector<double>*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::VECFLOAT) _branch = _tree->Branch(bname,(std::vector<float>*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::VECINT) _branch = _tree->Branch(bname,(std::vector<int>*)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::VECBOOL) _branch = _tree->Branch(bname,(std::vector<bool>*)bVar->Address() );
 
 	else if(bVar->VarType() == VariableDef::VECVECDOUBLE) _branch = _tree->Branch(bname,(std::vector<std::vector<double> >*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::VECVECFLOAT) _branch = _tree->Branch(bname,(std::vector<std::vector<float> >*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::VECVECINT) _branch = _tree->Branch(bname,(std::vector<std::vector<int> >*)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::VECVECBOOL) _branch = _tree->Branch(bname,(std::vector<std::vector<bool> >*)bVar->Address() );
 
 	else if(bVar->VarType() == VariableDef::PTRDOUBLE) _branch = _tree->Branch(bname,(double**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRFLOAT) _branch = _tree->Branch(bname,(float**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRINT) _branch = _tree->Branch(bname,(int**)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::PTRBOOL) _branch = _tree->Branch(bname,(bool**)bVar->Address() );
 	else{ std::cerr << "<!> Error in TreeManager::AddBranchToTree(): the variable type is not recognized !!" << std::endl; }
       }
       else if( ( bVar->IsVector() && (bVar->VecInd()>=0) ) || ( bVar->IsAnaObject() && !bVar->IsVector() ) ){

@@ -31,6 +31,12 @@ public:
     //
     std::map<int, bool> *o_sel_decisions;
 
+    //____________________________________________________________
+    //TRF weights, permutations and current configurations
+    //
+    int o_TRF_bjets_n;
+    bool o_TRF_isIncl;
+
 };
 
 #endif //OUTPUTDATA_H

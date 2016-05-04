@@ -9,7 +9,9 @@ OutputData::OutputData():
   o_vecF_weight_components(NULL),
   o_eventWeight_Nom(0.),
   o_eventWeight_Systs(NULL),
-  o_sel_decisions(NULL)
+  o_sel_decisions(NULL),
+  o_TRF_bjets_n(0),
+  o_TRF_isIncl(true)
 {
   o_eventWeight_Systs = new std::map<std::string, double>;
 }
@@ -24,6 +26,8 @@ OutputData::OutputData( const OutputData & q){
   o_eventWeight_Nom          = q.o_eventWeight_Nom;
   o_eventWeight_Systs        = q.o_eventWeight_Systs;
   o_sel_decisions            = q.o_sel_decisions;
+  o_TRF_bjets_n              = q.o_TRF_bjets_n;     
+  o_TRF_isIncl               = q.o_TRF_isIncl;     
 }
 
 //__________________________________________________________
@@ -83,14 +87,13 @@ void OutputData::ClearOutputData()
     }
   }  
 
-  /*
-    FIGURE OUT THE UNUSED VARIABLE WARNING
-   */
   if(o_sel_decisions){
     for(std::map<int, bool>::iterator selit = o_sel_decisions->begin();
 	selit != o_sel_decisions->end(); ++selit){ selit->second = false; }
-    //for ( std::pair < int, bool > selec : *o_sel_decisions ) selec.second = false;
   }
+
+  o_TRF_bjets_n = 0;
+  o_TRF_isIncl = true;
 
   return;
 

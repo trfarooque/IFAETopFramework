@@ -62,18 +62,24 @@ std::string VariableDef::GetVarTypeString(int varType){
     else if(varType == VariableType::PTRFLOAT)        {_varTypeString = "PF";}
     else if(varType == VariableType::DOUBLE)          {_varTypeString = "D";}
     else if(varType == VariableType::PTRDOUBLE)       {_varTypeString = "PD";}
+    else if(varType == VariableType::BOOL)            {_varTypeString = "B";}
+    else if(varType == VariableType::PTRBOOL)         {_varTypeString = "PB";}
     else if(varType == VariableType::VECINT)          {_varTypeString = "VI";}
     else if(varType == VariableType::PTRVECINT)       {_varTypeString = "PVI";}
     else if(varType == VariableType::VECFLOAT)        {_varTypeString = "VF";}
     else if(varType == VariableType::PTRVECFLOAT)     {_varTypeString = "PVF";}
     else if(varType == VariableType::VECDOUBLE)       {_varTypeString = "VD";}
     else if(varType == VariableType::PTRVECDOUBLE)    {_varTypeString = "PVD";}
+    else if(varType == VariableType::VECBOOL)         {_varTypeString = "VB";}
+    else if(varType == VariableType::PTRVECBOOL)      {_varTypeString = "PVB";}
     else if(varType == VariableType::VECVECINT)       {_varTypeString = "VVI";}
     else if(varType == VariableType::PTRVECVECINT)    {_varTypeString = "PVVI";}
     else if(varType == VariableType::VECVECFLOAT)     {_varTypeString = "VVF";}
     else if(varType == VariableType::PTRVECVECFLOAT)  {_varTypeString = "PVVF";}
     else if(varType == VariableType::VECVECDOUBLE)    {_varTypeString = "VVD";}
     else if(varType == VariableType::PTRVECVECDOUBLE) {_varTypeString = "PVVD";}
+    else if(varType == VariableType::VECVECBOOL)      {_varTypeString = "VVB";}
+    else if(varType == VariableType::PTRVECVECBOOL)   {_varTypeString = "PVVB";}
     else if(varType == VariableType::AOBJ)            {_varTypeString = "AO";}
     else if(varType == VariableType::PTRAOBJ)         {_varTypeString = "PAO";}
     else if(varType == VariableType::VECAO)           {_varTypeString = "VAO";}
@@ -93,12 +99,16 @@ VariableDef::VariableType VariableDef::GetVarType(const std::string& varTypeStri
     else if(varTypeString == "PF")        {_varType = VariableType::PTRFLOAT;}
     else if(varTypeString == "D")         {_varType = VariableType::DOUBLE;}
     else if(varTypeString == "PD")        {_varType = VariableType::PTRDOUBLE;}
+    else if(varTypeString == "B")         {_varType = VariableType::BOOL;}
+    else if(varTypeString == "PB")        {_varType = VariableType::PTRBOOL;}
     else if(varTypeString == "VI")        {_varType = VariableType::VECINT;}
     else if(varTypeString == "PVI")       {_varType = VariableType::PTRVECINT;}
     else if(varTypeString == "VF")        {_varType = VariableType::VECFLOAT;}
     else if(varTypeString == "PVF")       {_varType = VariableType::PTRVECFLOAT;}
     else if(varTypeString == "VD")        {_varType = VariableType::VECDOUBLE;}
     else if(varTypeString == "PVD")       {_varType = VariableType::PTRVECDOUBLE;}
+    else if(varTypeString == "VB")        {_varType = VariableType::VECBOOL;}
+    else if(varTypeString == "PVB")       {_varType = VariableType::PTRVECBOOL;}
     else if(varTypeString == "VVI")       {_varType = VariableType::VECVECINT;}
     else if(varTypeString == "PVVI")      {_varType = VariableType::PTRVECVECINT;}
     else if(varTypeString == "VVF")       {_varType = VariableType::VECVECFLOAT;}
@@ -119,18 +129,23 @@ VariableDef::VariableType VariableDef::GetVarType(const std::string& varTypeStri
 bool VariableDef::IsPrimitive(int varType){
     
     bool _isPrimitive = false;
-    _isPrimitive = (varType == VariableType::DOUBLE || varType == VariableType::FLOAT || varType == VariableType::INT
-		    || varType == VariableType::PTRDOUBLE || varType == VariableType::PTRFLOAT || varType == VariableType::PTRINT) ;
+    _isPrimitive = (varType == VariableType::DOUBLE || varType == VariableType::FLOAT 
+		    || varType == VariableType::INT || varType == VariableType::BOOL
+		    || varType == VariableType::PTRDOUBLE || varType == VariableType::PTRFLOAT 
+		    || varType == VariableType::PTRINT || varType == VariableType::PTRBOOL) ;
     return _isPrimitive;
 }
 
 bool VariableDef::IsPointer(int varType){
     
     bool _isPointer = false;
-    _isPointer = ( varType == VariableType::PTRVECDOUBLE || varType == VariableType::PTRVECFLOAT || varType == VariableType::PTRVECINT
-		   || varType == VariableType::PTRVECVECDOUBLE || varType == VariableType::PTRVECVECFLOAT || varType == VariableType::PTRVECVECINT
+    _isPointer = ( varType == VariableType::PTRVECDOUBLE || varType == VariableType::PTRVECFLOAT 
+		   || varType == VariableType::PTRVECINT || varType == VariableType::PTRVECBOOL
+		   || varType == VariableType::PTRVECVECDOUBLE || varType == VariableType::PTRVECVECFLOAT 
+		   || varType == VariableType::PTRVECVECINT || varType == VariableType::PTRVECVECBOOL
 		   || varType == VariableType::PTRAOBJ || varType == VariableType::PTRVECAO
-		   || varType == VariableType::PTRDOUBLE || varType == VariableType::PTRFLOAT || varType == VariableType::PTRINT );
+		   || varType == VariableType::PTRDOUBLE || varType == VariableType::PTRFLOAT 
+		   || varType == VariableType::PTRINT || varType == VariableType::PTRBOOL );
 		   
       ;
     return _isPointer;
@@ -139,11 +154,15 @@ bool VariableDef::IsPointer(int varType){
 bool VariableDef::IsVector(int varType){
     
     bool _isVector = false;
-    _isVector = ( (varType == VariableType::VECINT) || (varType == VariableType::VECFLOAT) || (varType == VariableType::VECDOUBLE)
-		  || (varType == VariableType::VECVECINT) || (varType == VariableType::VECVECFLOAT) || (varType == VariableType::VECVECDOUBLE)
+    _isVector = ( (varType == VariableType::VECINT) || (varType == VariableType::VECBOOL) 
+		  || (varType == VariableType::VECFLOAT) || (varType == VariableType::VECDOUBLE)
+		  || (varType == VariableType::VECVECINT) || (varType == VariableType::VECVECBOOL) 
+		  || (varType == VariableType::VECVECFLOAT) || (varType == VariableType::VECVECDOUBLE)
 		  || (varType == VariableType::VECAO)
-		  || (varType == VariableType::PTRVECINT) || (varType == VariableType::PTRVECFLOAT) || (varType == VariableType::PTRVECDOUBLE)
-		  || (varType == VariableType::PTRVECVECINT) || (varType == VariableType::PTRVECVECFLOAT) || (varType == VariableType::PTRVECVECDOUBLE)
+		  || (varType == VariableType::PTRVECINT) || (varType == VariableType::PTRVECBOOL) 
+		  || (varType == VariableType::PTRVECFLOAT) || (varType == VariableType::PTRVECDOUBLE)
+		  || (varType == VariableType::PTRVECVECINT) || (varType == VariableType::PTRVECVECBOOL) 
+		  || (varType == VariableType::PTRVECVECFLOAT) || (varType == VariableType::PTRVECVECDOUBLE)
 		  || (varType == VariableType::PTRVECAO) );
 
     return _isVector;
@@ -194,6 +213,12 @@ void VariableDef::CalcDoubleValue(){
     else if(m_varType == VariableType::PTRINT){
         *m_val_store = (double)(**(int**)(m_address));
     }
+    else if(m_varType == VariableType::BOOL){
+        *m_val_store = (double)(*(bool*)(m_address));
+    }
+    else if(m_varType == VariableType::PTRBOOL){
+        *m_val_store = (double)(**(bool**)(m_address));
+    }
     else if(m_varType == VariableType::AOBJ){
       *m_val_store = ((AnalysisObject*)(m_address))->GetMoment(m_moment);
     } 
@@ -224,7 +249,13 @@ void VariableDef::CalcDoubleValue(){
 	m_vec_size = (int)vecI.size();
 	if( m_vec_size > m_vec_ind ){ *m_val_store = (double)(vecI.at(m_vec_ind)); }
       }
+      else if( (m_varType == VariableType::VECBOOL) || (m_varType == VariableType::PTRVECBOOL) ){
+	const std::vector<bool>& vecB = (m_varType == VariableType::PTRVECBOOL) 
+	  ? **((std::vector<bool>**)m_address) : *((std::vector<bool>*)m_address);
 
+	m_vec_size = (int)vecB.size();
+	if( m_vec_size > m_vec_ind ){ *m_val_store = (double)(vecB.at(m_vec_ind)); }
+      }
       else if( (m_varType == VariableType::PTRVECAO) || (m_varType == VariableType::VECAO) ){
 	const AOVector* aovec = (m_varType == VariableType::PTRVECAO) 
 	  ? *(AOVector**)m_address : (AOVector*)m_address;

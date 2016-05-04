@@ -185,70 +185,70 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
 //
 bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool updateStores ){
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
+  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
+  
+  if(!m_data){
+    std::cerr << "<!> ERROR in OutputHistManager::fillStandardTH1: We have big problems ... Please provide an OutputData object" << std::endl;
+    return false;
+  }
+  
+  for ( const std::pair < TString, OutputHistManager::h1Def* > h1 : *m_stdTH1Def ){
     
-    if(!m_data){
-        std::cerr << "<!> ERROR in OutputHistManager::fillStandardTH1: We have big problems ... Please provide an OutputData object" << std::endl;
-        return false;
-    }
+    //
+    // Nominal histogram filling
+    //
+    std::string histName = pattern + "_" + h1.second->var->Name();
     
-    for ( const std::pair < TString, OutputHistManager::h1Def* > h1 : *m_stdTH1Def ){
+    if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
 
-        //
-        // Nominal histogram filling
-        //
-      std::string histName = pattern + "_" + h1.second->var->Name();
-        
-      if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
-
-	if(m_opt -> MsgLevel() == Debug::DEBUG){
-	  std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" ADDRESS = "<<h1.second->var->Address()<<std::endl;
-	  std::cout<<" VALSTORE = "<<h1.second->var->ValStore()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
-	}
-	if(updateStores){ 
-	  h1.second->var->CalcDoubleValue();
-	}
-	if(m_opt -> MsgLevel() == Debug::DEBUG){
-	  std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
-	}
-	if( !h1.second->var->IsVector() || (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ){
-	  m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), m_data->o_eventWeight_Nom);
-	}
-      } 
-      else {
-
-	// If the index provided when declaring the standard histogram is -1, the
-	// histogram is filled with all the components of the vector
-	// Otherwise, just fills the histogram with the given component
-
-	FillTH1FromVector( h1.second->var->Address(),
-			   h1.second->var->VarType(), histName, m_data->o_eventWeight_Nom, h1.second->var->Moment() );
+      if(m_opt -> MsgLevel() == Debug::DEBUG){
+	std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" ADDRESS = "<<h1.second->var->Address()<<std::endl;
+	std::cout<<" VALSTORE = "<<h1.second->var->ValStore()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
       }
-      if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
-        
-      //
-      // Now checking systematics (if needed and if existing)
-      //
-      if(h1.second->hasSyst && m_mapHasSyst->at(pattern)){
-	if(!m_sysMap){
-	  std::cerr << "<!> ERROR in OutputHistManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
-	} else {
-	  for (const auto sys : *m_sysMap) {
-	    std::string systHistName = histName + "_" + sys.second->Name();
+      if(updateStores){ 
+	h1.second->var->CalcDoubleValue();
+      }
+      if(m_opt -> MsgLevel() == Debug::DEBUG){
+	std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
+      }
+      if( !h1.second->var->IsVector() || (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ){
+	m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), m_data->o_eventWeight_Nom);
+      }
+    } 
+    else {
 
-	    if( !h1.second->var->IsVector() || ( (h1.second->var->VecInd() >= 0) && (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ) ){
-		m_histMngr -> FillTH1D(systHistName, h1.second->var->GetDoubleValue(), sys.second->GetWeightValue());
-	    } else {
-	      FillTH1FromVector( h1.second->var->Address(),
-				 h1.second->var->VarType(), systHistName, sys.second->GetWeightValue(), h1.second->var->Moment());
-	    }
-	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
+      // If the index provided when declaring the standard histogram is -1, the
+      // histogram is filled with all the components of the vector
+      // Otherwise, just fills the histogram with the given component
+
+      FillTH1FromVector( h1.second->var->Address(),
+			 h1.second->var->VarType(), histName, m_data->o_eventWeight_Nom, h1.second->var->Moment() );
+    }
+    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
+        
+    //
+    // Now checking systematics (if needed and if existing)
+    //
+    if(h1.second->hasSyst && m_mapHasSyst->at(pattern)){
+      if(!m_sysMap){
+	std::cerr << "<!> ERROR in OutputHistManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
+      } else {
+	for (const auto sys : *m_sysMap) {
+	  std::string systHistName = histName + "_" + sys.second->Name();
+
+	  if( !h1.second->var->IsVector() || ( (h1.second->var->VecInd() >= 0) && (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ) ){
+	    m_histMngr -> FillTH1D(systHistName, h1.second->var->GetDoubleValue(), sys.second->GetWeightValue());
+	  } else {
+	    FillTH1FromVector( h1.second->var->Address(),
+			       h1.second->var->VarType(), systHistName, sys.second->GetWeightValue(), h1.second->var->Moment());
 	  }
+	  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
 	}
       }
     }
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
-    return true;
+  }
+  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
+  return true;
 }
 
 //________________________________________________________________________________________
@@ -275,6 +275,11 @@ bool OutputHistManager::FillTH1FromVector( void* t, const VariableDef::VariableT
   else if( (type == VariableDef::PTRVECINT) || (type == VariableDef::VECINT) ){
     std::vector < int >* vec = (type == VariableDef::PTRVECINT) ? 
       *(std::vector<int>**)t : (std::vector<int>*)t;
+    for ( double value : *vec ){ m_histMngr -> FillTH1D(histName, value, weight); }
+  }
+  else if( (type == VariableDef::PTRVECBOOL) || (type == VariableDef::VECBOOL) ){
+    std::vector < bool >* vec = (type == VariableDef::PTRVECBOOL) ? 
+      *(std::vector<bool>**)t : (std::vector<bool>*)t;
     for ( double value : *vec ){ m_histMngr -> FillTH1D(histName, value, weight); }
   }
   else if( (type == VariableDef::PTRVECAO) || (type == VariableDef::VECAO) ){
@@ -530,6 +535,7 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   std::vector<double>* vecD_X = NULL;
   std::vector<float>* vecF_X = NULL;
   std::vector<int>* vecI_X = NULL;
+  std::vector<bool>* vecB_X = NULL;
   AOVector* vecAO_X = NULL;
 
   if(typeX == VariableDef::PTRVECDOUBLE){ vecD_X = *((std::vector<double>**)tX); } 
@@ -538,6 +544,8 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   else if(typeX == VariableDef::VECFLOAT){ vecF_X = (std::vector<float>*)tX; } 
   else if(typeX == VariableDef::PTRVECINT){ vecI_X = *((std::vector<int>**)tX); } 
   else if(typeX == VariableDef::VECINT){ vecI_X = (std::vector<int>*)tX; } 
+  else if(typeX == VariableDef::PTRVECBOOL){ vecB_X = *((std::vector<bool>**)tX); } 
+  else if(typeX == VariableDef::VECBOOL){ vecB_X = (std::vector<bool>*)tX; } 
   else if(typeX == VariableDef::PTRVECAO){ vecAO_X = *((AOVector**)tX); } 
   else if(typeX == VariableDef::VECAO){ vecAO_X = (AOVector*)tX; } 
 
@@ -545,6 +553,7 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   std::vector<double>* vecD_Y = NULL;
   std::vector<float>* vecF_Y = NULL;
   std::vector<int>* vecI_Y = NULL;
+  std::vector<bool>* vecB_Y = NULL;
   AOVector* vecAO_Y = NULL;
 
   if(typeY == VariableDef::PTRVECDOUBLE){ vecD_Y = *((std::vector<double>**)tY); } 
@@ -553,6 +562,8 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   else if(typeY == VariableDef::VECFLOAT){ vecF_Y = (std::vector<float>*)tY; } 
   else if(typeY == VariableDef::PTRVECINT){ vecI_Y = *((std::vector<int>**)tY); } 
   else if(typeY == VariableDef::VECINT){ vecI_Y = (std::vector<int>*)tY; } 
+  else if(typeY == VariableDef::PTRVECBOOL){ vecB_Y = *((std::vector<bool>**)tY); } 
+  else if(typeY == VariableDef::VECBOOL){ vecB_Y = (std::vector<bool>*)tY; } 
   else if(typeY == VariableDef::PTRVECAO){ vecAO_Y = *((AOVector**)tY); } 
   else if(typeY == VariableDef::VECAO){ vecAO_Y = (AOVector*)tY; } 
   //-----------------------------------------
@@ -565,6 +576,9 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   }
   else if( vecD_X && vecI_Y ){
     FillTH2FromPrimitiveVectors( vecD_X, vecI_Y, histName, weight, pairwise  );
+  }
+  else if( vecD_X && vecB_Y ){
+    FillTH2FromPrimitiveVectors( vecD_X, vecB_Y, histName, weight, pairwise  );
   }
   else if( vecD_X && vecAO_Y ){
     FillTH2FromFlatAndAOVectors(  vecAO_Y, vecD_X, histName, weight, pairwise, momentY, "Y" );
@@ -579,6 +593,9 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   else if( vecF_X && vecI_Y ){
     FillTH2FromPrimitiveVectors( vecF_X, vecI_Y, histName, weight, pairwise  );
   }
+  else if( vecF_X && vecB_Y ){
+    FillTH2FromPrimitiveVectors( vecF_X, vecB_Y, histName, weight, pairwise  );
+  }
   else if( vecF_X && vecAO_Y ){
     FillTH2FromFlatAndAOVectors( vecAO_Y, vecF_X, histName, weight, pairwise , momentY, "Y" );
   }
@@ -592,8 +609,27 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   else if( vecI_X && vecI_Y ){
     FillTH2FromPrimitiveVectors( vecI_X, vecI_Y, histName, weight, pairwise, same );
   }
+  else if( vecI_X && vecB_Y ){
+    FillTH2FromPrimitiveVectors( vecI_X, vecB_Y, histName, weight, pairwise, same );
+  }
   else if( vecI_X && vecAO_Y ){
     FillTH2FromFlatAndAOVectors( vecAO_Y, vecI_X, histName, weight, pairwise , momentY, "Y" );
+  }
+  //---------------
+  if( vecB_X && vecD_Y ){
+    FillTH2FromPrimitiveVectors( vecB_X, vecD_Y, histName, weight, pairwise  );
+  }
+  else if( vecB_X && vecF_Y ){
+    FillTH2FromPrimitiveVectors( vecB_X, vecF_Y, histName, weight, pairwise  );
+  }
+  else if( vecB_X && vecI_Y ){
+    FillTH2FromPrimitiveVectors( vecB_X, vecI_Y, histName, weight, pairwise, same );
+  }
+  else if( vecB_X && vecB_Y ){
+    FillTH2FromPrimitiveVectors( vecB_X, vecB_Y, histName, weight, pairwise, same );
+  }
+  else if( vecB_X && vecAO_Y ){
+    FillTH2FromFlatAndAOVectors( vecAO_Y, vecB_X, histName, weight, pairwise , momentY, "Y" );
   }
   //-----------
   if( vecAO_X && vecD_Y ){
@@ -604,6 +640,9 @@ bool OutputHistManager::FillTH2FromVectors( void* tX, void* tY
   }
   else if( vecAO_X && vecI_Y ){
     FillTH2FromFlatAndAOVectors( vecAO_X, vecI_Y, histName, weight, pairwise , momentX, "X" );
+  }
+  else if( vecAO_X && vecB_Y ){
+    FillTH2FromFlatAndAOVectors( vecAO_X, vecB_Y, histName, weight, pairwise , momentX, "X" );
   }
   else if( vecAO_X && vecAO_Y ){
     FillTH2FromAOVectors( vecAO_X, vecAO_Y, histName, weight, pairwise , momentX, momentY );
@@ -633,7 +672,7 @@ bool OutputHistManager::FillTH2FromOneVector(const double& flatVal, void* t, con
       else if(vecAxis=="X"){ m_histMngr -> FillTH2D(histName, value, flatVal, weight); }
     }
   }
-  if( (type == VariableDef::PTRVECFLOAT) || (type == VariableDef::VECFLOAT) ){
+  else if( (type == VariableDef::PTRVECFLOAT) || (type == VariableDef::VECFLOAT) ){
     std::vector < float >* vec = (type == VariableDef::PTRVECFLOAT) 
       ? *(std::vector<float>**)t : (std::vector<float>*)t;
     for ( double value : *vec ){
@@ -641,10 +680,17 @@ bool OutputHistManager::FillTH2FromOneVector(const double& flatVal, void* t, con
       else if(vecAxis=="X"){ m_histMngr -> FillTH2D(histName, value, flatVal, weight); }
     }
   }
-
-  if( (type == VariableDef::PTRVECINT) || (type == VariableDef::VECINT) ){
+  else if( (type == VariableDef::PTRVECINT) || (type == VariableDef::VECINT) ){
     std::vector < int >* vec = (type == VariableDef::PTRVECINT) 
       ? *(std::vector<int>**)t : (std::vector<int>*)t;
+    for ( double value : *vec ){
+      if(vecAxis=="Y"){ m_histMngr -> FillTH2D(histName, flatVal, value, weight); }
+      else if(vecAxis=="X"){ m_histMngr -> FillTH2D(histName, value, flatVal, weight); }
+    }
+  }
+  else if( (type == VariableDef::PTRVECBOOL) || (type == VariableDef::VECBOOL) ){
+    std::vector < bool >* vec = (type == VariableDef::PTRVECBOOL) 
+      ? *(std::vector<bool>**)t : (std::vector<bool>*)t;
     for ( double value : *vec ){
       if(vecAxis=="Y"){ m_histMngr -> FillTH2D(histName, flatVal, value, weight); }
       else if(vecAxis=="X"){ m_histMngr -> FillTH2D(histName, value, flatVal, weight); }
