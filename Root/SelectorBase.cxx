@@ -184,7 +184,7 @@ bool SelectorBase::PassSelection( const int /*sel*/ ) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::PassSelectionChain( ) const {
+bool SelectorBase::PassSelectionChain( ) {
   if( m_opt -> MsgLevel() == Debug::DEBUG ){ 
     std::cout << "Entering SelectorBase::PassSelectionChain " << std::endl; 
 
@@ -208,7 +208,7 @@ bool SelectorBase::PassSelectionChain( ) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::RunSelectionChain( ) const {
+bool SelectorBase::RunSelectionChain( ) {
   if( m_opt -> MsgLevel() == Debug::DEBUG ){ 
     std::cout << "Entering SelectorBase::RunSelectionChain m_top_selections->size() = " << m_top_selections->size() << std::endl; 
     /*
@@ -238,7 +238,7 @@ bool SelectorBase::RunSelectionChain( ) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::PassSelectionNode( const int node ) const {
+bool SelectorBase::PassSelectionNode( const int node ) {
 
   std::map<int, Selection>::iterator selit = m_selections->find(node);
   if( selit == m_selections->end() ){
@@ -253,7 +253,7 @@ bool SelectorBase::PassSelectionNode( const int node ) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::PassSelectionNode( const Selection& sel ) const {
+bool SelectorBase::PassSelectionNode( const Selection& sel ) {
 
   bool pass_node = PassSelection(sel.selec_ind);
  
@@ -273,7 +273,7 @@ bool SelectorBase::PassSelectionNode( const Selection& sel ) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::RunSelectionNode( const int node ) const {
+bool SelectorBase::RunSelectionNode( const int node ){
 
   std::map<int, Selection>::iterator selit = m_selections->find(node);
   if( selit == m_selections->end() ){
@@ -288,7 +288,7 @@ bool SelectorBase::RunSelectionNode( const int node ) const {
 
 //___________________________________________________________
 //
-bool SelectorBase::RunSelectionNode( const Selection& sel ) const {
+bool SelectorBase::RunSelectionNode( const Selection& sel ){
 
   if(m_opt -> MsgLevel() == Debug::DEBUG){
     std::cout << " FIRST SelectorBase::RunSelectionNode() --> selection = " << sel.name 

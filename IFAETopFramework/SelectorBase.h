@@ -38,13 +38,13 @@ public:
 
   bool GetDecision(const int sel) const;
   bool GetDecision(const Selection& sel) const;
-  bool PassSelectionChain() const;
-  bool RunSelectionChain() const;
-  bool PassSelectionNode(const int node) const;
-  bool PassSelectionNode(const Selection& sel_node) const;
+  bool PassSelectionChain();
+  bool RunSelectionChain();
+  bool PassSelectionNode(const int node);
+  bool PassSelectionNode(const Selection& sel_node);
 
-  bool RunSelectionNode(const int node) const;
-  bool RunSelectionNode(const Selection& sel_node) const;
+  bool RunSelectionNode(const int node);
+  bool RunSelectionNode(const Selection& sel_node);
   bool RunOperations(const int node) const;
   virtual bool RunOperations(const Selection& /*sel*/) const{ return false;}
 
