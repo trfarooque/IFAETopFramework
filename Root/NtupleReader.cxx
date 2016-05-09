@@ -154,7 +154,10 @@ int NtupleReader::ChainFromStrList(TChain* ch, const std::string& inputfilelist)
         if (n == string::npos)
             n = inputfilelist.length();
         string tmp = inputfilelist.substr(i,n-i);
-        nfile += ch->Add(tmp.c_str());
+	if(!tmp.empty()){
+	  if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "NtupleReader::ChainFromStrList() : Adding " << tmp << " to chain" << std::endl;
+	  nfile += ch->Add(tmp.c_str());
+	}
         tmp.clear();
     }
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::ChainFromStrList()" << std::endl;
@@ -176,6 +179,9 @@ int NtupleReader::SetVariableToChain(const std::string& name, void* variable){
   TBranch* branch = 0;
   int stat = m_chain->SetBranchAddress(name.c_str(), variable, &branch);
   if(stat == 0){ m_branchList.insert(name); }
+  else{
+    std::cerr << " Error in NtupleReader::SetVariableToChain -> Non-zero status code "<< stat << " encountered for branch "<<name << std::endl;
+  }
   return stat;
 }
 
@@ -184,7 +190,8 @@ int NtupleReader::SetVariableToChain(const std::string& name, void* variable){
 int NtupleReader::SetAllBranchAddresses(){
 
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Begin NtupleReader::SetAllBranchAddresses() " << std::endl;
-    int stat = SetWeightBranchAddresses();
+    int stat = 0;
+    if(!m_opt->IsData()){ stat = SetWeightBranchAddresses(); }
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "End NtupleReader::SetAllBranchAddresses() " << std::endl;
 
     return stat;
