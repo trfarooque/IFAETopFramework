@@ -6,7 +6,11 @@ using namespace std;
 
 //________________________________________________________________________
 //
-NtupleData::NtupleData()
+NtupleData::NtupleData() :
+  d_D_weight_components(NULL), 
+  d_F_weight_components(NULL), 
+  d_vecD_weight_components(NULL), 
+  d_vecF_weight_components(NULL) 
 {
   //d_nominal_weight_components = new std::map<std::string, double>;
   //d_syst_weight_components    = new std::map<std::string, double>;

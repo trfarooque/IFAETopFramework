@@ -1,3 +1,6 @@
+2016-05-10 - Trisha Farooque <farooque@lxplus.cern.ch>
+	- Fixed uninitialised pointers in NtupleData
+	
 2016-05-01 - Loic Valery <lvalery@cern.ch>
         - Move some functions from private to public in AnalysisObject
 
