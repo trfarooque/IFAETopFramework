@@ -250,7 +250,6 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
 
   if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << "WeightManager::AddWeight adding weight ("
  						     << name << ")" << " isInput = " << isInput << " isNominal = " << isNominal <<std::endl; }
-
   WeightMap* wgtMap = (isNominal) ? m_nomMap : m_systMap;
   WeightMap::iterator it = wgtMap -> find(name);
   if(it != wgtMap->end()){
