@@ -27,7 +27,7 @@ public:
     std::map<std::string, double > *o_eventWeight_Systs;
 
     //____________________________________________________________
-    //Selection decisions
+    //Selection decision
     //
     std::map<int, bool> *o_sel_decisions;
 

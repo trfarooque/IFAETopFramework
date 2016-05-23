@@ -58,7 +58,7 @@ OutputData::~OutputData()
     o_vecF_weight_components->clear();
     delete o_vecF_weight_components;
   }
-  delete o_sel_decisions;
+  if(o_sel_decisions){ delete o_sel_decisions; }
 
 }
 
@@ -86,10 +86,9 @@ void OutputData::ClearOutputData()
       for(float& el : *comp.second){ el = 0.; }
     }
   }  
-
   if(o_sel_decisions){
-    for(std::map<int, bool>::iterator selit = o_sel_decisions->begin();
-	selit != o_sel_decisions->end(); ++selit){ selit->second = false; }
+    for(std::map<int, bool>::iterator decit = o_sel_decisions->begin(); decit != o_sel_decisions->end(); ++decit){decit->second = false;}
+    //for ( std::pair < int, bool > dec : *o_sel_decisions ) dec.second = false;
   }
 
   o_TRF_bjets_n = 0;
