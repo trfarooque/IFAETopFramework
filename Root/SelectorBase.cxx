@@ -163,17 +163,14 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
   AddFlag( (selit_pair.first->second), DOHIST, _do_histos ); 
   AddFlag( (selit_pair.first->second), DOTREE, _do_trees ); 
 
-  //if(m_opt->MsgLevel() == Debug::DEBUG){
+  if(m_opt->MsgLevel() == Debug::DEBUG){
     std::cout << " SELECTION " << index; 
     std::cout << " name = " << name; 
-    std::cout  << " do_runop = " << do_runop; 
-    std::cout    << " do_histos = " << do_histos ;
-    std::cout << " do_trees = " << do_trees; 
     std::cout  << " (flag & DORUNOP) = " << PassFlag((selit_pair.first->second), DORUNOP);
     std::cout  << " (flag & DOHIST) = " << PassFlag((selit_pair.first->second), DOHIST);
     std::cout << " (flag & DOTREE) = " << PassFlag((selit_pair.first->second), DOTREE);
     std::cout <<std::endl;
-    //}
+  }
 
   return true;
 

@@ -29,6 +29,8 @@ m_str_sampleID("UNDEFINED"),
 m_str_nomName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_sysName(""),//used to define dthe enum (object systematics) or the list of weight syst. to run
 m_str_wgt_configList(""),
+m_str_wgt_flags(""),
+m_str_wgt_vetoFlags(""),
 m_str_anaType(""),
 m_str_leptonChannel(""),
 m_inputTree(""),
@@ -68,6 +70,8 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_str_nomName        = q.m_str_nomName;
     m_str_sysName        = q.m_str_sysName;
     m_str_wgt_configList = q.m_str_wgt_configList;
+    m_str_wgt_flags      = q.m_str_wgt_flags;
+    m_str_wgt_vetoFlags  = q.m_str_wgt_vetoFlags;
     m_str_anaType        = q.m_str_anaType;
     m_str_leptonChannel  = q.m_str_leptonChannel;
     

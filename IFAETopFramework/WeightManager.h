@@ -20,9 +20,10 @@ class WeightManager{
   WeightManager( const WeightManager& q); 
   ~WeightManager();
 
-  inline WeightMap* NomMap(){ return m_nomMap; }
-  inline WeightMap* SystMap(){ return m_systMap; }
+  inline WeightMap* NomMap() const{ return m_nomMap; }
+  inline WeightMap* SystMap() const{ return m_systMap; }
 
+  WeightObject* GetWeightObject(const std::string& name, bool isNominal=true) const;
   void Print() const;
 
   //Create the maps of nominal and systematics weights from input command line options

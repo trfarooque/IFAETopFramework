@@ -1,8 +1,13 @@
-2016-04-24 - Trisha Farooque <farooque@lxplus.cern.ch>
+2016-05-23 - Trisha Farooque <farooque@cern.ch>
+	- New SelectorBase with more complex selection hierarchy
+	- WeightObject accessible from WeightManager
+	- Conditional blocks in weight configuration file
+
+2016-04-24 - Trisha Farooque <farooque@cern.ch>
 	- Fixed bug in OutputHistManager related to check on vector size
 
-2016-04-24 - Trisha Farooque <farooque@lxplus.cern.ch>
-	- Clean up to Output[Hist,Tree]Manager for hadnling of weights
+2016-04-24 - Trisha Farooque <farooque@cern.ch>
+	- Clean up to Output[Hist,Tree]Manager for handling of weights
 	- New functions in OutputTreeManager to steer adding of weight branches
 	- Bug fix in OutputHistManager for some variable types
 

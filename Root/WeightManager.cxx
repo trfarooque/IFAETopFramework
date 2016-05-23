@@ -42,6 +42,27 @@ WeightManager::~WeightManager(){
 
 }
 
+WeightObject* WeightManager::GetWeightObject(const std::string& name, const bool isNominal) const{
+
+  WeightMap* wgtMap = isNominal ? m_nomMap : m_systMap;
+  WeightObject* wgtObj = NULL;
+  if(wgtMap){
+    WeightMap::iterator it = wgtMap -> find(name);
+    if(it != wgtMap->end()){ wgtObj = it->second; }
+    else{ std::cerr << "WeightManager::GetWeightObject() --> ERROR : Weight " << name 
+		    << " not found in map; isNominal = " << isNominal <<std::endl;
+    }
+  }
+  else{
+    std::cerr << "WeightManager::GetWeightObject() --> ERROR : Weight " << name 
+		    << " not found in map; isNominal = " << isNominal <<std::endl;
+  }
+
+  return wgtObj;
+
+}
+
+
 bool WeightManager::AddAllWeights(){
 
   bool stat = true;
@@ -371,9 +392,9 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
     if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Adding weights from configuration file " << tmp << std::endl;}
     //Add weights from configuration file
     wgt_map.clear();
-    AnalysisUtils::ParseConfigFile_Blocks(tmp, wgt_map, " : ");
+    AnalysisUtils::ParseConfigFile_Blocks( tmp, wgt_map, " : ", m_opt->WeightFlags(), m_opt->WeightVetoFlags() );
     if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Number of systematic blocks in configuration file " 
-							 << inputStr << " = " << wgt_map.size() << std::endl;}
+							 << inputStr << " = " << wgt_map.size() << std::endl; }
     
     for( std::map<std::string, std::string> wgt_block : wgt_map ){
       name            = "";
