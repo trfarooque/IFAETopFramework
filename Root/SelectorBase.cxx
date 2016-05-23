@@ -53,18 +53,15 @@ SelectorBase::~SelectorBase(){
 //
 bool SelectorBase::AddAncestorsRecursive(Selection& sel){
 
-  if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Entering AddAncestorsRecursive "<< sel.name << std::endl; }
+  if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Entering AddAncestorsRecursive for selection " << sel.selec_ind << " ; " << sel.name << std::endl; }
   //____________________________________________________________________
   if(m_add_ancestors){
     sel.primary_ancestor = AddAncestors(sel.ancestors, sel.selec_ind);
+
     for(int anc : sel.ancestors){
-      if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" CHECKING Selection " << sel.selec_ind << " with name "<< sel.name << " ; ancestor = " << anc << std::endl; }
-      if( (anc > 0) && (m_selections->find(anc) == m_selections->end()) ){
-	if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Adding Ancestral Selection :: " << sel.selec_ind << " with name "<< sel.name << " ; ancestor = " << anc << std::endl; }
+      if( (anc >= 0) && (m_selections->find(anc) == m_selections->end()) ){
 	AddSelection(anc, Form("anc_%i",anc), false);
-	if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Added Ancestral Selection :: " << sel.selec_ind << " with name "<< sel.name << " ; ancestor = " << anc << std::endl; }
       }
-      if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" CHECKED Selection " << sel.selec_ind << " with name "<< sel.name << " ; ancestor = " << anc << std::endl; }
     }
   }//add immediate ancestors to chain if needed
   else{
@@ -106,19 +103,14 @@ bool SelectorBase::AddAncestorsRecursive(Selection& sel){
   int _primary_ancestor_index = sel.primary_ancestor;
   if( _primary_ancestor_index >= 0 ){
     Selection& _clos_ancestor = m_selections->at(_primary_ancestor_index);
-    if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"Adding descendant selection " << sel.name << " to ancestor " << _clos_ancestor.name 
-						    << "; current size of descendants =  " << _clos_ancestor.primary_descendants.size() << std::endl; }
     (_clos_ancestor).primary_descendants.push_back( sel.selec_ind );
-    if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"Added descendant selection " << sel.name << " to parent " << _clos_ancestor.name 
-						    << "; current size of descendants =  " << _clos_ancestor.primary_descendants.size() << std::endl; }
   }//if selection has ancestor
   
   if(_primary_ancestor_index < 0){
-    if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"Adding " << sel.name << " as top selection " << std::endl; }
     m_top_selections->insert( std::pair< int, Selection* >(sel.selec_ind, &sel ) );
   }
 
-  if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Exiting AddAncestorsRecursive "<< sel.name << std::endl; }
+  if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Exiting AddAncestorsRecursive for selection " << sel.selec_ind << " ; " << sel.name << std::endl; }
 
   return true;
 
@@ -130,6 +122,9 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
     std::cout<<" Adding Selection "<<index<<" with name "<<name<<std::endl;
   }
 
+  bool _do_histos = do_runop ? do_histos : false;
+  bool _do_trees = do_runop ? do_trees : false;
+
   std::pair< std::map<int, Selection>::iterator, bool > selit_pair = m_selections -> insert( std::pair< int, Selection >(index, Selection()) );
   if(m_outData->o_sel_decisions == NULL){ m_outData->o_sel_decisions = new std::map<int, bool>;}
   std::pair< std::map<int, bool>::iterator, bool > decit_pair = m_outData->o_sel_decisions->insert( std::pair<int, bool>(index, false) );
@@ -138,9 +133,7 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
   }
 
   if( selit_pair.second ) {
-    std::cout<<" 00 HERE "<<std::endl;
     m_map_sel_int_string -> insert( std::pair< int, std::string >(index, name) );
-    std::cout<<" 01 HERE "<<std::endl;
 
     (selit_pair.first->second).selec_ind = index;
     (selit_pair.first->second).decision = &(decit_pair.first->second);
@@ -152,52 +145,35 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
     (selit_pair.first->second).ancestors.clear();
     (selit_pair.first->second).primary_descendants.clear();
 
-    std::cout<<" 02 HERE "<<std::endl;
     //_______________________________________________
 
     AddAncestorsRecursive(selit_pair.first->second);
     //_______________________________________________
-    std::cout<<" 03 HERE "<<std::endl;
 
   }
   else{
-    std::cout<<" 03 01 HERE "<<std::endl;
     std::cout << " Warning in SelectorBase::AddSelection --> selection index "
 	      << index << " already exists with name "<<(selit_pair.first)->second.name<<"; new name will be "<<name<<std::endl;
     m_map_sel_int_string -> at( index ) = name;
-    std::cout<<" 03 02 HERE "<<std::endl;
   }
-  std::cout<<" 04 HERE "<<std::endl;
 
   (selit_pair.first->second).name = name;
   (selit_pair.first->second).flags = 0;
   AddFlag( (selit_pair.first->second), DORUNOP, do_runop );
-  AddFlag( (selit_pair.first->second), DOHIST, do_histos ); 
-  AddFlag( (selit_pair.first->second), DOTREE, do_trees ); 
-  std::cout<<" 05 HERE "<<std::endl;
+  AddFlag( (selit_pair.first->second), DOHIST, _do_histos ); 
+  AddFlag( (selit_pair.first->second), DOTREE, _do_trees ); 
 
-  if(m_opt->MsgLevel() == Debug::DEBUG){
-    std::cout<<" 06 HERE "<<std::endl;
+  //if(m_opt->MsgLevel() == Debug::DEBUG){
     std::cout << " SELECTION " << index; 
-    std::cout<<" 06 00 HERE "<<std::endl;
     std::cout << " name = " << name; 
-    std::cout<<" 06 0 HERE "<<std::endl;
     std::cout  << " do_runop = " << do_runop; 
-    std::cout<<" 06 1 HERE "<<std::endl;
     std::cout    << " do_histos = " << do_histos ;
-    std::cout<<" 06 2 HERE "<<std::endl;
     std::cout << " do_trees = " << do_trees; 
-    std::cout<<" 06 3 HERE "<<std::endl;
     std::cout  << " (flag & DORUNOP) = " << PassFlag((selit_pair.first->second), DORUNOP);
-    std::cout<<" 06 4 HERE "<<std::endl;
     std::cout  << " (flag & DOHIST) = " << PassFlag((selit_pair.first->second), DOHIST);
-    std::cout<<" 06 5 0 HERE "<<std::endl;
     std::cout << " (flag & DOTREE) = " << PassFlag((selit_pair.first->second), DOTREE);
-    std::cout<<" 06 6 0 HERE "<<std::endl;
     std::cout <<std::endl;
-    std::cout<<" 07 HERE "<<std::endl;
-  }
-  std::cout<<" 08 HERE "<<std::endl;
+    //}
 
   return true;
 
