@@ -245,6 +245,7 @@ int AnalysisUtils::ParseConfigFile_Blocks(const std::string& config_file, std::v
     }//end a conditional
 
     if(cond_skip){ continue; }
+    if(conf_line == "BREAK"){ break; }
 
     if(conf_line == "NEW"){ 
       nset++; 
