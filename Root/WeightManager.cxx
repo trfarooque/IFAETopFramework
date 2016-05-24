@@ -10,7 +10,9 @@ WeightManager::WeightManager(OptionsBase* opt, const NtupleData* ntupData, Outpu
   m_ntupData(ntupData),
   m_outData(outData),
   m_nomMap(NULL),
-  m_systMap(NULL)
+  m_systMap(NULL),
+  m_config_flags(""),
+  m_config_vetoFlags("")
 {
   m_nomMap = new WeightMap();
   m_systMap = new WeightMap();
@@ -18,12 +20,13 @@ WeightManager::WeightManager(OptionsBase* opt, const NtupleData* ntupData, Outpu
 
 WeightManager::WeightManager( const WeightManager& q){
 
-  m_opt          = q.m_opt;
-  m_ntupData     = q.m_ntupData;
-  m_outData      = q.m_outData;
-  m_nomMap       = q.m_nomMap;
-  m_systMap      = q.m_systMap;
-
+  m_opt                = q.m_opt;
+  m_ntupData           = q.m_ntupData;
+  m_outData            = q.m_outData;
+  m_nomMap             = q.m_nomMap;
+  m_systMap            = q.m_systMap;
+  m_config_flags       = m_config_flags;
+  m_config_vetoFlags   = m_config_vetoFlags;
 }
 
 WeightManager::~WeightManager(){
@@ -369,7 +372,7 @@ bool WeightManager::AddWeightsFromString(const std::string& inputStr, bool isNom
 }
 
 bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
-  
+
   if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Adding weights from configuration files " << inputStr << std::endl;}
   std::string name           = "";
   std::string title          = "";
@@ -392,7 +395,7 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
     if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Adding weights from configuration file " << tmp << std::endl;}
     //Add weights from configuration file
     wgt_map.clear();
-    AnalysisUtils::ParseConfigFile_Blocks( tmp, wgt_map, " : ", m_opt->WeightFlags(), m_opt->WeightVetoFlags() );
+    AnalysisUtils::ParseConfigFile_Blocks( tmp, wgt_map, " : ", m_config_flags, m_config_vetoFlags );
     if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Number of systematic blocks in configuration file " 
 							 << inputStr << " = " << wgt_map.size() << std::endl; }
     
@@ -480,3 +483,10 @@ bool WeightManager::SetWeightComponent(const std::string& name, double value, bo
 }
 
 
+void WeightManager::SetConfigBlock(const std::string& flag, const bool value){
+
+  if(value){ m_config_flags += "__"+flag+"__"; }
+  else     { m_config_vetoFlags += "__"+flag+"__"; }
+
+  return;
+}

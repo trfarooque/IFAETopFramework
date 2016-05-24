@@ -1,3 +1,6 @@
+2016-05-24 - Trisha Farooque <farooque@cern.ch>
+	- Moved weight configuration file flags out of OptionsBase and into WeightManager
+	
 2016-05-23 - Trisha Farooque <farooque@cern.ch>
 	- New SelectorBase with more complex selection hierarchy
 	- WeightObject accessible from WeightManager
