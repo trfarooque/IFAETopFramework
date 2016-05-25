@@ -57,10 +57,12 @@ bool SelectorBase::AddAncestorsRecursive(Selection& sel){
   //____________________________________________________________________
   if(m_add_ancestors){
     sel.primary_ancestor = AddAncestors(sel.ancestors, sel.selec_ind);
-
+    if( (sel.primary_ancestor >= 0) && (m_selections->find(sel.primary_ancestor) == m_selections->end()) ){
+	AddSelection(sel.primary_ancestor, "", false);
+    }
     for(int anc : sel.ancestors){
       if( (anc >= 0) && (m_selections->find(anc) == m_selections->end()) ){
-	AddSelection(anc, Form("anc_%i",anc), false);
+	AddSelection(anc, "", false);
       }
     }
   }//add immediate ancestors to chain if needed
@@ -98,10 +100,10 @@ bool SelectorBase::AddAncestorsRecursive(Selection& sel){
     orphan_ancestors.clear();
   }//recursive addition of ancestors
 
-
   //--------------- Add selection as a primary descendant of its primary ancestor ----------------------
   int _primary_ancestor_index = sel.primary_ancestor;
   if( _primary_ancestor_index >= 0 ){
+
     Selection& _clos_ancestor = m_selections->at(_primary_ancestor_index);
     (_clos_ancestor).primary_descendants.push_back( sel.selec_ind );
   }//if selection has ancestor
@@ -146,8 +148,16 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
     (selit_pair.first->second).primary_descendants.clear();
 
     //_______________________________________________
-
+    if( m_opt->MsgLevel() == Debug::DEBUG ){
+      std::cout << "SelectorBase::AddSelection:: Calling AddAncestorRecursive for selection " << index
+		<< " with name " << name << std::endl;
+    }
     AddAncestorsRecursive(selit_pair.first->second);
+
+    if( m_opt->MsgLevel() == Debug::DEBUG ){
+      std::cout << "SelectorBase::AddSelection:: Called AddAncestorRecursive for selection " << index
+		<< " with name " << name << std::endl;
+    }
     //_______________________________________________
 
   }
@@ -157,11 +167,21 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
     m_map_sel_int_string -> at( index ) = name;
   }
 
-  (selit_pair.first->second).name = name;
+  if( m_opt->MsgLevel() == Debug::DEBUG ){
+      std::cout << "SelectorBase::AddSelection:: About to set parameters for selection " << index
+		<< " with name " << name << std::endl;
+  }
+
+  (selit_pair.first->second).name = (name != "") ? name : Form("sel_%i", (selit_pair.first->second).selec_ind);
   (selit_pair.first->second).flags = 0;
   AddFlag( (selit_pair.first->second), DORUNOP, do_runop );
   AddFlag( (selit_pair.first->second), DOHIST, _do_histos ); 
   AddFlag( (selit_pair.first->second), DOTREE, _do_trees ); 
+
+  if( m_opt->MsgLevel() == Debug::DEBUG ){
+      std::cout << "SelectorBase::AddSelection:: Set parameters for selection " << index
+		<< " with name " << name << std::endl;
+    }
 
   if(m_opt->MsgLevel() == Debug::DEBUG){
     std::cout << " SELECTION " << index; 
@@ -176,67 +196,6 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
 
 }
 
-/*
-bool SelectorBase::AddSelection( const int index, const std::string &name, const bool do_runop, const bool do_histos, const bool do_trees ) {
-
-  if(m_opt->MsgLevel() == Debug::DEBUG){
-    std::cout<<" Adding Selection "<<index<<" with name "<<name<<std::endl;
-  }
-  std::pair< std::map<int, Selection>::iterator, bool > selit_pair = m_selections -> insert( std::pair< int, Selection >(index, Selection()) );
-  if(m_outData->o_sel_decisions == NULL){ m_outData->o_sel_decisions = new std::map<int, bool>;}
-  std::pair< std::map<int, bool>::iterator, bool > decit_pair = m_outData->o_sel_decisions->insert( std::pair<int, bool>(index, false) );
-  if(!decit_pair.second){
-    std::cerr << " Error in SelectorBase::AddSelection --> OutputData already contains a decision element for selection index " << index <<std::endl;
-    return false;
-  }
-
-  if( selit_pair.second ) {
-
-    m_map_sel_int_string -> insert( std::pair< int, std::string >(index, name) );
-
-    (selit_pair.first->second).selec_ind = index;
-    (selit_pair.first->second).name = name;
-    (selit_pair.first->second).decision = &(decit_pair.first->second);
-
-    (selit_pair.first->second).flags = 0;
-    AddFlag( (selit_pair.first->second), DORUNOP, do_runop );
-    AddFlag( (selit_pair.first->second), DOHIST, do_histos ); 
-    AddFlag( (selit_pair.first->second), DOTREE, do_trees ); 
-
-    (selit_pair.first->second).ancestors = std::vector<int>();
-    (selit_pair.first->second).primary_ancestor = -1;
-    (selit_pair.first->second).primary_descendants = std::vector<int>();
-
-    (selit_pair.first->second).ancestors.clear();
-    (selit_pair.first->second).primary_descendants.clear();
-
-    //____________________________________________________________________
-
-    AddAncestorsRecursive(selit_pair.first->second);
-
-    //____________________________________________________________________
-
-    return true;
-  }
-  else{
-      std::cerr << " Error in SelectorBase::AddSelection --> Attempt to overwrite selection index "
-	      << index << " with name "<<(selit_pair.first)->second.name<<" by new name "<<name<<std::endl;
-    return false;
-  }
-
-  return false;
-
-}
-
- */
-
-/*
-  virtual bool AddFlag(const int index, const std::string& flag, const bool value=true );
-  virtual bool AddFlag(Selection& sel , const std::string& flag, const bool value=true );
-  bool AddFlag(const int index, const int flag, const bool value=true );
-  void AddFlag(Selection& sel , const int flag, const bool value=true );
-
- */
 //___________________________________________________________
 //
 bool SelectorBase::AddFlag(const int index, const std::string& flag, const bool value){
