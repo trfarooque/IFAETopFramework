@@ -120,8 +120,9 @@ bool SelectorBase::AddAncestorsRecursive(Selection& sel){
 
 bool SelectorBase::AddSelection( const int index, const std::string &name, const bool do_runop, const bool do_histos, const bool do_trees ) {
 
+  const std::string& _name = (name != "") ? name : FindName(index);
   if(m_opt->MsgLevel() == Debug::DEBUG){
-    std::cout<<" Adding Selection "<<index<<" with name "<<name<<std::endl;
+    std::cout<<" Adding Selection "<<index<<" with name "<<name << " ;_name = " << _name <<std::endl;
   }
 
   bool _do_histos = do_runop ? do_histos : false;
@@ -135,7 +136,7 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
   }
 
   if( selit_pair.second ) {
-    m_map_sel_int_string -> insert( std::pair< int, std::string >(index, name) );
+    m_map_sel_int_string -> insert( std::pair< int, std::string >(index, _name) );
 
     (selit_pair.first->second).selec_ind = index;
     (selit_pair.first->second).decision = &(decit_pair.first->second);
@@ -150,29 +151,29 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
     //_______________________________________________
     if( m_opt->MsgLevel() == Debug::DEBUG ){
       std::cout << "SelectorBase::AddSelection:: Calling AddAncestorRecursive for selection " << index
-		<< " with name " << name << std::endl;
+		<< " with _name " << _name << std::endl;
     }
     AddAncestorsRecursive(selit_pair.first->second);
 
     if( m_opt->MsgLevel() == Debug::DEBUG ){
       std::cout << "SelectorBase::AddSelection:: Called AddAncestorRecursive for selection " << index
-		<< " with name " << name << std::endl;
+		<< " with _name " << _name << std::endl;
     }
     //_______________________________________________
 
   }
   else{
     std::cout << " Warning in SelectorBase::AddSelection --> selection index "
-	      << index << " already exists with name "<<(selit_pair.first)->second.name<<"; new name will be "<<name<<std::endl;
-    m_map_sel_int_string -> at( index ) = name;
+	      << index << " already exists with _name "<<(selit_pair.first)->second.name<<"; new _name will be "<<_name<<std::endl;
+    m_map_sel_int_string -> at( index ) = _name;
   }
 
   if( m_opt->MsgLevel() == Debug::DEBUG ){
       std::cout << "SelectorBase::AddSelection:: About to set parameters for selection " << index
-		<< " with name " << name << std::endl;
+		<< " with _name " << _name << std::endl;
   }
 
-  (selit_pair.first->second).name = (name != "") ? name : Form("sel_%i", (selit_pair.first->second).selec_ind);
+  (selit_pair.first->second).name = _name;
   (selit_pair.first->second).flags = 0;
   AddFlag( (selit_pair.first->second), DORUNOP, do_runop );
   AddFlag( (selit_pair.first->second), DOHIST, _do_histos ); 
@@ -180,12 +181,12 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
 
   if( m_opt->MsgLevel() == Debug::DEBUG ){
       std::cout << "SelectorBase::AddSelection:: Set parameters for selection " << index
-		<< " with name " << name << std::endl;
+		<< " with _name " << _name << std::endl;
     }
 
   if(m_opt->MsgLevel() == Debug::DEBUG){
     std::cout << " SELECTION " << index; 
-    std::cout << " name = " << name; 
+    std::cout << " _name = " << _name; 
     std::cout  << " (flag & DORUNOP) = " << PassFlag((selit_pair.first->second), DORUNOP);
     std::cout  << " (flag & DOHIST) = " << PassFlag((selit_pair.first->second), DOHIST);
     std::cout << " (flag & DOTREE) = " << PassFlag((selit_pair.first->second), DOTREE);
@@ -195,6 +196,8 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
   return true;
 
 }
+
+std::string SelectorBase::FindName(const int index) const{ return Form("sel_%i", index); }
 
 //___________________________________________________________
 //
