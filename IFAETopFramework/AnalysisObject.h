@@ -10,13 +10,18 @@ class AnalysisObject : public TLorentzVector {
   ClassDef(AnalysisObject, 1);
     
 public:
-    //Standard C++ functions
+    
+    //
+    // Standard C++ functions
+    //
     AnalysisObject();
     virtual ~AnalysisObject();
     AnalysisObject( const TLorentzVector& tlv );
     AnalysisObject( const AnalysisObject& q );
     
-    //Specific functions
+    //
+    // Specific functions
+    //
     void Reset();
     void SetMoment(const std::string &name,const double value);
     void UpdateMoment( const std::string &name, const double value );
@@ -52,14 +57,13 @@ public:
 
     void* GetGeneralMoment(const std::string &name) const;
 
-    AnalysisObject& operator=(const AnalysisObject& q);
-    AnalysisObject operator+(const AnalysisObject& q) const;
-    
-private:
-
     bool IsKnownMoment(const std::string &name) const;
     bool IsKinematicMoment(const std::string &name) const;
     bool IsKnownGeneralMoment(const std::string &name) const;
+
+
+    AnalysisObject& operator=(const AnalysisObject& q);
+    AnalysisObject operator+(const AnalysisObject& q) const;
 
     std::map<std::string,double> m_moments;
     std::map<std::string, void*> m_gen_moments;
