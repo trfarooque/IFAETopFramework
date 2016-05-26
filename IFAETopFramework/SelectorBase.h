@@ -12,6 +12,8 @@ struct Selection{
   int selec_ind;
   std::string name;
   bool* decision;
+  double numPass_raw;
+  double numPass_wgt; 
   std::vector<int> ancestors;
   int primary_ancestor;
   std::vector<int> primary_descendants;
@@ -27,9 +29,22 @@ public:
 
   enum BaseSelFlags{ DORUNOP=0,DOHIST,DOTREE };
 
+
+  //_________________________________
+
+  //Constructors and destructors
+  //__________________________________
+
+
   SelectorBase( OptionsBase *opt, OutputData *outData, const bool add_ancestors=false);
   SelectorBase( const SelectorBase &q );
   virtual ~SelectorBase();
+
+  //_________________________________
+
+  //Setup selections
+  //__________________________________
+
   
   bool AddSelection( const int index, const std::string &name, const bool do_runop = true, const bool do_histos = true, const bool do_trees = true );
   virtual std::string FindName(const int index) const;
@@ -43,21 +58,37 @@ public:
 
   bool AddAncestorsRecursive(Selection& sel);
 
+  //_________________________________
+
+  //Pass and run selections
+  //__________________________________
+
   bool PassSelection( const Selection& sel, const bool check_primary=true) const;
   virtual bool PassSelection( const int /*sel*/) const{ return true; }
 
   bool RunSelectionChain();
   bool RunSelectionNode(const int node);
-  bool RunSelectionNode(const Selection& sel_node);
+  bool RunSelectionNode( Selection& sel_node);
 
   bool RunOperations(const int node) const;
   virtual bool RunOperations(const Selection& /*sel*/) const{ return false;}
-  void PrintSelectionTree() const;
+
+  //_______________________
+
+  //Getter functions
+  //_______________________
 
   const Selection* GetSelection(const int node) const;
   inline std::map < int, std::string >* GetSelectionMap() const { return m_map_sel_int_string; }
   inline std::map < int, Selection >* GetSelections() const { return m_selections; }
   inline std::map < int, Selection* >* GetTopSelections() const { return m_top_selections; }
+
+  //_______________________
+
+  //Diagnostic Tools
+  //_______________________
+
+  void PrintSelectionTree( const bool printYields = false) const;
   
  protected:
 

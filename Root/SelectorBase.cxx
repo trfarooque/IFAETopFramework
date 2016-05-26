@@ -32,6 +32,7 @@ SelectorBase::SelectorBase( const SelectorBase &q ){
     m_opt                  = q.m_opt;
     m_add_ancestors        = q.m_add_ancestors;
     m_outData              = q.m_outData;
+
     m_selections           = q.m_selections;
     m_top_selections       = q.m_top_selections; 
     m_map_sel_int_string   = q.m_map_sel_int_string;
@@ -42,9 +43,9 @@ SelectorBase::SelectorBase( const SelectorBase &q ){
 //___________________________________________________________
 //
 SelectorBase::~SelectorBase(){
-    m_selections         -> clear();     delete m_selections;
-    m_top_selections     -> clear();     delete m_top_selections;
-    m_map_sel_int_string -> clear();     delete m_map_sel_int_string;
+  m_selections         -> clear();     delete m_selections;
+  m_top_selections     -> clear();     delete m_top_selections;
+  m_map_sel_int_string -> clear();     delete m_map_sel_int_string;
 }
 
 //___________________________________________________________
@@ -138,11 +139,13 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
   if( selit_pair.second ) {
     m_map_sel_int_string -> insert( std::pair< int, std::string >(index, _name) );
 
-    (selit_pair.first->second).selec_ind = index;
-    (selit_pair.first->second).decision = &(decit_pair.first->second);
+    (selit_pair.first->second).selec_ind    = index;
+    (selit_pair.first->second).decision     = &(decit_pair.first->second);
+    (selit_pair.first->second).numPass_raw  = 0.;
+    (selit_pair.first->second).numPass_wgt  = 0.;
 
-    (selit_pair.first->second).ancestors = std::vector<int>();
-    (selit_pair.first->second).primary_ancestor = -1;
+    (selit_pair.first->second).ancestors           = std::vector<int>();
+    (selit_pair.first->second).primary_ancestor    = -1;
     (selit_pair.first->second).primary_descendants = std::vector<int>();
 
     (selit_pair.first->second).ancestors.clear();
@@ -340,7 +343,7 @@ bool SelectorBase::RunSelectionNode( const int node ){
 
 //___________________________________________________________
 //
-bool SelectorBase::RunSelectionNode( const Selection& sel ){
+bool SelectorBase::RunSelectionNode( Selection& sel ){
 
   if(m_opt -> MsgLevel() == Debug::DEBUG){
     std::cout << " FIRST SelectorBase::RunSelectionNode() --> selection = " << sel.name 
@@ -358,6 +361,11 @@ bool SelectorBase::RunSelectionNode( const Selection& sel ){
   }
   if( !pass_node ) return pass_node;
   m_nPass++;
+
+  if(pass_node){
+    sel.numPass_raw += 1.;
+    sel.numPass_wgt += m_outData -> o_eventWeight_Nom;
+  }
 
   if( PassFlag(sel, DORUNOP) ){
     //std::cout << " Calling run operations for selection "<<sel.name<<std::endl;
@@ -387,7 +395,7 @@ bool SelectorBase::RunOperations( const int node ) const {
 
 //__________________________________________________________
 //
-void SelectorBase::PrintSelectionTree() const{
+void SelectorBase::PrintSelectionTree( const bool printYields ) const{
 
   std::cout<< "************ TOP_SELECTIONS **************" << std::endl;
   for(std::pair<int, Selection*> sel : *m_top_selections){ std::cout << sel.second->name << std::endl; }
@@ -397,6 +405,10 @@ void SelectorBase::PrintSelectionTree() const{
   std::cout<< "************ ALL_SELECTIONS **************" << std::endl;
   for(std::pair<int, Selection> sel : *m_selections){ 
     std::cout <<"SELECTION : " << sel.second.name << ";  INDEX : " << sel.second.selec_ind << std::endl;
+    if(printYields){
+      std::cout << "EVENTS PASSED (UNWEIGHTED): " << sel.second.numPass_raw << std::endl;
+      std::cout << "EVENTS PASSED (WEIGHTED): " << sel.second.numPass_wgt << std::endl;
+    }
     if(sel.second.primary_ancestor  >= 0){ std::cout <<" PRIMARY ANCESTOR : " << m_selections->at(sel.second.primary_ancestor).name << std::endl; }
     else{ std::cout <<" PRIMARY ANCESTOR : " << sel.second.primary_ancestor << std::endl; } 
     std::cout <<" ANCESTOR LIST : "<<std::endl;
