@@ -15,7 +15,6 @@
  
  */
 
-
 #include <iostream>
 #include <map>
 #include <iomanip>
@@ -27,14 +26,11 @@
 #include "TCanvas.h"
 #include "TPie.h"
 #include "TKey.h"
-
-//All colors
-int allColors[] = {2,418,5,4,6,8,1,0};
+#include "TH1F.h"
+#include "TROOT.h"
 
 //Functions
 long GetTreeSizeStudy( TTree* );
-
-
 
 
 //__________________________________________________________________________
@@ -80,12 +76,25 @@ long GetTreeSizeStudy( TTree* tree ){
     TIterator *it = list -> MakeIterator();
     std::map < std::string, long > map_categories;
     long totalSize = 0;
+    
+    //Creating the pdf
+    TCanvas c;
+    TH1F* h = new TH1F();
+    h->SetName("h_temp");
+    h->SetTitle("checks_for_trees");
+    c.cd();
+    h->Draw();
+    c.SaveAs(Form("%s.pdf[",(tree->GetName())));
+    
+    TCanvas c1;
     while ( TBranch *branch = (TBranch*)it -> Next() ){
         //Categories
         std::string name = branch -> GetName();
         size_t pos = name.find("_");
         std::string category = name.substr(0, pos);
         if(pos==std::string::npos) category = "Single variables";
+        tree->Draw( Form( "%s >> h_temp_%s",branch->GetName(), branch->GetName() ),"","hist");
+        c1.SaveAs(Form("%s.pdf",(tree->GetName())));
         
         //Size
         long size = branch -> GetZipBytes();
@@ -98,6 +107,8 @@ long GetTreeSizeStudy( TTree* tree ){
             map_categories.insert( std::pair < std::string, long >( category, size) );
         }
     }
+    
+    c.SaveAs(Form("%s.pdf]",(tree->GetName())));
     
     //
     // Now creates the pie chart
@@ -114,7 +125,7 @@ long GetTreeSizeStudy( TTree* tree ){
     for ( std::pair < std::string, long > Pair : map_categories ) {
         if( (double)Pair.second/(totalSize) < threshold ) continue;
         vals[counter] = (double)(Pair.second);
-        colors[counter] = allColors[counter];
+        colors[counter] = counter;
         std::cout << std::setw(4) << counter << "     " << std::setw(20) << Pair.first << " ---> " << std::setw(3) << Pair.second/(1024.*1024.) << " Mo   (" << std::setw(4) << (double)Pair.second/(totalSize)*100. << " %)" << std::endl;
         counter++;
     }
@@ -163,30 +174,3 @@ long GetTreeSizeStudy( TTree* tree ){
     
     return totalSize;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
