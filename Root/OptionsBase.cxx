@@ -116,7 +116,7 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
         //Search for know argument names
         //
         if(!IdentifyOption(argument, value)){
-            std::cout << "<!> Problem identifying the option : " << value << std::endl;
+            std::cout << "<!> Problem identifying the option : " << argument << "   -> value is " << value << std::endl;
         }
         else{ m_optStr += argument; }
     }
