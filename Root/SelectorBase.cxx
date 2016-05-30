@@ -8,34 +8,35 @@
 
 //___________________________________________________________
 //
-SelectorBase::SelectorBase( OptionsBase* opt, OutputData* outData, const bool add_ancestors ):
+SelectorBase::SelectorBase( OptionsBase* opt, OutputData* outData, const bool useDecisions, const bool add_primaries):
 m_opt(opt),
-m_add_ancestors(add_ancestors),
+m_add_primaries(add_primaries),
+m_useDecisions(useDecisions),
 m_outData(outData),
 m_selections(0),
+m_selection_tree(0),
 m_top_selections(0),
-m_map_sel_int_string(0),
 m_nPass(0)
 {
-    m_selections         = new std::map < int, Selection >;
+    m_selections         = new std::map < int, Selection* >;
+    m_selection_tree     = new std::map < int, Selection* >;
     m_top_selections     = new std::map < int, Selection* >;
-    m_map_sel_int_string = new std::map<int, std::string>;
 
     m_selections        -> clear();
     m_top_selections    -> clear();
-    m_map_sel_int_string-> clear();
 }
 
 //___________________________________________________________
 //
 SelectorBase::SelectorBase( const SelectorBase &q ){
     m_opt                  = q.m_opt;
-    m_add_ancestors        = q.m_add_ancestors;
+    m_add_primaries        = q.m_add_primaries;
+    m_useDecisions         = q.m_useDecisions;
     m_outData              = q.m_outData;
 
     m_selections           = q.m_selections;
+    m_selection_tree       = q.m_selection_tree;
     m_top_selections       = q.m_top_selections; 
-    m_map_sel_int_string   = q.m_map_sel_int_string;
     m_nPass                = q.m_nPass;
 
 }
@@ -43,156 +44,169 @@ SelectorBase::SelectorBase( const SelectorBase &q ){
 //___________________________________________________________
 //
 SelectorBase::~SelectorBase(){
-  m_selections         -> clear();     delete m_selections;
+
   m_top_selections     -> clear();     delete m_top_selections;
-  m_map_sel_int_string -> clear();     delete m_map_sel_int_string;
+  m_selection_tree     -> clear();     delete m_selection_tree;
+ 
+  for(std::pair<int, Selection* > sel : *m_selections){ delete sel.second; }
+  m_selections         -> clear();     delete m_selections;
+
 }
 
-//___________________________________________________________
-//
-//___________________________________________________________
-//
-bool SelectorBase::AddAncestorsRecursive(Selection& sel){
+int SelectorBase::AddPrimary(Selection& sel, const int primary){
 
-  if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Entering AddAncestorsRecursive for selection " << sel.selec_ind << " ; " << sel.name << std::endl; }
-  //____________________________________________________________________
-  if(m_add_ancestors){
-    sel.primary_ancestor = AddAncestors(sel.ancestors, sel.selec_ind);
-    if( (sel.primary_ancestor >= 0) && (m_selections->find(sel.primary_ancestor) == m_selections->end()) ){
-	AddSelection(sel.primary_ancestor, "", false);
+  int _primary = primary;
+  std::map<int, Selection*>::iterator primit = m_selection_tree->find(_primary);
+  std::map<int, Selection*>::iterator storeit = m_selections->find(_primary);
+  while( (_primary>=0) && (primit == m_selection_tree->end()) ){
+    if(m_add_primaries){ sel.primary_ancestor = AddSelection(_primary, "", false); }
+    else{
+      Selection* sel_prim = (storeit != m_selections->end()) ? storeit->second : MakeSelection(primary);
+      int _temp_primary = sel_prim->primary_ancestor;
+      if(storeit == m_selections->end()){
+	delete sel_prim;
+	m_selections->erase( m_selections->find(_primary) ); 
+      }
+      _primary = _temp_primary;
     }
-    for(int anc : sel.ancestors){
-      if( (anc >= 0) && (m_selections->find(anc) == m_selections->end()) ){
-	AddSelection(anc, "", false);
-      }
-    }
-  }//add immediate ancestors to chain if needed
-  else{
-    sel.ancestors.push_back(sel.selec_ind);
-    sel.primary_ancestor = sel.selec_ind;
-    int primary = -1;
-
-    bool orphan = true;
-    std::set<int> orphan_ancestors; orphan_ancestors.clear();
-    std::vector<int> new_ancestors; new_ancestors.clear();
-
-    while(orphan){ 
-      for(int anc : sel.ancestors){
-	if( (anc == sel.selec_ind) //starting position - swayambhu 
-	    || ( (anc >= 0) //this point should not be reached
-		 && (m_selections->find(anc) == m_selections->end()) //ancestor not in chain
-		 && (orphan_ancestors.find(anc) == orphan_ancestors.end()) ) ){ //a top-level ancestor (swayambhu)
-	  primary = AddAncestors(new_ancestors, anc);
-	  if(primary < 0){ orphan_ancestors.insert(anc); }
-	  if(sel.primary_ancestor == anc){ sel.primary_ancestor = primary; }
-	}
-      }
-
-      orphan = false;
-      for(int new_anc : new_ancestors){ 
-	if( (new_anc >= 0) && (orphan_ancestors.find(new_anc) == orphan_ancestors.end())
-	    && (m_selections->find(new_anc) == m_selections->end()) ){ orphan = true; break; }
-      }
-
-      //----------------------------------------
-      sel.ancestors.clear();
-      sel.ancestors = new_ancestors;
-    }//while(orphan)
-    orphan_ancestors.clear();
-  }//recursive addition of ancestors
-
-  //--------------- Add selection as a primary descendant of its primary ancestor ----------------------
-  int _primary_ancestor_index = sel.primary_ancestor;
-  if( _primary_ancestor_index >= 0 ){
-
-    Selection& _clos_ancestor = m_selections->at(_primary_ancestor_index);
-    (_clos_ancestor).primary_descendants.push_back( sel.selec_ind );
-  }//if selection has ancestor
-  
-  if(_primary_ancestor_index < 0){
-    m_top_selections->insert( std::pair< int, Selection* >(sel.selec_ind, &sel ) );
+    if( _primary >= 0 ){ primit = m_selection_tree->find(_primary); }
   }
 
-  if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<" Exiting AddAncestorsRecursive for selection " << sel.selec_ind << " ; " << sel.name << std::endl; }
+  sel.primary_ancestor = _primary;
+
+  return _primary;
+
+}
+
+bool SelectorBase::AddAncestor(Selection& sel, const int anc, bool is_primary){
+
+  std::map<int, Selection*>::iterator ancit = m_selections->find(anc);
+  Selection* sel_anc = NULL;;
+  if(ancit != m_selections->end()){ sel_anc = ancit->second; }
+  else{ sel_anc = MakeSelection(anc);  }
+  sel.ancestors.push_back(sel_anc);
+
+  if(is_primary){ AddPrimary(sel, anc); }
 
   return true;
 
 }
 
+bool SelectorBase::AddAncestors(Selection& sel, const std::vector<int> &anclist, const int primary){
+
+  bool found_primary = false;
+  for(int anc : anclist){ 
+    bool is_primary = (!found_primary) && (anc==primary);
+    if(is_primary){ found_primary = true; }
+    AddAncestor(sel, anc, is_primary);
+  }
+  if(!found_primary){ AddPrimary(sel, primary); }
+
+  return true;
+
+}
+//_________________________________________________________________________________________
+//
+// Make a new selection and add it to the selection store, if it does not already exist.
+// Otherwise the method exits silently and returns the existing selection
+// The method is virtual, so the inherited classes are responsible for calling the appropriate 
+// AddAncestors and AddPrimary functions on it inside this method
+//_________________________________________________________________________________________
+//
+Selection* SelectorBase::MakeSelection( const int index, const std::string& name ) {
+
+  std::pair< std::map<int, Selection*>::iterator, bool > selit_pair = m_selections -> insert( std::pair< int, Selection* >(index, NULL) );
+  if( selit_pair.second ) {
+    selit_pair.first->second = new Selection();
+    if(m_outData->o_sel_decisions == NULL){ m_outData->o_sel_decisions = new std::map<int, bool>;}
+    std::pair< std::map<int, bool>::iterator, bool > decit_pair = m_outData->o_sel_decisions->insert( std::pair<int, bool>(index, false) );
+    if(!decit_pair.second){
+      std::cout << " Warning in SelectorBase::MakeSelection --> OutputData already contains a decision element for selection index " << index <<std::endl;
+    }
+
+    if(m_outData->o_sel_isSet == NULL){ m_outData->o_sel_isSet = new std::map<int, bool>;}
+    std::pair< std::map<int, bool>::iterator, bool > setit_pair = m_outData->o_sel_isSet->insert( std::pair<int, bool>(index, false) );
+    if(!decit_pair.second){
+      std::cout << " Warning in SelectorBase::MakeSelection --> OutputData already contains a decision element for selection index " << index <<std::endl;
+    }
+    if(!setit_pair.second){
+      std::cout << " Warning in SelectorBase::MakeSelection --> OutputData already contains an isSet element for selection index " << index <<std::endl;
+    }
+
+    selit_pair.first->second->selec_ind    = index;
+    selit_pair.first->second->name         = (name != "") ? name : FindName(index);
+    selit_pair.first->second->decision     = &(decit_pair.first->second);
+    selit_pair.first->second->isSet        = &(setit_pair.first->second);
+    selit_pair.first->second->numPass_raw  = 0.;
+    selit_pair.first->second->numPass_wgt  = 0.;
+    selit_pair.first->second->flags        = 0;
+    
+    selit_pair.first->second->ancestors           = std::vector<Selection*>();
+    selit_pair.first->second->primary_ancestor    = -1;
+    selit_pair.first->second->primary_descendants = std::vector<int>();
+
+    selit_pair.first->second->ancestors.clear();
+    selit_pair.first->second->primary_descendants.clear();
+
+  }
+  return selit_pair.first->second;
+
+}
+
+//_________________________________________________________________________________________
+//
+// Add a selection with given attributes to the selection tree. A new selection is created and 
+// added to the selection store if this index is not found. Else, the existing selection is updated 
+// with the attributed given here and a warning is printed
+//_________________________________________________________________________________________
+//
+
 bool SelectorBase::AddSelection( const int index, const std::string &name, const bool do_runop, const bool do_histos, const bool do_trees ) {
 
-  const std::string& _name = (name != "") ? name : FindName(index);
   if(m_opt->MsgLevel() == Debug::DEBUG){
-    std::cout<<" Adding Selection "<<index<<" with name "<<name << " ;_name = " << _name <<std::endl;
+    std::cout<<" Adding Selection " << index << " with name " << name << std::endl;
+    std::cout<<" ______BASE_______INDEX______"<<index<<" __NAME__ "<<" __DORUNOP__ "<<do_runop
+	     <<" __DOHISTOS__ "<<do_histos<<" __DOTREES__ "<<do_trees<<std::endl;
   }
 
-  bool _do_histos = do_runop ? do_histos : false;
-  bool _do_trees = do_runop ? do_trees : false;
-
-  std::pair< std::map<int, Selection>::iterator, bool > selit_pair = m_selections -> insert( std::pair< int, Selection >(index, Selection()) );
-  if(m_outData->o_sel_decisions == NULL){ m_outData->o_sel_decisions = new std::map<int, bool>;}
-  std::pair< std::map<int, bool>::iterator, bool > decit_pair = m_outData->o_sel_decisions->insert( std::pair<int, bool>(index, false) );
-  if(!decit_pair.second){
-    std::cout << " Warning in SelectorBase::AddSelection --> OutputData already contains a decision element for selection index " << index <<std::endl;
-  }
-
+  std::pair< std::map<int, Selection*>::iterator, bool > selit_pair = m_selection_tree -> insert( std::pair< int, Selection* >(index, NULL) );
   if( selit_pair.second ) {
-    m_map_sel_int_string -> insert( std::pair< int, std::string >(index, _name) );
-
-    (selit_pair.first->second).selec_ind    = index;
-    (selit_pair.first->second).decision     = &(decit_pair.first->second);
-    (selit_pair.first->second).numPass_raw  = 0.;
-    (selit_pair.first->second).numPass_wgt  = 0.;
-
-    (selit_pair.first->second).ancestors           = std::vector<int>();
-    (selit_pair.first->second).primary_ancestor    = -1;
-    (selit_pair.first->second).primary_descendants = std::vector<int>();
-
-    (selit_pair.first->second).ancestors.clear();
-    (selit_pair.first->second).primary_descendants.clear();
-
-    //_______________________________________________
-    if( m_opt->MsgLevel() == Debug::DEBUG ){
-      std::cout << "SelectorBase::AddSelection:: Calling AddAncestorRecursive for selection " << index
-		<< " with _name " << _name << std::endl;
+    selit_pair.first->second = MakeSelection( index, name );
+    if( (selit_pair.first->second) -> primary_ancestor < 0 ){
+      m_top_selections->insert( std::pair<int, Selection*>( (selit_pair.first->second)->selec_ind, (selit_pair.first->second) ) );
     }
-    AddAncestorsRecursive(selit_pair.first->second);
-
-    if( m_opt->MsgLevel() == Debug::DEBUG ){
-      std::cout << "SelectorBase::AddSelection:: Called AddAncestorRecursive for selection " << index
-		<< " with _name " << _name << std::endl;
+    else{
+      m_selection_tree->at( (selit_pair.first->second)->primary_ancestor )->
+	primary_descendants.push_back( (selit_pair.first->second) -> selec_ind );
     }
-    //_______________________________________________
-
   }
   else{
     std::cout << " Warning in SelectorBase::AddSelection --> selection index "
-	      << index << " already exists with _name "<<(selit_pair.first)->second.name<<"; new _name will be "<<_name<<std::endl;
-    m_map_sel_int_string -> at( index ) = _name;
+	      << index << " already exists with _name " << (selit_pair.first)->second->name 
+	      << "; new _name will be " << name << std::endl;
   }
 
   if( m_opt->MsgLevel() == Debug::DEBUG ){
       std::cout << "SelectorBase::AddSelection:: About to set parameters for selection " << index
-		<< " with _name " << _name << std::endl;
+		<< " with name " << selit_pair.first->second->name << std::endl;
   }
+  Selection* sel = selit_pair.first->second;
 
-  (selit_pair.first->second).name = _name;
-  (selit_pair.first->second).flags = 0;
-  AddFlag( (selit_pair.first->second), DORUNOP, do_runop );
-  AddFlag( (selit_pair.first->second), DOHIST, _do_histos ); 
-  AddFlag( (selit_pair.first->second), DOTREE, _do_trees ); 
+  bool _do_histos = do_runop ? do_histos : false;
+  bool _do_trees = do_runop ? do_trees : false;
 
-  if( m_opt->MsgLevel() == Debug::DEBUG ){
-      std::cout << "SelectorBase::AddSelection:: Set parameters for selection " << index
-		<< " with _name " << _name << std::endl;
-    }
+  sel -> flags        = 0;
+  AddFlag( *sel, DORUNOP, do_runop );
+  AddFlag( *sel, DOHIST, _do_histos ); 
+  AddFlag( *sel, DOTREE, _do_trees ); 
 
   if(m_opt->MsgLevel() == Debug::DEBUG){
-    std::cout << " SELECTION " << index; 
-    std::cout << " _name = " << _name; 
-    std::cout  << " (flag & DORUNOP) = " << PassFlag((selit_pair.first->second), DORUNOP);
-    std::cout  << " (flag & DOHIST) = " << PassFlag((selit_pair.first->second), DOHIST);
-    std::cout << " (flag & DOTREE) = " << PassFlag((selit_pair.first->second), DOTREE);
+    std::cout << " SelectorBase::AddSelection -->> ADDED SELECTION " << index; 
+    std::cout << " name = " << sel -> name; 
+    std::cout << " primary_ancestor = "   << sel -> primary_ancestor; 
+    std::cout << " (flag & DORUNOP) =   " << PassFlag(*sel, DORUNOP);
+    std::cout << " (flag & DOHIST)  =   " << PassFlag(*sel, DOHIST);
+    std::cout << " (flag & DOTREE)  =   " << PassFlag(*sel, DOTREE);
     std::cout <<std::endl;
   }
 
@@ -200,20 +214,22 @@ bool SelectorBase::AddSelection( const int index, const std::string &name, const
 
 }
 
-std::string SelectorBase::FindName(const int index) const{ return Form("sel_%i", index); }
-
+std::string SelectorBase::FindName(const int index) const{
+  std::string name =  Form("selection_%i", index);
+  return name;
+}
 //___________________________________________________________
 //
 bool SelectorBase::AddFlag(const int index, const std::string& flag, const bool value){
 
   bool stat = true;
-  std::map<int, Selection>::iterator selit = m_selections->find(index);
+  std::map<int, Selection*>::iterator selit = m_selections->find(index);
   if( selit == m_selections->end() ){
     std::cerr<<" Error in SelectorBase::AddFlag() --> Selection at index "<< index << "cannot be found"<<std::endl;
     return false;
   }
   else{
-    stat = AddFlag(selit->second, flag, value); 
+    stat = AddFlag(*(selit->second), flag, value); 
   } 
   return stat;
 
@@ -223,12 +239,12 @@ bool SelectorBase::AddFlag(const int index, const std::string& flag, const bool 
 //
 bool SelectorBase::AddFlag(const int index, const int flag, const bool value){
 
-  std::map<int, Selection>::iterator selit = m_selections->find(index);
+  std::map<int, Selection*>::iterator selit = m_selections->find(index);
   if( selit == m_selections->end() ){
     std::cerr<<" Error in SelectorBase::AddFlag() --> Selection at index "<< index << "cannot be found"<<std::endl;
     return false;
   }
-  AddFlag(selit->second, flag, value); 
+  AddFlag(*(selit->second), flag, value); 
   return true;
 }
 
@@ -246,10 +262,10 @@ void SelectorBase::AddFlag(Selection& sel , const int flag, const bool value ){
 //
 bool SelectorBase::AddFlag(Selection& sel, const std::string& flag, const bool value){
 
-  if(flag=="do_runop"){ AddFlag(sel, DORUNOP, value); }
-  else if(flag=="do_histos"){ AddFlag(sel, DOHIST, value); }
-  else if(flag=="do_trees"){ AddFlag(sel, DOTREE, value); }
-  else{ std::cerr << " ERROR in SelectorBase --> Unknown flag "<<flag<<std::endl; return false; }
+  if(flag=="do_runop")       { AddFlag(sel, DORUNOP, value); }
+  else if(flag=="do_histos") { AddFlag(sel, DOHIST, value); }
+  else if(flag=="do_trees")  { AddFlag(sel, DOTREE, value); }
+  else                       { std::cerr << " ERROR in SelectorBase --> Unknown flag "<<flag<<std::endl; return false; }
   return true;
 
 }
@@ -257,52 +273,32 @@ bool SelectorBase::AddFlag(Selection& sel, const std::string& flag, const bool v
 bool SelectorBase::PassFlag(const Selection& sel, const int flag) const{
   return (sel.flags & 0x1<<flag); 
 }
+
 //___________________________________________________________
 //
-/*
-bool SelectorBase::PassSelection( const int sel ) const {
-
-  bool pass = false;
-  std::map<int, Selection>::iterator selit = m_selections->find(sel);
-  if( selit == m_selections->end() ){
-    std::cerr<<" Error in SelectorBase::PassSelection() --> Selection at index "<< sel << "cannot be found"<<std::endl;
-    return false;
-  }
-  else{
-    if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"SelectorBase::PassSelection on index "<<sel<<std::endl; }
-    pass = PassSelection(selit->second); 
-  } 
-
-  return pass;
-
-}
-*/
-//___________________________________________________________
-//
-bool SelectorBase::PassSelection( const Selection& sel, bool check_primary ) const {
+bool SelectorBase::PassSelection( Selection& sel, bool useDecision, bool check_primary ) {
 
   if( m_opt -> MsgLevel() == Debug::DEBUG ){ 
     std::cout << "Entering SelectorBase::PassSelection for selection " << sel.name << std::endl; 
-    }
-  //std::cout << " Running full selection for " << sel.name << std::endl;
+  }
+  if(useDecision && *(sel.isSet) ){ return *(sel.decision); }
+
   bool pass = true;
   if(sel.ancestors.size() > 0){ 
-    for(int anc : sel.ancestors){ 
-      //std::cout << " Now checking ancestor " << anc << " of selection " << sel.name << std::endl;
-      if(anc < 0 ) pass = true;
-      else if( !check_primary && (anc == sel.primary_ancestor) ) continue;
-      else{
-	std::map<int, Selection>::iterator selit = m_selections->find(anc);
-	if(selit != m_selections->end()){ pass = PassSelection( selit->second, check_primary ); }
-	else{  pass = PassSelection(anc); }
-	//std::cout << "Decision for ancestor "<<anc<<" : "<<pass<<std::endl;
-      }
+    for(Selection* anc : sel.ancestors){ 
+      if( !check_primary && (anc->selec_ind == sel.primary_ancestor) ) continue;
+      else{ pass = PassSelection( *anc, useDecision, check_primary ); }
       if(!pass) break;
     }
   }
   pass = pass && PassSelection(sel.selec_ind);
+  if(!(*(sel.isSet)) && pass){
+    sel.numPass_raw += 1.;
+    sel.numPass_wgt += m_outData -> o_eventWeight_Nom;
+  }
+
   *(sel.decision) = pass;
-  //std::cout << "Decision for " << sel.name << " : " << pass << std::endl;
+  *(sel.isSet) = true;
 
   return pass;
 }
@@ -330,12 +326,12 @@ bool SelectorBase::RunSelectionChain( ) {
 //
 bool SelectorBase::RunSelectionNode( const int node ){
 
-  std::map<int, Selection>::iterator selit = m_selections->find(node);
-  if( selit == m_selections->end() ){
-    std::cerr<<" Error in SelectorBase::RunSelectionNode() --> Selection at index "<< node << "cannot be found"<<std::endl;
+  std::map<int, Selection*>::iterator selit = m_selection_tree->find(node);
+  if( selit == m_selection_tree->end() ){
+    std::cerr<<" Error in SelectorBase::RunSelectionNode() --> Selection at index "<< node << "cannot be found in tree"<<std::endl;
     return false;
   }
-  bool pass_node = RunSelectionNode(selit->second);
+  bool pass_node = RunSelectionNode(*(selit->second));
 
   return pass_node;
 
@@ -352,7 +348,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
 
   }
 
-  bool pass_node = PassSelection(sel, false);
+  bool pass_node = PassSelection(sel, m_useDecisions, false);
   if(m_opt -> MsgLevel() == Debug::DEBUG){
     std::cout << " SECOND SelectorBase::RunSelectionNode() --> selection = " << sel.name << " pass_node = " << pass_node 
 	      << " Number of descendants = " << sel.primary_descendants.size()  
@@ -362,13 +358,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
   if( !pass_node ) return pass_node;
   m_nPass++;
 
-  if(pass_node){
-    sel.numPass_raw += 1.;
-    sel.numPass_wgt += m_outData -> o_eventWeight_Nom;
-  }
-
   if( PassFlag(sel, DORUNOP) ){
-    //std::cout << " Calling run operations for selection "<<sel.name<<std::endl;
     if(!RunOperations(sel)){ std::cerr << "ERROR in SelectorBase::RunSelectionNode() -> Failure to execute RunOperations on selection node " << sel.selec_ind << std::endl;}
   }
 
@@ -382,12 +372,12 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
 //
 bool SelectorBase::RunOperations( const int node ) const {
 
-  std::map<int, Selection>::iterator selit = m_selections->find(node);
+  std::map<int, Selection*>::iterator selit = m_selections->find(node);
   if( selit == m_selections->end() ){
     std::cerr<<" Error in SelectorBase::RunOperations() --> Selection at index "<< node << "cannot be found"<<std::endl;
     return false;
   }
-  bool stat = RunOperations(selit->second);
+  bool stat = RunOperations( *(selit->second) );
 
   return stat;
 
@@ -403,22 +393,23 @@ void SelectorBase::PrintSelectionTree( const bool printYields ) const{
   std::cout<<std::endl<<std::endl<<std::endl;
 
   std::cout<< "************ ALL_SELECTIONS **************" << std::endl;
-  for(std::pair<int, Selection> sel : *m_selections){ 
-    std::cout <<"SELECTION : " << sel.second.name << ";  INDEX : " << sel.second.selec_ind << std::endl;
+  for(std::pair<int, Selection*> sel : *m_selection_tree){ 
+    std::cout <<"SELECTION : " << sel.second->name << ";  INDEX : " << sel.second->selec_ind << std::endl;
+    std::cout << "   DORUNOP =   " << PassFlag(*(sel.second), DORUNOP)
+	      << "   DOHIST  =   " << PassFlag(*(sel.second), DOHIST)
+	      << "   DOTREE  =   " << PassFlag(*(sel.second), DOTREE) << std::endl;
     if(printYields){
-      std::cout << "EVENTS PASSED (UNWEIGHTED): " << sel.second.numPass_raw << std::endl;
-      std::cout << "EVENTS PASSED (WEIGHTED): " << sel.second.numPass_wgt << std::endl;
+      std::cout << "EVENTS PASSED (UNWEIGHTED): " << sel.second->numPass_raw << std::endl;
+      std::cout << "EVENTS PASSED (WEIGHTED):   " << sel.second->numPass_wgt << std::endl;
     }
-    if(sel.second.primary_ancestor  >= 0){ std::cout <<" PRIMARY ANCESTOR : " << m_selections->at(sel.second.primary_ancestor).name << std::endl; }
-    else{ std::cout <<" PRIMARY ANCESTOR : " << sel.second.primary_ancestor << std::endl; } 
+
+    if(sel.second->primary_ancestor >= 0){ std::cout <<" PRIMARY ANCESTOR : " << m_selections->at(sel.second->primary_ancestor)->name << std::endl; }
     std::cout <<" ANCESTOR LIST : "<<std::endl;
-    for( int anc : sel.second.ancestors ){
-      if( (anc >= 0) && (m_selections->find(anc) != m_selections->end()) ){ std::cout << "   " << m_selections->at(anc).name << std::endl; }
-      else{ std::cout << "   " << anc << std::endl; }
-    }
+    for( Selection* anc : sel.second->ancestors ){ std::cout << "   " << anc->name << std::endl; }
+
     std::cout <<" PRIMARY DESCENDANT LIST : "<<std::endl;
-    for( int dec : sel.second.primary_descendants ){
-      std::cout << "   " << m_selections->at(dec).name << std::endl;
+    for( int dec : sel.second->primary_descendants ){
+      std::cout << "   " << m_selections->at(dec)->name << std::endl;
     }
 
     std::cout << std::endl << std::endl << std::endl;
@@ -432,12 +423,12 @@ void SelectorBase::PrintSelectionTree( const bool printYields ) const{
 
 const Selection* SelectorBase::GetSelection(const int node) const{
 
- std::map<int, Selection>::iterator selit = m_selections->find(node);
+ std::map<int, Selection*>::iterator selit = m_selections->find(node);
  if( selit == m_selections->end() ){
    std::cerr<<" Error in SelectorBase::RunOperations() --> Selection at index "<< node << "cannot be found"<<std::endl;
    return NULL;
  }
- Selection* sel = &(selit->second);
+ Selection* sel = (selit->second);
  return sel;
 
 }

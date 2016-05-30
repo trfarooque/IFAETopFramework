@@ -10,6 +10,7 @@ OutputData::OutputData():
   o_eventWeight_Nom(0.),
   o_eventWeight_Systs(NULL),
   o_sel_decisions(NULL),
+  o_sel_isSet(NULL),
   o_TRF_bjets_n(0),
   o_TRF_isIncl(true)
 {
@@ -26,6 +27,7 @@ OutputData::OutputData( const OutputData & q){
   o_eventWeight_Nom          = q.o_eventWeight_Nom;
   o_eventWeight_Systs        = q.o_eventWeight_Systs;
   o_sel_decisions            = q.o_sel_decisions;
+  o_sel_isSet                = q.o_sel_isSet;
   o_TRF_bjets_n              = q.o_TRF_bjets_n;     
   o_TRF_isIncl               = q.o_TRF_isIncl;     
 }
@@ -59,6 +61,7 @@ OutputData::~OutputData()
     delete o_vecF_weight_components;
   }
   if(o_sel_decisions){ delete o_sel_decisions; }
+  if(o_sel_isSet){ delete o_sel_isSet; }
 
 }
 
@@ -88,7 +91,9 @@ void OutputData::ClearOutputData()
   }  
   if(o_sel_decisions){
     for(std::map<int, bool>::iterator decit = o_sel_decisions->begin(); decit != o_sel_decisions->end(); ++decit){decit->second = false;}
-    //for ( std::pair < int, bool > dec : *o_sel_decisions ) dec.second = false;
+  }
+  if(o_sel_isSet){
+    for(std::map<int, bool>::iterator setit = o_sel_isSet->begin(); setit != o_sel_isSet->end(); ++setit){setit->second = false;}
   }
 
   o_TRF_bjets_n = 0;

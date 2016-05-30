@@ -1,3 +1,7 @@
+2016-05-31 - Trisha Farooque <farooque@cern.ch>
+	- Clean-up and restructuring of SelectorBase
+	- isSet flag for selections in OutputData
+	
 2016-05-24 - Trisha Farooque <farooque@cern.ch>
 	- Moved weight configuration file flags out of OptionsBase and into WeightManager
 	

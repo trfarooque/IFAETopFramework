@@ -30,6 +30,7 @@ public:
     //Selection decision
     //
     std::map<int, bool> *o_sel_decisions;
+    std::map<int, bool> *o_sel_isSet;
 
     //____________________________________________________________
     //TRF weights, permutations and current configurations
