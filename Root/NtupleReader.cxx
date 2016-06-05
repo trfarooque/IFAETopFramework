@@ -24,7 +24,10 @@ NtupleReader::NtupleReader(OptionsBase* opt, std::map<std::string, WeightObject*
   m_ntupData(NULL),
   m_nomMap(nomMap),
   m_sysMap(sysMap)
-{ m_branchList.clear(); }
+{
+  m_branchList = std::set<std::string>();
+  m_branchList.clear();
+}
 
 
 //_________________________________________________________________________________
@@ -69,16 +72,15 @@ int NtupleReader::GetChainEntry( long entry ) const {
 //
 int NtupleReader::ChainNEntries() const {
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::chainNEntries()" << std::endl;
-    return m_chain->GetEntries();
+    long int nentries = m_chain->GetEntries();
+    std::cout<<" Number of entries in chain = "<<nentries<<std::endl;
+    return nentries;
 }
 
 //_________________________________________________________________________________
 //
 bool NtupleReader::Init(std::map<std::string, WeightObject*> *nomMap, std::map<std::string, WeightObject*> *sysMap){
-    
-    //decide whether it is a comma separated list of files, or a text file containing
-    //the names of the files to be added
-    
+
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::Init()" << std::endl;
     if(m_ntupData == NULL){
       std::cerr << "NtupleReader::Init() --> ERROR : NtupleData is NULL. Please check your code."<<std::endl;
@@ -132,8 +134,8 @@ int NtupleReader::ChainFromTextFile(TChain* ch, const std::string& inputfilename
     string fstr="";
     int nfile =0;
     while(getline(inlist,fstr)){
-        nfile += ch->Add(fstr.c_str());
-        fstr.clear();
+      nfile += ch->Add(fstr.c_str(), 0);
+      fstr.clear();
     }
     inlist.close();
     
@@ -156,7 +158,7 @@ int NtupleReader::ChainFromStrList(TChain* ch, const std::string& inputfilelist)
         string tmp = inputfilelist.substr(i,n-i);
 	if(!tmp.empty()){
 	  if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "NtupleReader::ChainFromStrList() : Adding " << tmp << " to chain" << std::endl;
-	  nfile += ch->Add(tmp.c_str());
+	  nfile += ch->Add(tmp.c_str(), 0);
 	}
         tmp.clear();
     }
@@ -166,14 +168,13 @@ int NtupleReader::ChainFromStrList(TChain* ch, const std::string& inputfilelist)
 
 
 int NtupleReader::SetVariableToChain(const std::string& name, void* variable){
-
+  
   if(m_opt->MsgLevel() == Debug::DEBUG){ std::cout<<"NtupleReader::SetVariableToChain(void*) :: Setting "<<name<<" to "<<variable<<std::endl; }
   std::set<std::string>::iterator it = m_branchList.find(name);
   if(it != m_branchList.end()){
     std::cout << "NtupleReader::SetVariableToChain()--> WARNING: Branch with name "<<name<<" has already been set to an address. Ignoring. "<<std::endl;
     return 0;
   }
-
   m_chain->SetBranchStatus(name.c_str(), 1);
 
   TBranch* branch = 0;
