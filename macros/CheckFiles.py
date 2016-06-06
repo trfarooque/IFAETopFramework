@@ -94,7 +94,7 @@ def CheckFiles(inputFolder):
 def CheckFilesFromTemplate(inputFolder,templateFile):
     #Get the expected results from rucio
     comRucio = "rucio ls \""+templateFile+"\""
-    command = comRucio + " | grep \"COLLECTION\" | awk '{print $2}'"
+    command = comRucio + " | grep \"CONTAINER\" | awk '{print $2}'"
     out = os.popen(command).read()
     if(out==""):
         printError("<!> Template "+templateFile+" has no results. Please check !")

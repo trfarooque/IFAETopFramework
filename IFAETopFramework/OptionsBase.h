@@ -88,10 +88,10 @@ protected:
     LeptonChannel::lepch m_leptonChannel;
 
     std::string m_str_sampleName,m_str_sampleID,m_str_nomName,m_str_sysName
-      ,m_str_wgt_configList,m_str_anaType,m_str_leptonChannel;
+      ,m_str_wgt_configList
+      ,m_str_anaType,m_str_leptonChannel;
 
     std::string m_inputTree,m_outputTree,m_inputFile,m_outputFile,m_outputFolder;
-
     int m_skipEvents, m_nEvents, m_pickEvent;
     
 };

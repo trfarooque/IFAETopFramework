@@ -185,19 +185,21 @@ bool AnalysisUtils::FileExists(const std::string& filename){
 }
 
 //______________________________________________________________________________________________________________________
-int AnalysisUtils::ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map
-				   , const std::string& delim, bool blockformat ){
-
+int AnalysisUtils::ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, 
+				   std::string> >& ret_map, const std::string& delim,
+				   const std::string& flagList, const std::string& vetoList,
+				   const bool blockformat){
   int stat = 1;
-  if(blockformat){ stat = ParseConfigFile_Blocks(config_file, ret_map,  delim); }
-  else{ stat = ParseConfigFile_Lines(config_file, ret_map,  delim); }
+  if(blockformat){ stat = ParseConfigFile_Blocks(config_file, ret_map,  delim, flagList, vetoList); }
+  else{ stat = ParseConfigFile_Lines(config_file, ret_map,  delim, flagList, vetoList); }
 
   return stat;
 
 }
 
-int AnalysisUtils::ParseConfigFile_Blocks(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim ){
-
+int AnalysisUtils::ParseConfigFile_Blocks(const std::string& config_file, std::vector<std::map<std::string, 
+					  std::string> >& ret_map, const std::string& delim, 
+					  const std::string& flagList, const std::string& vetoList){
   ret_map.clear();
   std::ifstream conf_stream(config_file);
   if(!conf_stream){
@@ -208,12 +210,42 @@ int AnalysisUtils::ParseConfigFile_Blocks(const std::string& config_file, std::v
   std::string conf_line; 
   bool begun = false;
   int nset = -1;
+  bool cond_skip = false;
+  std::string cond_term = "";
+  std::string s_if    = "--if ";
+  std::string s_ifnot = "--ifnot ";
+  std::string s_endif = "--endif ";
+
   while( getline(conf_stream, conf_line) ){
     TrimString(conf_line);
     if(conf_line == "BEGIN"){begun = true; continue;}
     if(!begun){continue;}
     if(conf_line == "END") break;
     if( conf_line.empty() || (conf_line.find("#") == 0) ) continue;
+
+    if( conf_line.find("--if") == 0 ){
+      if(cond_skip){ continue; } //an outer if statement is active
+      if( conf_line.find(s_if) == 0 ){
+	cond_term = conf_line.substr( s_if.size());
+	if( flagList.find("__"+cond_term+"__") == std::string::npos ){ cond_skip = true; }
+      }
+      else if( conf_line.find(s_ifnot) == 0 ){
+	cond_term = conf_line.substr( s_ifnot.size());
+	if( vetoList.find("__"+cond_term+"__") == std::string::npos ){ cond_skip = true; }
+      }
+      continue;
+    }//start a conditional
+    else if( conf_line.find(s_endif) == 0 ){
+      if( conf_line.find( cond_term ) == std::string::npos ){ continue; }
+      else{
+	cond_skip = false;
+	cond_term = "";
+      }
+      continue;
+    }//end a conditional
+
+    if(cond_skip){ continue; }
+    if(conf_line == "BREAK"){ break; }
 
     if(conf_line == "NEW"){ 
       nset++; 
@@ -238,8 +270,10 @@ int AnalysisUtils::ParseConfigFile_Blocks(const std::string& config_file, std::v
 
 }
 
-int AnalysisUtils::ParseConfigFile_Lines(const std::string& config_file, std::vector<std::map<std::string, std::string> >& ret_map, const std::string& delim){
-
+int AnalysisUtils::ParseConfigFile_Lines(const std::string& config_file, std::vector<std::map<std::string, 
+					 std::string> >& ret_map, const std::string& delim,
+					 const std::string& /*flagList*/, const std::string& /*vetoList*/){
+  
   ret_map.clear();
 
   std::map<int, std::string> paramSeq; paramSeq.clear();

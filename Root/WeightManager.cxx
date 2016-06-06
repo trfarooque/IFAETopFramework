@@ -10,7 +10,9 @@ WeightManager::WeightManager(OptionsBase* opt, const NtupleData* ntupData, Outpu
   m_ntupData(ntupData),
   m_outData(outData),
   m_nomMap(NULL),
-  m_systMap(NULL)
+  m_systMap(NULL),
+  m_config_flags(""),
+  m_config_vetoFlags("")
 {
   m_nomMap = new WeightMap();
   m_systMap = new WeightMap();
@@ -18,12 +20,13 @@ WeightManager::WeightManager(OptionsBase* opt, const NtupleData* ntupData, Outpu
 
 WeightManager::WeightManager( const WeightManager& q){
 
-  m_opt          = q.m_opt;
-  m_ntupData     = q.m_ntupData;
-  m_outData      = q.m_outData;
-  m_nomMap       = q.m_nomMap;
-  m_systMap      = q.m_systMap;
-
+  m_opt                = q.m_opt;
+  m_ntupData           = q.m_ntupData;
+  m_outData            = q.m_outData;
+  m_nomMap             = q.m_nomMap;
+  m_systMap            = q.m_systMap;
+  m_config_flags       = m_config_flags;
+  m_config_vetoFlags   = m_config_vetoFlags;
 }
 
 WeightManager::~WeightManager(){
@@ -41,6 +44,27 @@ WeightManager::~WeightManager(){
 
 
 }
+
+WeightObject* WeightManager::GetWeightObject(const std::string& name, const bool isNominal) const{
+
+  WeightMap* wgtMap = isNominal ? m_nomMap : m_systMap;
+  WeightObject* wgtObj = NULL;
+  if(wgtMap){
+    WeightMap::iterator it = wgtMap -> find(name);
+    if(it != wgtMap->end()){ wgtObj = it->second; }
+    else{ std::cerr << "WeightManager::GetWeightObject() --> ERROR : Weight " << name 
+		    << " not found in map; isNominal = " << isNominal <<std::endl;
+    }
+  }
+  else{
+    std::cerr << "WeightManager::GetWeightObject() --> ERROR : Weight " << name 
+		    << " not found in map; isNominal = " << isNominal <<std::endl;
+  }
+
+  return wgtObj;
+
+}
+
 
 bool WeightManager::AddAllWeights(){
 
@@ -250,7 +274,6 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
 
   if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << "WeightManager::AddWeight adding weight ("
  						     << name << ")" << " isInput = " << isInput << " isNominal = " << isNominal <<std::endl; }
-
   WeightMap* wgtMap = (isNominal) ? m_nomMap : m_systMap;
   WeightMap::iterator it = wgtMap -> find(name);
   if(it != wgtMap->end()){
@@ -349,7 +372,7 @@ bool WeightManager::AddWeightsFromString(const std::string& inputStr, bool isNom
 }
 
 bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
-  
+
   if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Adding weights from configuration files " << inputStr << std::endl;}
   std::string name           = "";
   std::string title          = "";
@@ -372,9 +395,9 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
     if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Adding weights from configuration file " << tmp << std::endl;}
     //Add weights from configuration file
     wgt_map.clear();
-    AnalysisUtils::ParseConfigFile_Blocks(tmp, wgt_map, " : ");
+    AnalysisUtils::ParseConfigFile_Blocks( tmp, wgt_map, " : ", m_config_flags, m_config_vetoFlags );
     if( m_opt -> MsgLevel() == Debug::DEBUG ){ std::cout << "Number of systematic blocks in configuration file " 
-							 << inputStr << " = " << wgt_map.size() << std::endl;}
+							 << inputStr << " = " << wgt_map.size() << std::endl; }
     
     for( std::map<std::string, std::string> wgt_block : wgt_map ){
       name            = "";
@@ -460,3 +483,10 @@ bool WeightManager::SetWeightComponent(const std::string& name, double value, bo
 }
 
 
+void WeightManager::SetConfigBlock(const std::string& flag, const bool value){
+
+  if(value){ m_config_flags += "__"+flag+"__"; }
+  else     { m_config_vetoFlags += "__"+flag+"__"; }
+
+  return;
+}
