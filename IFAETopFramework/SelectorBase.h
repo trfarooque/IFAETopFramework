@@ -45,7 +45,7 @@ public:
   //__________________________________
 
   
-  bool AddSelection( const int index, const std::string &name, const bool do_runop = true, const bool do_histos = true, const bool do_trees = true );
+  bool AddSelection( const int index, const std::string &name = "", const bool do_runop = true, const bool do_histos = true, const bool do_trees = true );
   bool AddFlag(const int index, const std::string& flag, const bool value=true );
   virtual bool AddFlag(Selection& sel , const std::string& flag, const bool value=true );
   bool AddFlag(const int index, const int flag, const bool value=true );
