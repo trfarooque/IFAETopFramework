@@ -186,9 +186,8 @@ bool AnalysisUtils::FileExists(const std::string& filename){
 
 //______________________________________________________________________________________________________________________
 int AnalysisUtils::ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, 
-				   std::string> >& ret_map, const std::string& delim,
-				   const std::string& flagList, const std::string& vetoList,
-				   const bool blockformat){
+				   std::string> >& ret_map, const std::string& delim, const bool blockformat, 
+				   const std::string& flagList, const std::string& vetoList ){
   int stat = 1;
   if(blockformat){ stat = ParseConfigFile_Blocks(config_file, ret_map,  delim, flagList, vetoList); }
   else{ stat = ParseConfigFile_Lines(config_file, ret_map,  delim, flagList, vetoList); }

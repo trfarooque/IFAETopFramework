@@ -31,9 +31,9 @@ class AnalysisUtils{
   static std::string ReplaceString(const std::string& inputStr, const std::string& orig, const std::string& replacement);
 
   static int ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, 
-			     std::string> >& ret_map, const std::string& delim=" : ",
-			     const std::string& flagList="", const std::string& vetoList="",
-			     const bool blockformat=false);
+			     std::string> >& ret_map, const std::string& delim=" : ", 
+			     const bool blockformat=false, 
+			     const std::string& flagList="", const std::string& vetoList="");
   static int ParseConfigFile_Blocks(const std::string& config_file, std::vector<std::map<std::string, 
 				    std::string> >& ret_map, const std::string& delim=" : ", 
 				    const std::string& flagList="", const std::string& vetoList="");
