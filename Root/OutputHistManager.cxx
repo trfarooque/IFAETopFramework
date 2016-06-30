@@ -91,21 +91,23 @@ OutputHistManager::~OutputHistManager()
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
 //______________________________________________________________________________________
 //
-bool OutputHistManager::AddStandardTH1(const std::string &name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst, const int hopt){
+bool OutputHistManager::AddStandardTH1(const std::string &name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst, const int hopt, const bool noWeight){
     
     //
     // INTERNAL FUNCTION
     //
-    
+  bool _hasSyst = hasSyst && !noWeight;
+
     if(m_opt -> MsgLevel() == Debug::DEBUG){
         std::cout << "In OutputHistManager::addStandardTH1" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
-        std::cout << "  width  = " << width << std::endl;
-        std::cout << "  min    = " << min << std::endl;
-        std::cout << "  max    = " << max << std::endl;
-	std::cout << "  edges  = " << edges << std::endl;
-        std::cout << "  hasSyst= " << hasSyst << std::endl;
-        std::cout << "  hopt   = " << hopt << std::endl;
+        std::cout << "  width    = " << width << std::endl;
+        std::cout << "  min      = " << min << std::endl;
+        std::cout << "  max      = " << max << std::endl;
+	std::cout << "  edges    = " << edges << std::endl;
+        std::cout << "  hasSyst  = " << hasSyst << std::endl;
+        std::cout << "  hopt     = " << hopt << std::endl;
+	std::cout << "  noWeight = " << noWeight << std::endl;
     }
     
     h1Def *hist = new h1Def();
@@ -113,9 +115,10 @@ bool OutputHistManager::AddStandardTH1(const std::string &name, const double wid
     hist -> width = width;
     hist -> min = min;
     hist -> max = max;
-    hist -> hasSyst = hasSyst;
+    hist -> hasSyst = _hasSyst;
     hist -> edges = edges;    
     hist -> hopt = hopt;
+    hist -> noWeight = noWeight;
     m_stdTH1Def -> insert( std::pair < std::string, h1Def* >( name, hist ) );
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::addStandardTH1" << std::endl;
@@ -198,7 +201,7 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
     // Nominal histogram filling
     //
     std::string histName = pattern + "_" + h1.second->var->Name();
-    
+    double weight = (h1.second->noWeight) ? 1. : m_data->o_eventWeight_Nom;
     if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
 
       if(m_opt -> MsgLevel() == Debug::DEBUG){
@@ -212,7 +215,7 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
 	std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
       }
       if( !h1.second->var->IsVector() || (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ){
-	m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), m_data->o_eventWeight_Nom);
+	m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), weight);
       }
     } 
     else {
@@ -222,7 +225,7 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
       // Otherwise, just fills the histogram with the given component
 
       FillTH1FromVector( h1.second->var->Address(),
-			 h1.second->var->VarType(), histName, m_data->o_eventWeight_Nom, h1.second->var->Moment() );
+			 h1.second->var->VarType(), histName, weight, h1.second->var->Moment() );
     }
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
@@ -316,11 +319,12 @@ bool OutputHistManager::SaveStandardTH1( const std::string &outputName, const bo
 bool OutputHistManager::AddStandardTH2( const std::string &name, const double widthX, const double minX, const double maxX,
 					const double widthY, const double minY, const double maxY, 
 					const std::vector<double>* edgesX, const std::vector<double>* edgesY,
-					const bool hasSyst, const bool pairwise){
+					const bool hasSyst, const bool pairwise, const bool noWeight){
     //
     // INTERNAL FUNCTION
     //
-    
+  bool _hasSyst = hasSyst && !noWeight;
+
     if(m_opt -> MsgLevel() == Debug::DEBUG){
         std::cout << "In OutputHistManager::addStandardTH2" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
@@ -332,6 +336,7 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
         std::cout << "  maxY    = " << maxY << std::endl;
         std::cout << "  hasSyst = " << hasSyst << std::endl;
         std::cout << "  pairwise = " << pairwise << std::endl;
+	std::cout << "  noWeight = " << noWeight << std::endl;
     }
     
     h2Def *hist = new h2Def();
@@ -345,9 +350,10 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
     hist -> minY = minY;
     hist -> maxY = maxY;
     hist -> edgesY = edgesY;
-    hist -> hasSyst = hasSyst;
+    hist -> hasSyst = _hasSyst;
     hist -> pairwise = pairwise;
-    
+    hist -> noWeight = noWeight;
+
     m_stdTH2Def -> insert( std::pair < std::string, h2Def* >( name, hist ) );
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::addStandardTH2" << std::endl;
@@ -447,7 +453,8 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
     }
     
     for ( const auto h2 : *m_stdTH2Def ){
-        
+
+      double weight = h2.second->noWeight ? 1. : m_data -> o_eventWeight_Nom;        
       //
       // Nominal histogram filling
       //
@@ -462,21 +469,21 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
       if(bY_flat && h2.second->varY->IsVector() && (h2.second->varY->VecInd() >= h2.second->varY->GetVecSize()) ){ continue; }
 
       if( bX_flat && bY_flat ){
-	m_histMngr -> FillTH2D(histName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), m_data->o_eventWeight_Nom);
+	m_histMngr -> FillTH2D(histName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), weight);
       }
       else if( bX_flat && !bY_flat){
 	FillTH2FromOneVector(h2.second->varX->GetDoubleValue(), h2.second->varY->Address(), h2.second->varY->VarType() 
-			     , histName, m_data->o_eventWeight_Nom, "Y", h2.second->varY->Moment());
+			     , histName, weight, "Y", h2.second->varY->Moment());
       }
       else if( !bX_flat && bY_flat){
 	FillTH2FromOneVector(h2.second->varY->GetDoubleValue(), h2.second->varX->Address(), h2.second->varX->VarType() 
-			     , histName, m_data->o_eventWeight_Nom, "X", h2.second->varX->Moment());
+			     , histName, weight, "X", h2.second->varX->Moment());
       }
       else{
 
 	FillTH2FromVectors(h2.second->varX->Address(), h2.second->varY->Address()
 			   , h2.second->varX->VarType() , h2.second->varY->VarType() 
-			   , histName, m_data->o_eventWeight_Nom, h2.second->pairwise, h2.second->varX->Moment(), h2.second->varY->Moment());
+			   , histName, weight, h2.second->pairwise, h2.second->varX->Moment(), h2.second->varY->Moment());
 
       }
 
