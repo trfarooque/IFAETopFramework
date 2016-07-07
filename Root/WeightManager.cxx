@@ -5,6 +5,8 @@
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/AnalysisUtils.h"
 
+#include <stdexcept> // range_error
+
 WeightManager::WeightManager(OptionsBase* opt, const NtupleData* ntupData, OutputData* outData) : 
   m_opt(opt),
   m_ntupData(ntupData),
@@ -94,7 +96,10 @@ bool WeightManager::AddAllWeights(){
   if(m_opt->MsgLevel() == Debug::DEBUG){
     Print();
   }
-
+  if(not stat)
+      throw std::range_error(string(__FILE__)+"\n"+
+                             " There is probably an issue with the weight indices."
+                             " Please check or you will get bogus weights");
   return stat;
 }
 
