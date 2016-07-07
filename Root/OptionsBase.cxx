@@ -1,10 +1,13 @@
+#include "IFAETopFramework/OptionsBase.h"
+#include "IFAETopFramework/AnalysisUtils.h"
+
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <stdexcept> // invalid_argument
 
-#include "IFAETopFramework/OptionsBase.h"
-#include "IFAETopFramework/AnalysisUtils.h"
+using std::string;
 
 //_____________________________________________________________________________________________
 //
@@ -190,8 +193,10 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else if ( temp_val.find("VLQ") != std::string::npos){          m_sampleName = SampleName::VLQ;         }
         else if ( temp_val.find("GLUINO") != std::string::npos){       m_sampleName = SampleName::GLUINO;      }
         else if ( temp_val.find("SGLUON") != std::string::npos){       m_sampleName = SampleName::SGLUON;      }
+        else if ( temp_val.find("HBSM") != std::string::npos){         m_sampleName = SampleName::HBSM;        }
         else {
-            std::cout<<"Unknown sample name"<<std::endl;
+            throw std::invalid_argument(string(__FILE__)+"\n"+
+                                        " Unknown sample name '"+temp_val+"'");
         }
         m_str_sampleName = temp_val;
     }
