@@ -48,6 +48,11 @@ WeightObject::WeightObject( WeightObject &q )
 
 //_____________________________________________________________________________________
 //
+double WeightObject::GetWeightValue() const{
+  if(m_is_nominal) m_var_weight->CalcDoubleValue();
+  return m_var_weight->GetDoubleValue();
+}
+
 void WeightObject::SetVarWeight(double* t){
   m_var_weight = new VariableDef(m_name + "_weight", "", "D", t);
 }

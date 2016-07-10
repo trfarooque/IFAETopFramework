@@ -30,7 +30,8 @@ public:
     inline bool IsNominal() const{ return m_is_nominal; }
 
     inline double GetComponentValue() const{ return m_var_component->GetDoubleValue(); }
-    inline double GetWeightValue() const{ return m_var_weight->GetDoubleValue(); }
+    double GetWeightValue() const;//{ return m_var_weight->GetDoubleValue(); }
+
     inline VariableDef::VariableType GetComponentType() const{ return m_var_component->VarType(); } 
     inline const std::string& GetComponentTypeStr() const{ return m_var_component->VarTypeString(); } 
     inline void* GetComponentAddress() const{ return m_var_component->Address(); }
