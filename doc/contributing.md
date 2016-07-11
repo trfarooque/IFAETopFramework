@@ -9,7 +9,7 @@ This doc is mainly for developers, hopefully serving as a quick reference for us
 
 GitHub repos can be used in numerous ways, but the recommended way is to set up your GitHub account with ssh keys and use the ssh protocol.
 
-###Setup git
+### Setup git
 
 On lxplus, git is already installed. Just check what version you are using:
 ```bash
@@ -21,20 +21,28 @@ For first time use, you must setup your configuration,
 In addition to username and email might be interested in setting your
 preferred editor and colored diff. However, don't bother with the
 password caching.  Instead, [setup your ssh
-keys](https://gitlab.cern.ch/help/ssh/README.md).
+keys](https://gitlab.cern.ch/help/ssh/README.md) or use kerberos.
+
+```bash
+git config --global user.name "First Last"
+git config --global user.email "first.last@cern.ch"
+git config --global color.ui auto
+git config --global core.editor "emacs -nw"
+
+```
 
 You might have to require us to add you as a developer before you can
 push changes to the gitlab repository.  (but, in the meantime, you can
 still commit them to your local repository)
 
-###Setup a clean development area
+### Setup a clean development area
 ```bash
 mkdir ifaetop_dev
 cd ifaetop_dev
 git clone ssh://git@gitlab.cern.ch:7999/htx/IFAETopFramework.git 
 ```
 
-###Commit changes to your local repository and push them to github:
+### Commit changes to your local repository and push them to github:
 ```bash
 cd IFAETopFramework
 git status # start from a clean state, up-to-date with the origin
@@ -60,7 +68,7 @@ Notes:
   docs
 - report issues and bugs: open a new issue
 
-###Helpful links
+### Helpful links
 - [Reference of all git commands](http://git-scm.com/docs).
 - When you have time, I recommend reading through [the git book](http://git-scm.com/book).
 - [Here's a simple guide for using git](http://rogerdudler.github.io/git-guide/), found by Suneet.
