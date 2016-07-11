@@ -1,4 +1,9 @@
-#How to contribute
+# Just show me the commands
+
+For a quick svn-git translation table, see the 
+[git-svn crash course](https://git.wiki.kernel.org/index.php/GitSvnCrashCourse)
+
+# How to contribute
 
 This doc is mainly for developers, hopefully serving as a quick reference for using git.
 
