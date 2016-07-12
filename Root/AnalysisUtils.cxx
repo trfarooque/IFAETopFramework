@@ -159,6 +159,16 @@ std::string AnalysisUtils::ReplaceString(const std::string& inputStr, const std:
 
 }
 
+//From RosettaCode
+int AnalysisUtils::CountSubstring(const std::string& str, const std::string& sub){
+  if (sub.length() == 0) return 0;
+  int count = 0;
+  for (size_t offset = str.find(sub); offset != std::string::npos;
+       offset = str.find(sub, offset + sub.length())){ ++count; }
+  return count;
+}
+
+
 bool AnalysisUtils::BoolValue(std::string& arg_val, bool& bin_val){
 
   std::transform(arg_val.begin(), arg_val.end(), arg_val.begin(), ::toupper);

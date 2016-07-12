@@ -98,7 +98,23 @@ bool WeightManager::AddAllWeights(){
   return stat;
 }
 
-void WeightManager::Print() const{
+void WeightManager::PrintWeight(const std::string& name, bool isNominal) const{
+  PrintWeight( GetWeightObject(name, isNominal) );
+  return;
+}
+
+void WeightManager::PrintWeight(WeightObject* wgtObj) const{
+
+  std::cout<<" Weight "<<wgtObj->Name()<<" isNominal: "<<wgtObj->IsNominal()
+	   <<" component value: "<<wgtObj->GetComponentValue()
+	   <<" total value: "<<wgtObj->GetWeightValue() << std::endl;
+  std::cout<<" nominal weight: "<<m_outData->o_eventWeight_Nom<<std::endl;
+
+  std::cout<<" Weight address: "<<wgtObj->GetWeightAddress()<<" nomAddress = "<<&(m_outData->o_eventWeight_Nom)<<std::endl;
+}
+
+
+void WeightManager::Print(const bool fullInfo) const{
 
 
   std::cout<<" Printing nominal weights :: m_nomMap = "<<m_nomMap<<std::endl;
@@ -108,7 +124,8 @@ void WeightManager::Print() const{
     std::cout << "=====================================================" << std::endl;
     std::cout << std::endl;
     for ( const std::pair < std::string, WeightObject* > nom : *m_nomMap ){
-      std::cout << nom.first << std::endl;
+      if(fullInfo) PrintWeight(nom.second);
+      else std::cout<<nom.first<<std::endl;
     }
     std::cout << std::endl;
     std::cout << "=====================================================" << std::endl;
@@ -122,7 +139,8 @@ void WeightManager::Print() const{
     std::cout << "=====================================================" << std::endl;
     std::cout << std::endl;
     for ( const std::pair < std::string, WeightObject* > sys : *m_systMap ){
-      std::cout << sys.first << std::endl;
+      if(fullInfo) PrintWeight(sys.second);
+      else std::cout<<sys.first<<std::endl;
     }
     std::cout << std::endl;
     std::cout << "=====================================================" << std::endl;
@@ -154,11 +172,8 @@ bool WeightManager::ComputeNominalWeight(){
 
   //Read all input components and update the value held by weight
   for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ 
-    if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " nominal weight component ("<<nom.first<<") = "<<nom.second->GetComponentValue()<<std::endl; }
     m_outData -> o_eventWeight_Nom *= nom.second -> GetComponentValue();
   }
-
-  if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << " Calculated nominal weight = "<< m_outData -> o_eventWeight_Nom <<std::endl; }
 
   return stat;
 
@@ -223,7 +238,8 @@ bool WeightManager::UpdateNominalComponent(const std::string& name, double value
   //(The weights have pointers to the map value, so this should actually be fairly easy). 
   if((old_value > 0.) || (old_value < 0.)){
     double new_nomWeight = (old_nomWeight/old_value)*value;
-    m_outData->o_eventWeight_Nom = new_nomWeight;
+    wgt_nom->SetWeightValue(new_nomWeight);
+    //m_outData->o_eventWeight_Nom = new_nomWeight;
   }
   else{ ComputeNominalWeight(); }
 
@@ -233,12 +249,12 @@ bool WeightManager::UpdateNominalComponent(const std::string& name, double value
       if( sys.second -> AffectedComponent() == name ){ continue; }
 
       double old_sysWeight = sys.second->GetWeightValue();
+
       if((old_value > 0.) || (old_value < 0.)){
 	double new_sysWeight = (old_sysWeight/old_value)*value;
 	sys.second->SetWeightValue(new_sysWeight);
       }
       else{ ComputeSystematicWeight(name); }
-
     }
   }
  
@@ -339,7 +355,10 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
       return false;
     }
 
-    if(!isNominal){ 
+    if(isNominal){ 
+      wgt->SetVarWeight( &(m_outData -> o_eventWeight_Nom) );
+    }
+    else{ 
       if( m_outData -> o_eventWeight_Systs->find(name) != m_outData -> o_eventWeight_Systs->end() ){
 	std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
 	return false;
@@ -347,6 +366,7 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
       m_outData -> o_eventWeight_Systs -> insert( std::pair<std::string, double>(name, 0.) );
       wgt->SetVarWeight( &(m_outData -> o_eventWeight_Systs -> at(name)) );
     }
+
 
     wgtMap->insert( std::pair<std::string, WeightObject*>(name, wgt) );
  
@@ -380,9 +400,10 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
   bool isNominal             = true;
   std::string input_varType  = "D";
   int input_vecInd           = -1;
+  std::string str_in_vecInd  = "";
   std::string branchName     = "";
   std::string replace        = "";
-
+  bool multi_ind             = false; 
 
   std::vector<std::map<std::string, std::string> > wgt_map;
   for ( size_t i = 0,n; i <= inputStr.length(); i=n+1){
@@ -406,9 +427,11 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
       isNominal       = true;
       input_varType   = "D";
       input_vecInd    = -1;
+      str_in_vecInd   = "";
       branchName      = "";
       replace         = "";
-
+      multi_ind       = false;
+ 
       if( wgt_block.find("ISNOMINAL") != wgt_block.end() ){ isNominal = AnalysisUtils::BoolValue(wgt_block["ISNOMINAL"], "ISNOMINAL"); }
       if( !( m_opt->ComputeWeightSys() || isNominal) ){ continue; } //do not add systematic weights if ComputeWeightSys()==FALSE
 
@@ -426,12 +449,65 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
 
       if( wgt_block.find("VARTYPE") != wgt_block.end() ){ input_varType = wgt_block["VARTYPE"]; }
 
-      if( wgt_block.find("VECIND") != wgt_block.end() ){ input_vecInd = atoi(wgt_block["VECIND"].c_str()); }
-
       if( wgt_block.find("BRANCHNAME") != wgt_block.end() ){ branchName = wgt_block["BRANCHNAME"]; }
       else{ branchName = name; }
 
-      AddWeight( name, title, isNominal, isInput, branchName, replace, input_varType, input_vecInd);
+      if( wgt_block.find("VECIND") != wgt_block.end() ){ str_in_vecInd = wgt_block["VECIND"]; }
+      if(str_in_vecInd.empty() || str_in_vecInd == "-1"){
+	input_vecInd = -1; 
+      }
+      else if( (str_in_vecInd.find("-") != std::string::npos) || (str_in_vecInd.find(",") != std::string::npos) ){
+	multi_ind = true;
+      }//multiple vector indices
+      else{ input_vecInd = atoi(str_in_vecInd.c_str()); }
+
+      if(multi_ind){
+	std::vector<std::string> rangeList; rangeList.clear();
+
+	std::string range = "";
+	std::string rangeString = str_in_vecInd;
+	std::string::size_type pos = 0;
+	bool clean = true;
+
+	std::string str_firstInd = "";
+	std::string str_lastInd = "";
+
+	do{ 
+	  pos = AnalysisUtils::ParseString(rangeString, range, ",");
+	  AnalysisUtils::TrimString(range);
+	  //Check formatting of range
+	  if( AnalysisUtils::CountSubstring(range, "-") == 0 ){
+	    AddWeight( name, title, isNominal, isInput, branchName, replace, input_varType, atoi(range.c_str()) );
+	  }
+	  else if( AnalysisUtils::CountSubstring(range, "-") > 1 ){
+	    std::cerr << " Vector index range "<<range<<" does not follow expected format A-B. Please check";
+	    clean = false;
+	    break;
+	  }
+	  else{
+	    str_firstInd = "";
+	    str_lastInd = range;
+	    AnalysisUtils::ParseString(str_lastInd, str_firstInd, "-");
+	    int firstInd = atoi(str_firstInd.c_str());
+	    int lastInd = atoi(str_lastInd.c_str());
+	    if(firstInd>lastInd){
+	      std::cerr << " Vector index range in reverse order. First index =  "<<firstInd<<", last index = "<<lastInd<<". Please check";
+	      clean = false;
+	      break;
+	    }
+
+	    for(int _ind = firstInd; _ind<=lastInd; ++_ind){
+	      AddWeight( Form("%s_%i",name.c_str(),_ind), title, isNominal, isInput, branchName, replace, input_varType, _ind);
+	    }//loop over the range
+
+	  }//proper vector range
+
+	}while(pos != std::string::npos);
+
+      }//parse the multiple vector indices and add a weight for each one
+      else{
+	AddWeight( name, title, isNominal, isInput, branchName, replace, input_varType, input_vecInd);
+      }//single vector index
       
     }//Loop over blocks in config file
 
@@ -442,13 +518,15 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
 
 bool WeightManager::ComputeSystematicWeight(WeightObject* sys){
   
+  //First include the systematic weight component
   double sys_wgt = sys->GetComponentValue();
 
+  //Now include the nominal part
   const std::string& replace = sys->AffectedComponent();
   if( replace == "ALL" ){   //no nominal component should be included
     ;
   }
-  else if( (replace == "") || (replace == "NONE") ){
+  else if( (replace == "") || (replace == "NONE") ){ //nothing should be excluded
     sys_wgt *= m_outData -> o_eventWeight_Nom;
   }
   else{
@@ -458,14 +536,26 @@ bool WeightManager::ComputeSystematicWeight(WeightObject* sys){
       return false;
     }
     else{
-      double replaced_nom = (nom_it->second)->GetComponentValue();
-      sys_wgt *= m_outData -> o_eventWeight_Nom / replaced_nom;
-    }
-  }
+      double nomWeight = m_outData -> o_eventWeight_Nom;
+      if(nomWeight>0. || nomWeight<0.){
+	sys_wgt *= nomWeight / (nom_it->second)->GetComponentValue();
+      }
+      else{
+	//Read all input components and update the value held by weight
+	for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ 
+	  if(nom.first == replace) continue;
+	  sys_wgt *= nom.second -> GetComponentValue();
+	}
+      }//nominal weight is zero
+
+    }//found the nominal component to replace
+
+  }//Replace one nominal component
+
   sys->SetWeightValue(sys_wgt);
+
   return true; 
 
-  
 }
 
 bool WeightManager::SetWeightComponent(const std::string& name, double value, bool nominal ){
