@@ -17,6 +17,7 @@
 #include "IFAETopFramework/VariableDef.h"
 #include "IFAETopFramework/WeightManager.h"
 #include "IFAETopFramework/WeightObject.h"
+#include "IFAETopFramework/TriggerInfo.h"
 
 #pragma link off all globals;
 #pragma link off all classes;
@@ -40,6 +41,7 @@
 #pragma link C++ class VariableDef+;
 #pragma link C++ class WeightManager+;
 #pragma link C++ class WeightObject+;
+#pragma link C++ class TriggerInfo+;
 
 
 #endif
