@@ -51,7 +51,8 @@ namespace SampleName{
         QCD,
         VLQ,
         GLUINO,
-        SGLUON
+        SGLUON,
+	HPLUS
     };
 }
 namespace SysName{
