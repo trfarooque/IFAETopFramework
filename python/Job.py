@@ -1,6 +1,5 @@
 #!/bin/python
 from BatchTools import *
-
 ##
 ##
 ## CLASS JOBSET
@@ -162,7 +161,8 @@ class JobSet:
         self.Terminate(f)
         f_reco_file.close()
         f.close()
-        
+        os.chmod(current_merged_script_name, 0755)
+
     ##_________________________________________________________________________
     ##
     def submitSet(self):

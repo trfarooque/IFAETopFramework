@@ -190,6 +190,7 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else if ( temp_val.find("VLQ") != std::string::npos){          m_sampleName = SampleName::VLQ;         }
         else if ( temp_val.find("GLUINO") != std::string::npos){       m_sampleName = SampleName::GLUINO;      }
         else if ( temp_val.find("SGLUON") != std::string::npos){       m_sampleName = SampleName::SGLUON;      }
+        else if ( temp_val.find("HPLUS") != std::string::npos){        m_sampleName = SampleName::HPLUS;      }
         else {
             std::cout<<"Unknown sample name"<<std::endl;
         }

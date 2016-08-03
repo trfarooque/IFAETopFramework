@@ -169,6 +169,8 @@ def filterListWithTemplate( originalTotalFile, templates, filterFile):
 ##
 def produceList(Patterns, InputDirectory, listName,exclusions=[]):
     com = "ls "+InputDirectory+"{*,*/*}.root*"
+    if "/eos/atlas/" in InputDirectory:
+        com = "/afs/cern.ch/project/eos/installation/atlas/bin/eos.select find -f "+InputDirectory+" | grep \"\\.root\""
     for iPattern in range(len(Patterns)):
 	if Patterns[iPattern]=="": continue
         com += " | grep "+Patterns[iPattern]
@@ -176,8 +178,11 @@ def produceList(Patterns, InputDirectory, listName,exclusions=[]):
         com += " | grep -v "+exclusions[iExclusion]
 
     com += " | grep -v \":\""
+    if "/eos/atlas/" in InputDirectory:
+        com+=" | sed \'s/\/eos\/atlas\//root:\/\/eosatlas\/\/eos\/atlas\//g\'"
     com += " > "+listName
     result = os.system(com)
+
     return result
 
 ##___________________________________________________________________
