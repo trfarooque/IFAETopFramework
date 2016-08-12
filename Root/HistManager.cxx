@@ -104,6 +104,7 @@ void HistManager::FinaliseTH1Bins(const string &s_hist){
     bool addUF = (hopt & FCHECK) ? (hopt & UFLOW) : m_addUF;
     bool addOF = (hopt & FCHECK) ? (hopt & OFLOW) : m_addOF;
 
+    int entries=h1_it->second->GetEntries(); // get number of entries of histogram to preserve it in the following
     int nbins = h1_it->second->GetNbinsX();
     if(addOF){
       double v_of       = h1_it->second->GetBinContent(nbins+1);
@@ -126,6 +127,7 @@ void HistManager::FinaliseTH1Bins(const string &s_hist){
     h1_it->second->SetBinError(0, 0.);
     h1_it->second->SetBinContent(nbins+1, 0.);
     h1_it->second->SetBinError(nbins+1, 0.);
+    h1_it->second->SetEntries(entries); // set the old number of entries for histogram so that it's not changed by the underflow/overflow adding procedure
 
     return;
 }
