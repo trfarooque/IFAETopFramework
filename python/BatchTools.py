@@ -119,7 +119,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
 
         # Get the weight systematics in case we run over the nominal object
         listWeight=""
-        if( Systs[iSys].upper()=="NOMINAL" ):
+        if( "NOMINAL" in Systs[iSys].upper() ):
             for iWS in sample['weightSyst']:
                 if iWS['oneSided']:
                     listWeight+=iWS['name']+","
