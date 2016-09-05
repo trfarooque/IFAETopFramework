@@ -23,6 +23,7 @@ class JobSet:
         self.tarballPath=""
         self.queue=""
         self.jobRecoveryFileName="JobCheck.chk"
+        self.writeSubmissionCommandsToFileOnly=False
 
     ##_________________________________________________________________________
     ##
@@ -44,6 +45,12 @@ class JobSet:
     ##
     def setQueue(self,queue):
 	self.queue=queue
+
+   ##_________________________________________________________________________
+    ##
+    def setSubmissionCommandsFile(self,submissioncommandsfile):
+        self.writeSubmissionCommandsToFileOnly=True
+        self.submissioncommandsfile=submissioncommandsfile
 
     ##_________________________________________________________________________
     ##
@@ -178,8 +185,15 @@ class JobSet:
         com += self.queue
         com += " " + self.scriptDir+"/"+self.scriptName+" "
         if not(self.logDir==""):
-            com += " -o "+self.logDir+" -e "+self.logDir
-        os.system(com)
+            if(self.platform == "lxplus"):
+                com += " -o "+self.logDir+"/"+self.scriptName+"_batch.log -e "+self.logDir+"/"+self.scriptName+"_batch.log"
+            else:
+                com += " -o "+self.logDir+" -e "+self.logDir
+        if self.writeSubmissionCommandsToFileOnly:
+            self.submissioncommandsfile.write("echo "+self.scriptName+"\n")
+            self.submissioncommandsfile.write(com+"\n")
+        else:
+            os.system(com)
 
 
 ##
