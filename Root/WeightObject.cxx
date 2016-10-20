@@ -54,7 +54,7 @@ double WeightObject::GetWeightValue() const{
 }
 
 void WeightObject::SetVarWeight(double* t){
-  m_var_weight = new VariableDef(m_name + "_weight", "", "D", t);
+  m_var_weight = new VariableDef(m_name + "_weight", "", t);
 }
 
 bool WeightObject::SetComponentValue(double value){

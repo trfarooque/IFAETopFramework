@@ -7,8 +7,8 @@
 VariableDef::VariableDef():
   m_name(""),
   m_title(""),
-  m_varTypeString(""),
   m_varType(VariableType::DOUBLE),
+  m_varTypeString(""),
   m_vec_ind(-1),
   m_address(NULL),
   m_isPrimitive(true),
@@ -35,8 +35,8 @@ VariableDef::~VariableDef()
 VariableDef::VariableDef( VariableDef &q ){
     m_name          = q.m_name;
     m_title         = q.m_title;
-    m_varTypeString = q.m_varTypeString;
     m_varType       = q.m_varType;
+    m_varTypeString = q.m_varTypeString;
     m_vec_ind       = q.m_vec_ind;
     m_address       = q.m_address;
     m_isPrimitive   = q.m_isPrimitive;

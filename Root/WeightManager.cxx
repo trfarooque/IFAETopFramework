@@ -308,7 +308,7 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
 	return false;
       }
       else{ valMap->insert(std::pair<std::string, double>( _branch, 0.) ); }
-      wgt->SetVarComponent(inputType, &(valMap -> at(_branch)) );
+      wgt->SetVarComponent(&(valMap -> at(_branch)) );
     }
 
     else if(inputType == "F"){
@@ -319,7 +319,7 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
 	return false;
       }
       else{ valMap->insert(std::pair<std::string, float>( _branch, 0.) ); }
-      wgt->SetVarComponent(inputType, &(valMap -> at(_branch)) );
+      wgt->SetVarComponent(&(valMap -> at(_branch)) );
     }
 
     else if( (inputType == "PVD") || (inputType == "VD") ){
@@ -332,8 +332,8 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
       if( valMap->find(_branch) == valMap->end() ){
 	valMap->insert(std::pair<std::string, std::vector<double>* >( _branch, NULL) );
       }
-      if( inputType == "PVD" ){ wgt->SetVarComponent(inputType, &(valMap -> at(_branch)), vec_ind ); }
-      else{ wgt->SetVarComponent(inputType, valMap -> at(_branch), vec_ind ); }
+      if( inputType == "PVD" ){ wgt->SetVarComponent( &(valMap -> at(_branch)), vec_ind ); }
+      else{ wgt->SetVarComponent(valMap -> at(_branch), vec_ind ); }
 
     }
 
@@ -347,8 +347,8 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
       if( valMap->find(_branch) == valMap->end() ){
 	valMap->insert(std::pair<std::string, std::vector<float>* >( _branch, NULL) );
       }
-      if(inputType == "PVF"){ wgt->SetVarComponent(inputType, &(valMap -> at(_branch)), vec_ind ); }
-      else{ wgt->SetVarComponent(inputType, valMap -> at(_branch), vec_ind ); }
+      if(inputType == "PVF"){ wgt->SetVarComponent(&(valMap -> at(_branch)), vec_ind ); }
+      else{ wgt->SetVarComponent(valMap -> at(_branch), vec_ind ); }
     }
     else{
       std::cerr <<" <!> ERROR in WeightManager::AddWeight() -> VariableType " << inputType << " is not recognised. "<<std::endl;

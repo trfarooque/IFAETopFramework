@@ -75,20 +75,20 @@ public:
     //___________________________________________________
     //
     template< typename T > bool AddStandardTH1( const std::string &name, const double width, const double min, const double max,
-						const std::string &title, const std::string &variableType,
+						const std::string &title,
 						const bool hasSyst, T *t,  const int vec_ind = -1, const std::string& moment="", const int hopt=0, const bool noWeight=false) {
 
       if(noWeight && hasSyst){ std::cout << "Warning in OutputHistManager::AddStandardTH1 --> Unweighted histogram "<< name << " requested with systematics. Please check"<<std::endl;}
       bool _hasSyst = hasSyst && !noWeight;
-      return AddStandardTH1(name, width, min, max, NULL, title, variableType, _hasSyst, t, vec_ind, moment, hopt, noWeight);
+      return AddStandardTH1(name, width, min, max, NULL, title, _hasSyst, t, vec_ind, moment, hopt, noWeight);
     }
     
     template< typename T > bool AddStandardTH1( const std::string &name, const std::vector<double>* edges,
-						const std::string &title, const std::string &variableType,
+						const std::string &title,
 						const bool hasSyst, T *t, const int vec_ind = -1, const std::string& moment="", const int hopt=0, const bool noWeight=false) {
       if(noWeight && hasSyst){ std::cout << "Warning in OutputHistManager::AddStandardTH1 --> Unweighted histogram "<< name << " requested with systematics. Please check"<<std::endl;}
       bool _hasSyst = hasSyst && !noWeight;
-      return AddStandardTH1(name, 0., 0., 0., edges, title, variableType, _hasSyst, t, vec_ind, moment, hopt, noWeight);
+      return AddStandardTH1(name, 0., 0., 0., edges, title, _hasSyst, t, vec_ind, moment, hopt, noWeight);
 
     }
     
@@ -107,41 +107,39 @@ public:
 							      const double widthX, const double minX, const double maxX,
 							      const double widthY, const double minY, const double maxY,
 							      const std::string &titleX, const std::string &titleY, 
-							      const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY, 
 							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise=true, 
 							      const std::string& momentX = "", const std::string& momentY = "", const bool noWeight=false) {
       if(noWeight && hasSyst){ std::cout << "Warning in OutputHistManager::AddStandardTH2 --> Unweighted histogram "<< nameY << "_vs_" << nameX << " requested with systematics. Please check"<<std::endl;}
       bool _hasSyst = hasSyst && !noWeight;
       return AddStandardTH2(nameX, nameY, widthX, minX, maxX, widthY, minY, maxY, NULL, NULL, 
-			    titleX, titleY, variableTypeX, variableTypeY, _hasSyst, tX, tY, vec_indX, vec_indY, pairwise, momentX, momentY, noWeight);
+			    titleX, titleY, _hasSyst, tX, tY, vec_indX, vec_indY, pairwise, momentX, momentY, noWeight);
     }
     
     template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const double widthX, const double minX, const double maxX,
 							      const std::vector<double>* edgesY,
 							      const std::string &titleX, const std::string &titleY,
-							      const std::string &variableTypeX, const std::string &variableTypeY,
 							      const bool hasSyst, TX *tX, TY *tY,
 							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise=true, 
 							      const std::string& momentX = "", const std::string& momentY = "", const bool noWeight=false) {
       if(noWeight && hasSyst){ std::cout << "Warning in OutputHistManager::AddStandardTH2 --> Unweighted histogram "<< nameY << "_vs_" << nameX << " requested with systematics. Please check"<<std::endl;}
       bool _hasSyst = hasSyst && !noWeight;
       return AddStandardTH2(nameX, nameY, widthX, minX, maxX, 0., 0., 0., NULL, edgesY,
-                              titleX, titleY, variableTypeX, variableTypeY, _hasSyst, tX, tY,
+                              titleX, titleY, _hasSyst, tX, tY,
 			      vec_indX, vec_indY, pairwise, momentX, momentY, noWeight);
     }
     
     template< typename TX, typename TY > bool AddStandardTH2( const std::string &nameX, const std::string &nameY,
 							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
-							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
+							      const std::string &titleX, const std::string &titleY, 
 							      const bool hasSyst, TX *tX, TY *tY,
 							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise=true, 
 							      const std::string& momentX = "", const std::string& momentY = "", const bool noWeight=false) {
       if(noWeight && hasSyst){ std::cout << "Warning in OutputHistManager::AddStandardTH2 --> Unweighted histogram "<< nameY << "_vs_" << nameX << " requested with systematics. Please check"<<std::endl;}
       bool _hasSyst = hasSyst && !noWeight;
       return AddStandardTH2(nameX, nameY, 0., 0., 0., 0., 0., 0., edgesX, edgesY,
-                              titleX, titleY, variableTypeX, variableTypeY, _hasSyst, tX, tY, 
+                              titleX, titleY, _hasSyst, tX, tY, 
 			      vec_indX, vec_indY, pairwise, momentX, momentY, noWeight);
         
     }
@@ -164,7 +162,7 @@ private:
     
     template< typename T > bool AddStandardTH1( const std::string &name, const double width, const double min, const double max,
 						const std::vector<double>* edges, 
-						const std::string &title, const std::string &variableType,
+						const std::string &title,
 						const bool hasSyst, T *t, 
 						const int vec_ind = -1, const std::string& moment="", const int hopt = 0, const bool noWeight=false) {
       bool _hasSyst = hasSyst && !noWeight;
@@ -184,7 +182,7 @@ private:
             return false;
         }
         
-        VariableDef* _var = new VariableDef(name, title, variableType, t, vec_ind, moment);
+        VariableDef* _var = new VariableDef(name, title, t, vec_ind, moment);
         
         std::map< std::string , h1Def*>::iterator it = m_stdTH1Def -> find(name);
         if(it != m_stdTH1Def->end()){
@@ -203,7 +201,7 @@ private:
 							      const double widthX, const double minX, const double maxX,
 							      const double widthY, const double minY, const double maxY,
 							      const std::vector<double>* edgesX, const std::vector<double>* edgesY,
-							      const std::string &titleX, const std::string &titleY, const std::string &variableTypeX, const std::string &variableTypeY,
+							      const std::string &titleX, const std::string &titleY,
 							      const bool hasSyst, TX *tX, TY *tY,
 							      const int vec_indX = -1, const int vec_indY = -1, const bool pairwise = true,  
 							      const std::string& momentX = "", const std::string& momentY = "", const bool noWeight=false) {
@@ -226,8 +224,8 @@ private:
             return false;
         }
         
-        VariableDef*  _varX = new VariableDef(nameX,titleX, variableTypeX, tX, vec_indX, momentX);
-        VariableDef* _varY = new VariableDef(nameY,titleY, variableTypeY, tY, vec_indY, momentY);
+        VariableDef*  _varX = new VariableDef(nameX,titleX, tX, vec_indX, momentX);
+        VariableDef* _varY = new VariableDef(nameY,titleY, tY, vec_indY, momentY);
         std::map< std::string , h2Def*>::iterator it = m_stdTH2Def -> find(name);
         if(it != m_stdTH2Def->end()){
             m_stdTH2Def->at(name)->varX = _varX;
@@ -242,12 +240,12 @@ private:
                         const double widthY, const double minY, const double maxY, 
                         const std::vector<double>* edgesX, const std::vector<double>* edgesY, const bool hasSyst = false, const bool pairwise = true, const bool noWeight=false);
     
-    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, const std::string &histName, const double weight, const std::string& moment="");
-    bool FillTH2FromOneVector(const double& flatVal, void* t, const VariableDef::VariableType type
-			    , const std::string &histName, const double weight,  const std::string& vecAxis="Y", const std::string& moment="");
+    bool FillTH1FromVector( void* t, const VariableDef::VariableType type, 
+			    const std::string &histName, const double weight, const std::string& moment="");
+    bool FillTH2FromOneVector(const double& flatVal, void* t, const VariableDef::VariableType type, 
+			      const std::string &histName, const double weight,  const std::string& vecAxis="Y", const std::string& moment="");
 
-    bool FillTH2FromVectors( void* tX, void* tY
-			     , VariableDef::VariableType typeX, VariableDef::VariableType typeY
+    bool FillTH2FromVectors( void* tX, void* tY, const VariableDef::VariableType typeX, const VariableDef::VariableType typeY
 			     , const std::string &histName, const double weight, const bool pairwise=true
 			     , const std::string& momentX="", const std::string& momentY="");
     

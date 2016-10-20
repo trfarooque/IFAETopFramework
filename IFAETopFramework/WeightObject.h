@@ -47,10 +47,15 @@ public:
     inline void SetBranchName( std::string& branch_name){ m_branch_name = branch_name; }
     inline void SetIsInput( bool is_input){ m_is_input = is_input; }
     inline void SetIsNominal( bool is_nominal){ m_is_nominal = is_nominal; }
-
+    /*
     template<typename T> void SetVarComponent(const std::string& varTypeString, T* t, int vec_ind = -1){
       m_var_component = new VariableDef(m_name + "_component", "", varTypeString, t, vec_ind);
     }
+    */
+    template<typename T> void SetVarComponent(T* t, int vec_ind = -1){
+      m_var_component = new VariableDef(m_name + "_component", "", t, vec_ind);
+    }
+
     void SetVarWeight(double* t); 
 
     bool SetWeightValue(double value);

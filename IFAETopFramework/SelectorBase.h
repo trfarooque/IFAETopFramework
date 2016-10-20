@@ -4,26 +4,12 @@
 #include <string>
 #include <vector>
 #include <map>
-
+//#include <IFAETopFramework/VariableDef.h>
 class OptionsBase;
 class OutputData;
-
-struct Selection{
-  int selec_ind;
-  std::string name;
-  bool* decision;
-  bool* isSet;
-  double numPass_raw;
-  double numPass_wgt; 
-  std::vector<Selection*> ancestors;
-  int primary_ancestor;
-  std::vector<int> primary_descendants;
-  int flags;
-};
-
+class Selection;
 
 class SelectorBase {
-
 
 public:
 
@@ -45,20 +31,19 @@ public:
   //__________________________________
 
   
-  bool AddSelection( const int index, const std::string &name = "", const bool do_runop = true, const bool do_histos = true, const bool do_trees = true );
-  bool AddFlag(const int index, const std::string& flag, const bool value=true );
-  virtual bool AddFlag(Selection& sel , const std::string& flag, const bool value=true );
+  Selection* AddSelection( const int index, const std::string &name = "", const bool do_runop = true, const bool do_histos = true, const bool do_trees = true );
   bool AddFlag(const int index, const int flag, const bool value=true );
-  void AddFlag(Selection& sel, const int flag, const bool value=true );
 
-  bool PassFlag(const Selection& sel, const int flag) const;
+  //bool AddFlag(const int index, const std::string& flag, const bool value=true );
+  //virtual bool AddFlag(Selection& sel , const std::string& flag, const bool value=true );
+  //virtual bool AddFlag(const int index , const std::string& flag, const bool value=true );
+
 
   //_________________________________
 
   //Pass and run selections
   //__________________________________
 
-  bool PassSelection( Selection& sel, const bool useDecision=true, const bool check_primary=true);
   virtual bool PassSelection( const int /*sel*/){ return true; }
 
   bool RunSelectionChain();
@@ -73,7 +58,8 @@ public:
   //Getter functions
   //_______________________
 
-  const Selection* GetSelection(const int node) const;
+  Selection* GetSelection(const int node);
+  //const Selection* GetSelection(const int node) const;
   inline std::map < int, Selection* >* GetSelections() const { return m_selections; }
   inline std::map < int, Selection* >* GetSelectionTree() const { return m_selection_tree; }
   inline std::map < int, Selection* >* GetTopSelections() const { return m_top_selections; }
@@ -88,7 +74,6 @@ public:
  protected:
 
   virtual Selection* MakeSelection( const int index, const std::string& name="" );
-  virtual std::string  FindName(const int index) const;
 
   bool AddAncestor( Selection& sel, const int index, bool is_primary=false);
   int  AddPrimary( Selection& sel, const int primary);

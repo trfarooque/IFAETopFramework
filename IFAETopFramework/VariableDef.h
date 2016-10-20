@@ -4,49 +4,55 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <typeinfo>
+
+#include "IFAETopFramework/AnalysisObject.h"
 
 class VariableDef {
     
-public:
-    
-    enum VariableType{
-        INT=1,
-        PTRINT,
-        FLOAT,
-        PTRFLOAT,
-        DOUBLE,
-        PTRDOUBLE,
-	BOOL,
-	PTRBOOL,
-        VECINT,
-        PTRVECINT,
-        VECFLOAT,
-        PTRVECFLOAT,
-        VECDOUBLE,
-        PTRVECDOUBLE,
-        VECBOOL,
-        PTRVECBOOL,
-        VECVECINT,
-        PTRVECVECINT,
-        VECVECFLOAT,
-        PTRVECVECFLOAT,
-        VECVECDOUBLE,
-        PTRVECVECDOUBLE,
-        VECVECBOOL,
-        PTRVECVECBOOL,
-	AOBJ,
-	PTRAOBJ,
-	VECAO,
-	PTRVECAO
-    };
-    
-    //
-    // Public standard functions
-    //
-    VariableDef();
-    ~VariableDef();
-    VariableDef( VariableDef &q );
-    
+ public:  
+
+  enum VariableType{
+    UNKNOWN,
+    VOID,
+    INT,
+    FLOAT,
+    DOUBLE,
+    BOOL,
+    VECINT,
+    VECFLOAT,
+    VECDOUBLE,
+    VECBOOL,
+    VECVECINT,
+    VECVECFLOAT,
+    VECVECDOUBLE,
+    VECVECBOOL,
+    AOBJ,
+    VECAO,
+
+    PTRINT,
+    PTRFLOAT,
+    PTRDOUBLE,
+    PTRBOOL,
+    PTRVECINT,
+    PTRVECFLOAT,
+    PTRVECDOUBLE,
+    PTRVECBOOL,
+    PTRVECVECINT,
+    PTRVECVECFLOAT,
+    PTRVECVECDOUBLE,
+    PTRVECVECBOOL,
+    PTRAOBJ,
+    PTRVECAO
+  };
+
+  //
+  // Public standard functions
+  //
+  VariableDef();
+  ~VariableDef();
+  VariableDef( VariableDef &q );
+  
     //
     // Class functions
     //
@@ -78,30 +84,36 @@ public:
     inline std::vector<double>* VecStore() const{ return m_vec_store; }
     inline double GetDoubleValue() const{ return *m_val_store; }
     inline int GetVecSize() const{ return m_vec_size; }
+    inline bool FillVec() const{ return m_fill_vec; }
 
     //
     // Setter functions
     //
     inline void SetName( const std::string& name ){m_name = name;}
     inline void SetTitle( const std::string& title ){m_title = title;}
-    void SetVarType( int varType ){
+    /*
+      void SetVarType( int varType ){
       m_varType       = (VariableType)varType;
       m_varTypeString = GetVarTypeString( (VariableType)varType );
-    }
-    void SetVarTypeString( const std::string& varTypeString ){
+      }
+      void SetVarTypeString( const std::string& varTypeString ){
       m_varTypeString = varTypeString;
       m_varType = GetVarType(varTypeString); 
-    }
+      }
+    */
     inline void SetVecInd(int vec_ind){m_vec_ind = vec_ind;}
     inline void SetMoment(const std::string& moment){ m_moment = moment; }
+    inline void SetFillVec(bool fill_vec){ m_fill_vec = fill_vec; }
+    
+    
     //
     // Template constructors
     //
-    template<typename T> VariableDef(const std::string& name, const std::string& title, VariableType varType, T *t, int vec_ind = -1, const std::string& moment="", bool fill_vec=false):
+    template<typename T> VariableDef(const std::string& name, const std::string& title, T *t, int vec_ind = -1, const std::string& moment="", bool fill_vec=false):
     m_name(name),
       m_title(title),
-      m_varTypeString(GetVarTypeString(varType)),
-      m_varType(varType),
+      m_varType(FindVarType(t)), //t is the address to the variable, so dereference it first
+      m_varTypeString(GetVarTypeString(m_varType)),
       m_vec_ind(vec_ind),
       m_address(0),
       m_isPrimitive(true),
@@ -111,11 +123,12 @@ public:
       m_val_store(NULL),
       m_vec_store(NULL),
       m_fill_vec(fill_vec) 
-    {
-        m_isPrimitive = IsPrimitive(varType);
-        m_isPointer = IsPointer(varType);
-	m_isVector = IsVector(varType);
-	m_isAnaObject = IsAnaObject(varType);
+      {
+	
+        m_isPrimitive = IsPrimitive(m_varType);
+        m_isPointer = IsPointer(m_varType);
+	m_isVector = IsVector(m_varType);
+	m_isAnaObject = IsAnaObject(m_varType);
 	if(m_fill_vec){
 	  m_vec_store = new std::vector<double>();
 	  m_vec_store->clear(); 
@@ -124,47 +137,84 @@ public:
 	  m_val_store = new double();
 	}
         SetAddress(t);
-    }
+      }
     
-    template<typename T> VariableDef(const std::string& name, const std::string& title, const std::string& varTypeString, T *t, int vec_ind = -1, const std::string& moment="", bool fill_vec=false):
-    m_name(name),
-      m_title(title),
-      m_varTypeString(varTypeString),
-      m_varType(GetVarType(varTypeString)),
-      m_vec_ind(vec_ind),
-      m_address(0),
-      m_isPrimitive(true),
-      m_isVector(false),
-      m_isAnaObject(false),
-      m_moment(moment),
-      m_val_store(NULL),
-      m_vec_store(NULL),
-      m_fill_vec(fill_vec) 
-
-    {
-	VariableType varType = GetVarType(varTypeString);
-        m_isPrimitive = IsPrimitive(varType);
-        m_isPointer = IsPointer(varType);
-	m_isVector = IsVector(varType);
-	m_isAnaObject = IsAnaObject(varType);
-        SetAddress(t);
-	if(m_fill_vec){
-	  m_vec_store = new std::vector<double>();
-	  m_vec_store->clear(); 
-	}
-	else{ m_val_store = new double(); }
-    }
     
     template< typename T > void SetAddress( T *t ){ m_address = (void*)t; }
+    //VariableType FindVarType(const std::string& vartypestr){ return INT; }
 
-protected:
+    template<typename T> VariableType FindVarType(T* t){
+
+      const std::type_info& testtype = typeid(t);
+
+      if(testtype == typeid(void*)) return VOID;
+      else if(testtype == typeid(int*)) return INT;
+      else if(testtype == typeid(float*)) return FLOAT;
+      else if(testtype == typeid(double*)) return DOUBLE;
+      else if(testtype == typeid(bool*)) return BOOL;
+
+      else if(testtype == typeid(std::vector<int>*)) return VECINT;
+      else if(testtype == typeid(std::vector<float>*)) return VECFLOAT;
+      else if(testtype == typeid(std::vector<double>*)) return VECDOUBLE;
+      else if(testtype == typeid(std::vector<bool>*)) return VECBOOL;
+
+      else if(testtype == typeid(std::vector<std::vector<int> >*)) return VECVECINT;
+      else if(testtype == typeid(std::vector<std::vector<float> >*)) return VECVECFLOAT;
+      else if(testtype == typeid(std::vector<std::vector<double> >*)) return VECVECDOUBLE;
+      else if(testtype == typeid(std::vector<std::vector<bool> >*)) return VECVECBOOL;
+
+      else if(testtype == typeid(AnalysisObject*)) return AOBJ;
+      else if(testtype == typeid(AOVector*)) return VECAO;
+      else{
+	std::cerr << " VariableDef::FindVarType --> ERROR: type "<<testtype.name()<<" of variable is unknown."<<std::endl;
+	exit(1);
+      }
+
+      return UNKNOWN; //Check if needed
+
+    } 
+
+
+    template< typename T > VariableType FindVarType(T** t){
+      
+      VariableType ret = FindVarType(*t);
+      
+      if(ret == INT) return PTRINT;
+      else if(ret == FLOAT) return PTRFLOAT;
+      else if(ret == DOUBLE) return PTRDOUBLE;
+      else if(ret == BOOL) return PTRBOOL;
+
+      else if(ret == VECINT) return PTRVECINT;
+      else if(ret == VECFLOAT) return PTRVECFLOAT;
+      else if(ret == VECDOUBLE) return PTRVECDOUBLE;
+      else if(ret == VECBOOL) return PTRVECBOOL;
+
+      else if(ret == VECVECINT) return PTRVECVECINT;
+      else if(ret == VECVECFLOAT) return PTRVECVECFLOAT;
+      else if(ret == VECVECDOUBLE) return PTRVECVECDOUBLE;
+      else if(ret == VECVECBOOL) return PTRVECVECBOOL;
+
+      else if(ret == AOBJ) return PTRAOBJ;
+      else if(ret == VECAO) return PTRVECAO;
+
+      else{
+	std::cerr << " VariableDef::FindVarType(pointer) --> ERROR: type "<<ret<<" return type from VariableDef::FindVarType is not recognised"<<std::endl;
+	exit(1);
+      }
+      return UNKNOWN; // CHeck if required
+
+    }
+
+
+
+ protected:
     //
     // Data members
     //
     std::string m_name;
     std::string m_title;
-    std::string m_varTypeString;
     VariableType m_varType;
+    std::string m_varTypeString;
     int m_vec_ind;
     void *m_address;
     bool m_isPrimitive;
@@ -177,6 +227,7 @@ protected:
     std::vector<double>* m_vec_store; 
     int m_vec_size;
     bool m_fill_vec;        
+
 };
 
 
