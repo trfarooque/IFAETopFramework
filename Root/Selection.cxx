@@ -14,11 +14,15 @@ Selection::Selection( const int index, const std::string& name,
   m_isSet(isSet),
   m_numPass_raw(0.),
   m_numPass_wgt(0.),
-  m_ancestors(*ancestors),
   m_primary_ancestor(-1),
-  m_primary_descendants(*primary_descendants),
-  m_flags(flags),
-  m_cuts(*cuts){ }
+  m_flags(flags)
+{
+
+  if(ancestors) m_ancestors = *ancestors;
+  if(primary_descendants) m_primary_descendants = *primary_descendants;
+  if(cuts) m_cuts = *cuts;
+
+}
 
 Selection::Selection( const int index, const std::string& name, 
 		      OutputData* outData,
@@ -30,11 +34,13 @@ Selection::Selection( const int index, const std::string& name,
   m_isSet(NULL),
   m_numPass_raw(0.),
   m_numPass_wgt(0.),
-  m_ancestors(*ancestors),
   m_primary_ancestor(-1),
-  m_primary_descendants(*primary_descendants),
-  m_flags(flags),
-  m_cuts(*cuts){ 
+  m_flags(flags)
+{ 
+
+  if(ancestors) m_ancestors = *ancestors;
+  if(primary_descendants) m_primary_descendants = *primary_descendants;
+  if(cuts) m_cuts = *cuts;
 
   if(outData==NULL){ std::cerr << "Error in Selection constructor --> Please provide a valid OutputData object" << std::endl; exit(1); }
   else{
