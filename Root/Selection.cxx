@@ -6,42 +6,65 @@
 //
 Selection::Selection( const int index, const std::string& name, 
 		      bool* decision, bool* isSet,
-		      const std::vector<VarCut*>* cuts, const int flags, 
-		      const std::vector<Selection*>* ancestors, const std::vector<int>* primary_descendants) :
+		       std::vector<VarCut*>* cuts, const int flags, 
+		       std::vector<Selection*>* ancestors, std::vector<int>* primary_descendants) :
   m_selec_ind(index),
   m_name(name),
   m_decision(decision),
   m_isSet(isSet),
   m_numPass_raw(0.),
   m_numPass_wgt(0.),
+  m_ancestors(ancestors),
   m_primary_ancestor(-1),
-  m_flags(flags)
+  m_primary_descendants(primary_descendants),
+  m_flags(flags),
+  m_cuts(cuts)
 {
 
-  if(ancestors) m_ancestors = *ancestors;
-  if(primary_descendants) m_primary_descendants = *primary_descendants;
-  if(cuts) m_cuts = *cuts;
+  if(m_ancestors == NULL) m_ancestors = new std::vector<Selection*>();
+  if(m_primary_descendants == NULL) m_primary_descendants = new std::vector<int>();
+  if(m_cuts == NULL) m_cuts = new std::vector<VarCut*>();
 
+  /*
+  if(ancestors) m_ancestors = *ancestors;
+  else{ m_ancestors = std::vector<Selection*>(); m_ancestors.clear(); }
+  if(primary_descendants) m_primary_descendants = *primary_descendants;
+  else{ m_primary_descendants = std::vector<int>(); m_primary_descendants.clear(); }
+  if(cuts) m_cuts = *cuts;
+  else{ m_cuts = std::vector<VarCut*>(); m_cuts.clear(); }
+  */
 }
 
 Selection::Selection( const int index, const std::string& name, 
 		      OutputData* outData,
-		      const std::vector<VarCut*>* cuts, const int flags, 
-		      const std::vector<Selection*>* ancestors, const std::vector<int>* primary_descendants) :
+		      std::vector<VarCut*>* cuts, const int flags, 
+		      std::vector<Selection*>* ancestors, std::vector<int>* primary_descendants) :
   m_selec_ind(index),
   m_name(name),
   m_decision(NULL),
   m_isSet(NULL),
   m_numPass_raw(0.),
   m_numPass_wgt(0.),
+  m_ancestors(ancestors),
   m_primary_ancestor(-1),
-  m_flags(flags)
+  m_primary_descendants(primary_descendants),
+  m_flags(flags),
+  m_cuts(cuts)
 { 
 
-  if(ancestors) m_ancestors = *ancestors;
-  if(primary_descendants) m_primary_descendants = *primary_descendants;
-  if(cuts) m_cuts = *cuts;
+  if(m_ancestors == NULL) m_ancestors = new std::vector<Selection*>();
+  if(m_primary_descendants == NULL) m_primary_descendants = new std::vector<int>();
+  if(m_cuts == NULL) m_cuts = new std::vector<VarCut*>();
 
+
+  /*
+  if(ancestors) m_ancestors = *ancestors;
+  else{ m_ancestors = std::vector<Selection*>(); m_ancestors.clear(); }
+  if(primary_descendants) m_primary_descendants = *primary_descendants;
+  else{ m_primary_descendants = std::vector<int>(); m_primary_descendants.clear(); }
+  if(cuts) m_cuts = *cuts;
+  else{ m_cuts = std::vector<VarCut*>(); m_cuts.clear(); }
+  */
   if(outData==NULL){ std::cerr << "Error in Selection constructor --> Please provide a valid OutputData object" << std::endl; exit(1); }
   else{
 
@@ -69,8 +92,18 @@ Selection::Selection( const int index, const std::string& name,
 
 Selection::~Selection(){
 
-  for( VarCut* varcut : m_cuts ) delete varcut;
-  m_cuts.clear();
+  std::cout<<" Deleting a selection with name "<<m_name<<"  with CutSet "<< m_cuts << " and " <<m_cuts->size()<<" number of cuts"<<std::endl;
+  for( VarCut* varcut : *m_cuts ){
+    std::cout<<" Deleting  cut "<<varcut<<std::endl;
+    delete varcut;
+  }
+  m_cuts->clear();
+  delete m_cuts;
+
+  m_ancestors->clear();
+  delete m_ancestors;
+  m_primary_descendants->clear();
+  delete m_primary_descendants;
 
 }
 
@@ -78,14 +111,14 @@ Selection::~Selection(){
 //___________________________________________________________
 //
 void Selection::AddAncestor(Selection* ancestor){
-  m_ancestors.push_back(ancestor);
+  m_ancestors->push_back(ancestor);
   return;
 }
 
 //___________________________________________________________
 //
 void Selection::AddPrimaryDescendant(int primary_descendant){
-  m_primary_descendants.push_back(primary_descendant);
+  m_primary_descendants->push_back(primary_descendant);
   return;
 }
 
@@ -112,7 +145,7 @@ void Selection::AddFlag(const int flag, const bool value ){
 //
 void Selection::AddCut(VarCut* cut){
 
-  m_cuts.push_back(cut);
+  m_cuts->push_back(cut);
   return;
 }
 
@@ -156,7 +189,9 @@ bool Selection::PassCut(VarCut& varcut){
 bool Selection::PassSelectionCuts() const{
 
   bool pass = false;
-  for(VarCut* varcut : m_cuts){
+  std::cout<<" Selection::PassSelectionCuts() -> m_name = "<<m_name<<" n_cuts = "<< m_cuts->size()<<std::endl;
+  for(VarCut* varcut : *m_cuts){
+    std::cout<<" varcut = "<<varcut<<std::endl;
     pass = pass && PassCut(*varcut);
     if(!pass) break;
   }
@@ -182,8 +217,8 @@ bool Selection::PassSelection( const bool useDecision, const bool check_primary)
   if(useDecision && *(m_isSet) ){ return *(m_decision); }
 
   bool pass = true;
-  if(m_ancestors.size() > 0){ 
-    for(Selection* anc : m_ancestors){ 
+  if(m_ancestors->size() > 0){ 
+    for(Selection* anc : *m_ancestors){ 
       if( !check_primary && (anc->SelecInd() == m_primary_ancestor) ) continue;
       else{ pass = anc->PassSelection( useDecision, check_primary ); }
       if(!pass) break;

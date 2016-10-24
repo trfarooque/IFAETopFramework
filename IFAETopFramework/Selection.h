@@ -24,12 +24,12 @@ class Selection{
  public:
 
  Selection( const int index, const std::string& name, OutputData* outData,
-	    const std::vector<VarCut*>* cuts=NULL, const int flags=0, 
-	    const std::vector<Selection*>* ancestors=NULL, const std::vector<int>* primary_descendants=NULL );
+	     std::vector<VarCut*>* cuts=NULL, const int flags=0, 
+	     std::vector<Selection*>* ancestors=NULL,  std::vector<int>* primary_descendants=NULL );
 
  Selection( const int index, const std::string& name, bool* decision=NULL, bool* isSet=NULL, 
-	    const std::vector<VarCut*>* cuts=NULL, const int flags=0, 
-	    const std::vector<Selection*>* ancestors=NULL, const std::vector<int>* primary_descendants=NULL );
+	     std::vector<VarCut*>* cuts=NULL, const int flags=0, 
+	     std::vector<Selection*>* ancestors=NULL,  std::vector<int>* primary_descendants=NULL );
 
  ~Selection();
 
@@ -44,11 +44,11 @@ class Selection{
 
   inline double NumPassRaw() const { return m_numPass_raw; }
   inline double NumPassWgt() const { return m_numPass_wgt; }
-  inline const std::vector<Selection*> Ancestors() const { return m_ancestors; }
+  inline const std::vector<Selection*>* Ancestors() const { return m_ancestors; }
   inline int PrimaryAncestor() const { return m_primary_ancestor; }
-  const std::vector<int> PrimaryDescendants() const { return m_primary_descendants; }
+  inline const std::vector<int>* PrimaryDescendants() const { return m_primary_descendants; }
   inline int Flags() const { return m_flags; }
-  inline const std::vector<VarCut*>* VarCuts() const { return  &m_cuts; }
+  inline const std::vector<VarCut*>* VarCuts() const { return  m_cuts; }
   
   //Setters
   inline void SetSelecInd(int selec_ind) { m_selec_ind = selec_ind; }
@@ -59,11 +59,11 @@ class Selection{
   inline void SetIsSetValue(bool isSet) { *m_isSet = isSet; }
   inline void SetNumPassRaw(int numPass_raw) { m_numPass_raw = numPass_raw; }
   inline void SetNumPassWgt(int numPass_wgt) { m_numPass_wgt = numPass_wgt; }
-  inline void SetAncestors(const std::vector<Selection*>& ancestors) { m_ancestors = ancestors; }
+  //inline void SetAncestors(std::vector<Selection*>* ancestors) { m_ancestors = ancestors; }
   inline void SetPrimaryAncestor(int primary_ancestor) { m_primary_ancestor = primary_ancestor; }
-  inline void SetPrimaryDescendants(const std::vector<int>& primary_descendants) { m_primary_descendants = primary_descendants; }
+  //inline void SetPrimaryDescendants(std::vector<int>* primary_descendants) { m_primary_descendants = primary_descendants; }
   inline void SetFlags(int flags) { m_flags = flags; }
-  inline void SetCuts(const std::vector<VarCut*>& cuts) { m_cuts = cuts; }
+  //inline void SetCuts(std::vector<VarCut*>* cuts) { m_cuts = cuts; }
 
   //C++ functions
   void AddAncestor(Selection* ancestor);
@@ -79,7 +79,7 @@ class Selection{
     else if(comparator == "<"){ _comparator = LT; }
     else if(comparator == "<="){ _comparator = LEQ; }
     else{ 
-      std::cerr << " Selection::AddCut--> ERROR : Comparator "<<comparator<<" can not be recognised "<<std::endl;
+      std::cerr << " Selection::MakeCut--> ERROR : Comparator "<<comparator<<" can not be recognised "<<std::endl;
       return NULL;
     }
 
@@ -100,6 +100,7 @@ class Selection{
 
   template<typename T> bool AddCut(T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){
     VarCut* varcut = MakeCut(t, comparator, vec_ind, moment);
+    std::cout<<" AddCut:: Adding cut "<<varcut<<" to selection "<<m_name<<std::endl;
     /*
     if(varcut->isIntegerType){
       std::cerr << "Selection::AddCut--> ERROR : Cut variable is of integer type. Please use AddIntegerCut() instead." << std::endl;
@@ -141,11 +142,11 @@ class Selection{
   bool* m_isSet;
   double m_numPass_raw;
   double m_numPass_wgt; 
-  std::vector<Selection*> m_ancestors; //NOT owned
+  std::vector<Selection*>* m_ancestors; //NOT owned
   int m_primary_ancestor;
-  std::vector<int> m_primary_descendants;
+  std::vector<int>* m_primary_descendants;
   int m_flags;
-  std::vector<VarCut*> m_cuts; //Owned
+  std::vector<VarCut*>* m_cuts; //Owned
 
   
 };

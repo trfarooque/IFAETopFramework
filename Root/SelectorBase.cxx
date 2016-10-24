@@ -49,7 +49,10 @@ SelectorBase::~SelectorBase(){
   m_top_selections     -> clear();     delete m_top_selections;
   m_selection_tree     -> clear();     delete m_selection_tree;
  
-  for(std::pair<int, Selection* > sel : *m_selections){ delete sel.second; }
+  for(std::pair<int, Selection* > sel : *m_selections){
+    std::cout<<" Deleting selection "<<sel.second->Name()<<" at address "<<sel.second<<std::endl;
+    delete sel.second;
+  }
   m_selections         -> clear();     delete m_selections;
 
 }
@@ -124,6 +127,8 @@ Selection* SelectorBase::MakeSelection( const int index, const std::string& name
   if( selit_pair.second ) {
     selit_pair.first->second = new Selection(index, name, m_outData);
   }
+  std::cout<<" SelectorBase::MakeSelection --> "<<name<<" n_cuts = "<<(selit_pair.first->second)->VarCuts()->size()<<std::endl;
+
   return selit_pair.first->second;
 
 }
@@ -242,7 +247,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
 
   if(m_opt -> MsgLevel() == Debug::DEBUG){
     std::cout << " FIRST SelectorBase::RunSelectionNode() --> selection = " << sel.Name() 
-	      << " Number of descendants = " << sel.PrimaryDescendants().size()  
+	      << " Number of descendants = " << sel.PrimaryDescendants()->size()  
 	      << std::endl;
 
   }
@@ -250,7 +255,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
   bool pass_node = sel.PassSelection(m_useDecisions, false);
   if(m_opt -> MsgLevel() == Debug::DEBUG){
     std::cout << " SECOND SelectorBase::RunSelectionNode() --> selection = " << sel.Name() << " pass_node = " << pass_node 
-	      << " Number of descendants = " << sel.PrimaryDescendants().size()  
+	      << " Number of descendants = " << sel.PrimaryDescendants()->size()  
 	      << std::endl;
 
   }
@@ -261,7 +266,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
     if(!RunOperations(sel)){ std::cerr << "ERROR in SelectorBase::RunSelectionNode() -> Failure to execute RunOperations on selection node " << sel.SelecInd() << std::endl;}
   }
 
-  for( const int descendant : sel.PrimaryDescendants() ){ RunSelectionNode(descendant); }
+  for( const int descendant : *(sel.PrimaryDescendants()) ){ RunSelectionNode(descendant); }
 
   return pass_node;
 
@@ -304,10 +309,10 @@ void SelectorBase::PrintSelectionTree( const bool printYields ) const{
 
     if(sel.second->PrimaryAncestor() >= 0){ std::cout <<" PRIMARY ANCESTOR : " << m_selections->at(sel.second->PrimaryAncestor())->Name() << std::endl; }
     std::cout <<" ANCESTOR LIST : "<<std::endl;
-    for( Selection* anc : sel.second->Ancestors() ){ std::cout << "   " << anc->Name() << std::endl; }
+    for( Selection* anc : *(sel.second->Ancestors()) ){ std::cout << "   " << anc->Name() << std::endl; }
 
     std::cout <<" PRIMARY DESCENDANT LIST : "<<std::endl;
-    for( int dec : sel.second->PrimaryDescendants() ){
+    for( int dec : *(sel.second->PrimaryDescendants()) ){
       std::cout << "   " << m_selections->at(dec)->Name() << std::endl;
     }
     std::cout << std::endl << std::endl << std::endl;
