@@ -21,9 +21,9 @@ Selection::Selection( const int index, const std::string& name,
   m_cuts(cuts)
 {
 
-  if(m_ancestors == NULL) m_ancestors = new std::vector<Selection*>();
-  if(m_primary_descendants == NULL) m_primary_descendants = new std::vector<int>();
-  if(m_cuts == NULL) m_cuts = new std::vector<VarCut*>();
+  if(m_ancestors == NULL){ m_ancestors = new std::vector<Selection*>(); m_ancestors->clear(); }
+  if(m_primary_descendants == NULL){ m_primary_descendants = new std::vector<int>(); m_primary_descendants->clear(); }
+  if(m_cuts == NULL){ m_cuts = new std::vector<VarCut*>(); m_cuts->clear(); }
 
   /*
   if(ancestors) m_ancestors = *ancestors;
@@ -52,10 +52,10 @@ Selection::Selection( const int index, const std::string& name,
   m_cuts(cuts)
 { 
 
-  if(m_ancestors == NULL) m_ancestors = new std::vector<Selection*>();
-  if(m_primary_descendants == NULL) m_primary_descendants = new std::vector<int>();
-  if(m_cuts == NULL) m_cuts = new std::vector<VarCut*>();
 
+  if(m_ancestors == NULL){ m_ancestors = new std::vector<Selection*>(); m_ancestors->clear(); }
+  if(m_primary_descendants == NULL){ m_primary_descendants = new std::vector<int>(); m_primary_descendants->clear(); }
+  if(m_cuts == NULL){ m_cuts = new std::vector<VarCut*>(); m_cuts->clear(); }
 
   /*
   if(ancestors) m_ancestors = *ancestors;
@@ -89,15 +89,29 @@ Selection::Selection( const int index, const std::string& name,
 
 }
 
+Selection::Selection(Selection& q){
+
+  m_selec_ind = q.m_selec_ind;
+  m_name = q.m_name;
+  m_decision = q.m_decision;
+  m_isSet = q.m_isSet;
+  m_numPass_raw = q.m_numPass_raw;
+  m_numPass_wgt = q.m_numPass_wgt; 
+  m_ancestors = q.m_ancestors; //NOT owned
+  m_primary_ancestor = q.m_primary_ancestor;
+  m_primary_descendants = q.m_primary_descendants;
+  m_flags = q.m_flags;
+  m_cuts = q.m_cuts; //Owned
+  
+  
+
+}
 
 Selection::~Selection(){
 
-  std::cout<<" Deleting a selection with name "<<m_name<<"  with CutSet "<< m_cuts << " and " <<m_cuts->size()<<" number of cuts"<<std::endl;
-  for( VarCut* varcut : *m_cuts ){
-    std::cout<<" Deleting  cut "<<varcut<<std::endl;
-    delete varcut;
+  for(std::vector<VarCut*>::iterator varcut_it = m_cuts->begin(); varcut_it != m_cuts->end(); varcut_it = m_cuts->erase(varcut_it) ){
+    delete *varcut_it; *varcut_it = NULL;
   }
-  m_cuts->clear();
   delete m_cuts;
 
   m_ancestors->clear();
@@ -168,10 +182,10 @@ bool Selection::PassFlagAtBit(const int bit_posn) const{
 
 //___________________________________________________________
 //
-bool Selection::PassCut(VarCut& varcut){
+bool Selection::PassCut(VarCut& varcut) {
 
-  varcut.var.CalcDoubleValue();
-  double val = varcut.var.GetDoubleValue();
+  varcut.var->CalcDoubleValue();
+  double val = varcut.var->GetDoubleValue();
 
   bool pass = false;
   if(varcut.comparator == GT){ pass = (val > varcut.cut); }
@@ -179,6 +193,9 @@ bool Selection::PassCut(VarCut& varcut){
   else if(varcut.comparator == EQ){ pass = AnalysisUtils::FloatEq( val, varcut.cut ); }
   else if(varcut.comparator == LEQ){ pass = (val <= varcut.cut); }
   else if(varcut.comparator == LT){ pass = (val < varcut.cut); }
+
+  //std::cout<<" name = "<<varcut.name<<" val = "<<val<<" cut = "<<varcut.cut<<" comparator = "<<varcut.comparator<<" pass = "<<pass<<std::endl;
+
 
   return pass;
 
@@ -188,13 +205,15 @@ bool Selection::PassCut(VarCut& varcut){
 //
 bool Selection::PassSelectionCuts() const{
 
-  bool pass = false;
-  std::cout<<" Selection::PassSelectionCuts() -> m_name = "<<m_name<<" n_cuts = "<< m_cuts->size()<<std::endl;
+  bool pass = true;
+  //std::cout<<"==================================== selection = "<<m_name<<"====================================="<<std::endl;
   for(VarCut* varcut : *m_cuts){
-    std::cout<<" varcut = "<<varcut<<std::endl;
     pass = pass && PassCut(*varcut);
     if(!pass) break;
   }
+
+  //std::cout<<"=========== selection = "<<m_name<<" pass_cuts = "<<pass<<"============="<<std::endl;
+
   return pass;
 
 }

@@ -51,7 +51,7 @@ class VariableDef {
   //
   VariableDef();
   ~VariableDef();
-  VariableDef( VariableDef &q );
+  VariableDef( const VariableDef &q );
   
     //
     // Class functions
@@ -146,7 +146,6 @@ class VariableDef {
     template<typename T> VariableType FindVarType(T* t){
 
       const std::type_info& testtype = typeid(t);
-
       if(testtype == typeid(void*)) return VOID;
       else if(testtype == typeid(int*)) return INT;
       else if(testtype == typeid(float*)) return FLOAT;

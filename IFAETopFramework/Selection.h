@@ -11,11 +11,14 @@ class OutputData;
 enum Comparator{GT=1, GEQ, EQ, LEQ, LT};
 
 struct VarCut{
-  VariableDef var;
+  std::string name;
+  VariableDef* var;
   //bool isIntegerType;
   double cut;
   int int_cut;
   int comparator; 
+
+  ~VarCut(){delete var;}
 };
 
 
@@ -30,6 +33,8 @@ class Selection{
  Selection( const int index, const std::string& name, bool* decision=NULL, bool* isSet=NULL, 
 	     std::vector<VarCut*>* cuts=NULL, const int flags=0, 
 	     std::vector<Selection*>* ancestors=NULL,  std::vector<int>* primary_descendants=NULL );
+
+ Selection(Selection& q);
 
  ~Selection();
 
@@ -70,7 +75,7 @@ class Selection{
   void AddPrimaryDescendant(int decendant);
   void AddCut(VarCut* cut);
 
-  template<typename T> VarCut* MakeCut(T* t, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){ //protected
+  template<typename T> VarCut* MakeCut(T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){ //protected
 
     int _comparator = 0;
     if(comparator == ">"){ _comparator = GT; }
@@ -85,48 +90,29 @@ class Selection{
 
     VarCut* varcut = new VarCut();
     varcut->comparator = _comparator;
-    varcut->var = VariableDef("","", t, vec_ind, moment);
-    //VariableDef::VariableType var_type = varcut->var.VarType();
-   /*
-    varcut->isIntegerType = ( (var_type == VariableDef::INT) || (var_type == VariableDef::VECINT) || (var_type == VariableDef::PTRVECINT) );
-    if(varcut->var.IsVector() && vec_ind < -1){
-      std::cerr << " Selection::AddCut--> ERROR : Illegal vector index "<<vec_ind<<" provided for vector cut variable "<<std::endl;
-      delete varcut;
-      return NULL;
-    }
-    */
+    varcut->var = new VariableDef("","", t, vec_ind, moment);
+    varcut->cut = cut;
+
+
     return varcut;
   }
 
+  template<typename T> bool AddCut(const std::string& name, T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){
+
+    VarCut* varcut = MakeCut(t, cut, comparator, vec_ind, moment);
+    if(varcut == NULL) return false;
+    varcut->name = name;
+    AddCut(varcut);
+    return true;
+
+  }
   template<typename T> bool AddCut(T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){
-    VarCut* varcut = MakeCut(t, comparator, vec_ind, moment);
-    std::cout<<" AddCut:: Adding cut "<<varcut<<" to selection "<<m_name<<std::endl;
-    /*
-    if(varcut->isIntegerType){
-      std::cerr << "Selection::AddCut--> ERROR : Cut variable is of integer type. Please use AddIntegerCut() instead." << std::endl;
-      delete varcut;
-      return false;
-    }
-    */
-    varcut->cut = cut;
-    AddCut(varcut);
 
-    return true;
-  }
-  /*
-  template<T> bool AddIntegerCut(T* t, int cut, const std::string& comparator=">=", int vec_ind==-1, const std::string& moment=""){
-    VarCut* varcut = MakeCut(t, comparator, vec_ind, moment);
-    if(!(varcut->isIntegerType) ){
-      std::cerr << "Selection::AddIntegerCut--> ERROR : Cut variable is not of integer type. Please use AddCut() instead." << std::endl;
-      delete varcut;
-      return false;
-    }
-    varcut->int_cut = cut;
-    AddCut(varcut);
+    bool stat = AddCut("", t, cut, comparator, vec_ind, moment);
 
-    return true;
+    return stat;
   }
-  */
+
   void AddFlag(const int flag, const bool value); //Add this bit to the flags
   void AddFlagAtBit(const int bit_posn, const bool value); //Add the bit at position counted by bit_posn to the flags
   bool PassFlag(const int flag) const;

@@ -48,9 +48,8 @@ SelectorBase::~SelectorBase(){
 
   m_top_selections     -> clear();     delete m_top_selections;
   m_selection_tree     -> clear();     delete m_selection_tree;
- 
+
   for(std::pair<int, Selection* > sel : *m_selections){
-    std::cout<<" Deleting selection "<<sel.second->Name()<<" at address "<<sel.second<<std::endl;
     delete sel.second;
   }
   m_selections         -> clear();     delete m_selections;
@@ -262,7 +261,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
   if( !pass_node ) return pass_node;
   m_nPass++;
 
-  if( sel.PassFlag(DORUNOP) ){
+  if( sel.PassFlagAtBit(DORUNOP) ){
     if(!RunOperations(sel)){ std::cerr << "ERROR in SelectorBase::RunSelectionNode() -> Failure to execute RunOperations on selection node " << sel.SelecInd() << std::endl;}
   }
 

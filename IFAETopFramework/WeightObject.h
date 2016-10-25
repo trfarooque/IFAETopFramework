@@ -38,6 +38,8 @@ public:
     inline void* GetWeightAddress() const{ return m_var_weight->Address(); }
     inline void* GetComponentValStore() const{ return m_var_component->ValStore(); }
     inline void* GetWeightValStore() const{ return m_var_weight->ValStore(); }
+    inline const VariableDef* GetComponentVariable() const{ return m_var_component; }
+    inline const VariableDef* GetWeightVariable() const{ return m_var_weight; }
 
      //
     //Setter functions

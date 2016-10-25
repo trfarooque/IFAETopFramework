@@ -32,7 +32,7 @@ VariableDef::~VariableDef()
 
 //_____________________________________________________________________________________
 //
-VariableDef::VariableDef( VariableDef &q ){
+VariableDef::VariableDef( const VariableDef &q ){
     m_name          = q.m_name;
     m_title         = q.m_title;
     m_varType       = q.m_varType;
@@ -84,7 +84,7 @@ std::string VariableDef::GetVarTypeString(int varType){
     else if(varType == VariableType::PTRAOBJ)         {_varTypeString = "PAO";}
     else if(varType == VariableType::VECAO)           {_varTypeString = "VAO";}
     else if(varType == VariableType::PTRVECAO)        {_varTypeString = "PVAO";}
-    else { std::cout << "Unknown variable type" << std::endl; }
+    else { std::cout << "Unknown variable type " << varType << std::endl; }
     
     return _varTypeString;
 }
@@ -119,6 +119,7 @@ VariableDef::VariableType VariableDef::GetVarType(const std::string& varTypeStri
     else if(varTypeString == "PAO")       {_varType = VariableType::PTRAOBJ;}
     else if(varTypeString == "VAO")       {_varType = VariableType::VECAO;}
     else if(varTypeString == "PVAO")      {_varType = VariableType::PTRVECAO;}
+    else { std::cout << "Unknown variable type string " << varTypeString << std::endl; }
     
     return _varType;
 }
