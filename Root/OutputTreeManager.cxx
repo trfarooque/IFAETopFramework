@@ -70,7 +70,7 @@ bool OutputTreeManager::AddAllWeightBranches( const std::string &name, WeightMan
     if(!stat){ return stat; }
   }
   else{
-    AddStandardBranch( name, "Nominal weight", "D", &(m_data -> o_eventWeight_Nom) );
+    AddStandardBranch( name, "Nominal weight", &(m_data -> o_eventWeight_Nom) );
   }
   if( m_opt->ComputeWeightSys() ){
     WeightManager::WeightMap* sysMap = wgtMngr->SystMap();
@@ -87,10 +87,13 @@ bool OutputTreeManager::AddAllWeightBranches( const std::string &name, WeightMan
 
 bool OutputTreeManager::AddWeightBranches(const std::string& name, WeightManager::WeightMap *wgtMap, const bool add_components){
   for( const auto &wgt : *wgtMap ){
-    std::string branchName = (name == "")? wgt.second -> Name() : name + "_" + wgt.second -> Name();
+    const std::string& branchName = (name == "") ? wgt.second -> Name() : name + "_" + wgt.second -> Name();
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "OutputTreeManager::AddWeightBranches(); adding branch for weight "<<wgt.second->Name() << std::endl;
-    if(add_components){ AddStandardBranch( branchName, wgt.second -> Title(), wgt.second -> GetComponentTypeStr(), wgt.second -> GetComponentAddress() ); }
-    else{ AddStandardBranch( branchName, wgt.second -> Title(), "D", wgt.second -> GetWeightAddress() ); }
+
+    //void* wgt_address = (add_components) ? wgt.second->GetComponentAddress() : wgt.second->GetWeightAddress();
+
+    if(add_components){ AddStandardBranch(wgt.second -> GetComponentVariable(), branchName, wgt.second -> Title() ); }
+    else{ AddStandardBranch( wgt.second -> GetWeightVariable(), branchName, wgt.second -> Title() ); }
   }
 
   return true;
@@ -140,7 +143,7 @@ bool OutputTreeManager::BookStandardTree( const std::string &pattern, const std:
 	else if(bVar->VarType() == VariableDef::PTRFLOAT) _branch = _tree->Branch(bname,(float**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRINT) _branch = _tree->Branch(bname,(int**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRBOOL) _branch = _tree->Branch(bname,(bool**)bVar->Address() );
-	else{ std::cerr << "<!> Error in TreeManager::AddBranchToTree(): the variable type is not recognized !!" << std::endl; }
+	else{ std::cerr << "<!> Error in TreeManager::AddBranchToTree(): the variable type is not recognized !!" << std::endl; } 
       }
       else if( ( bVar->IsVector() && (bVar->VecInd()>=0) ) || ( bVar->IsAnaObject() && !bVar->IsVector() ) ){
 	_branch = _tree->Branch(bVar->Name().c_str(), bVar->ValStore() );

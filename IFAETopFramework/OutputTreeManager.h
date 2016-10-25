@@ -43,8 +43,32 @@ public:
     // TREE-SPECIFIC FUNCTIONS
     //
     //
-    template< typename T > bool AddStandardBranch( const std::string &name,  const std::string &title, const std::string &variableType,
-						   T *t, const int vec_ind = -1, const std::string moment="") {
+
+    bool AddStandardBranch( const VariableDef* var,  const std::string &name,  const std::string &title) {
+        
+        if(m_opt -> MsgLevel() == Debug::DEBUG){
+            std::cout << "In OutputManager::addStandardBranch from VarDef" << std::endl;
+            std::cout << "Adding variable: "<< name << std::endl;
+            std::cout << "title: "<< title << std::endl;
+            std::cout << "var: "<< var << std::endl;
+        }
+        if(!var) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << var << "). Please check !" << std::endl;
+
+        VariableDef *_var = new VariableDef(*var);
+	if(!name.empty()) _var->SetName(name);
+	if(!title.empty()) _var->SetTitle(name);
+
+	bool fill_vec = false;
+	if( ((_var->VarType() == VariableDef::VECAO) || (_var->VarType() == VariableDef::PTRVECAO))  && (_var->VecInd() < 0) ){fill_vec = true;}
+	_var->SetFillVec(fill_vec);
+        m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( name, _var ) );
+        
+        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardBranch" << std::endl;
+        
+        return true;
+    }
+
+    template< typename T > bool AddStandardBranch( const std::string &name,  const std::string &title, T *t, const int vec_ind = -1, const std::string moment="") {
         
         if(m_opt -> MsgLevel() == Debug::DEBUG){
             std::cout << "In OutputManager::addStandardBranch" << std::endl;
@@ -53,15 +77,20 @@ public:
             std::cout << "  address  = " << t << std::endl;
         }
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
+
+        VariableDef *_var = new VariableDef(name, title, t, vec_ind, moment);
+
 	bool fill_vec = false;
-	if( ((variableType == "VAO") || (variableType == "PVAO"))  && (vec_ind < 0) ){fill_vec = true;}
-        VariableDef *_var = new VariableDef(name, title, variableType, t, vec_ind, moment, fill_vec);
+	if( ((_var->VarType() == VariableDef::VECAO) || (_var->VarType() == VariableDef::PTRVECAO))  && (vec_ind < 0) ){fill_vec = true;}
+	_var->SetFillVec(fill_vec);
         m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( name, _var ) );
         
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardBranch" << std::endl;
         
         return true;
     }
+
+
     bool BookStandardTree( const std::string &pattern, const std::string &title);
     bool FillStandardTree( const std::string &name, const bool updateStores=true );
     bool SaveStandardTree( const std::string& );

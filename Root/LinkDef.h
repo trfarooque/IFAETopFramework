@@ -11,6 +11,7 @@
 #include "IFAETopFramework/OutputManager.h"
 #include "IFAETopFramework/OutputTreeManager.h"
 #include "IFAETopFramework/SampleInfo.h"
+#include "IFAETopFramework/Selection.h"
 #include "IFAETopFramework/SelectorBase.h"
 #include "IFAETopFramework/TreeManager.h"
 #include "IFAETopFramework/TRFManager.h"
@@ -35,6 +36,7 @@
 #pragma link C++ class OutputManager+;
 #pragma link C++ class OutputTreeManager+;
 #pragma link C++ class SampleInfo+;
+#pragma link C++ class Selection+;
 #pragma link C++ class SelectorBase+;
 #pragma link C++ class TreeManager+;
 #pragma link C++ class TRFManager+;
