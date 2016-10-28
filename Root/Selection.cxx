@@ -89,7 +89,7 @@ Selection::Selection( const int index, const std::string& name,
 
 }
 
-Selection::Selection(Selection& q){
+Selection::Selection(const Selection& q){
 
   m_selec_ind = q.m_selec_ind;
   m_name = q.m_name;

@@ -52,8 +52,8 @@ public:
     
   int GetChainEntry(long entry) const ;
   int ChainNEntries() const;
-  int ChainFromTextFile(TChain* ch, const std::string& infilename);
-  int ChainFromStrList(TChain* ch, const std::string& infilelist);
+  static int ChainFromTextFile(TChain* ch, const std::string& infilename, const bool printDebug=false);
+  static int ChainFromStrList(TChain* ch, const std::string& infilelist, const bool printDebug=false);
     
   //virtual const NtupleData* Data() const = 0;//{ return m_ntupData; }
 

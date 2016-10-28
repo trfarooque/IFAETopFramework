@@ -17,7 +17,7 @@ SampleInfo::SampleInfo(  ):
 {}
 
 
-SampleInfo::SampleInfo( OptionsBase *opt ):
+SampleInfo::SampleInfo( const OptionsBase *opt ):
   SampleInfo()
 { m_opt = opt; }
 
@@ -29,7 +29,7 @@ SampleInfo::SampleInfo( const std::string& sampleID, const std::string &configFi
 { ReadSample(sampleID, configFile); }
 
 
-SampleInfo::SampleInfo( OptionsBase *opt, const std::string &configFile ):
+SampleInfo::SampleInfo( const OptionsBase *opt, const std::string &configFile ):
   SampleInfo(opt -> StrSampleID(), configFile)
 { m_opt = opt; }
 

@@ -15,9 +15,32 @@ struct VarCut{
   VariableDef* var;
   //bool isIntegerType;
   double cut;
-  int int_cut;
   int comparator; 
 
+  template<typename T> VarCut(const std::string& _name, T* t, double _cut, const std::string& str_comparator=">=", int vec_ind=-1, const std::string& moment=""){
+
+    int _comparator = 0;
+    if(str_comparator == ">"){ _comparator = GT; }
+    else if(str_comparator == ">="){ _comparator = GEQ; }
+    else if( (str_comparator == "=") || (str_comparator == "==") ){ _comparator = EQ; }
+    else if(str_comparator == "<"){ _comparator = LT; }
+    else if(str_comparator == "<="){ _comparator = LEQ; }
+    else{ 
+      std::cerr << " Selection::MakeCut--> ERROR : Comparator "<<str_comparator<<" can not be recognised "<<std::endl;
+      return;
+    }
+    name = _name;
+    comparator = _comparator;
+    var = new VariableDef("","", t, vec_ind, moment);
+    cut = _cut;
+  }
+
+  VarCut(const VarCut& q){
+    name = q.name;
+    var = new VariableDef(*(q.var));
+    cut = q.cut;
+    comparator = q.comparator;
+  }
   ~VarCut(){delete var;}
 };
 
@@ -34,7 +57,7 @@ class Selection{
 	     std::vector<VarCut*>* cuts=NULL, const int flags=0, 
 	     std::vector<Selection*>* ancestors=NULL,  std::vector<int>* primary_descendants=NULL );
 
- Selection(Selection& q);
+ Selection(const Selection& q);
 
  ~Selection();
 
@@ -75,33 +98,10 @@ class Selection{
   void AddPrimaryDescendant(int decendant);
   void AddCut(VarCut* cut);
 
-  template<typename T> VarCut* MakeCut(T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){ //protected
-
-    int _comparator = 0;
-    if(comparator == ">"){ _comparator = GT; }
-    else if(comparator == ">="){ _comparator = GEQ; }
-    else if( (comparator == "=") || (comparator == "==") ){ _comparator = EQ; }
-    else if(comparator == "<"){ _comparator = LT; }
-    else if(comparator == "<="){ _comparator = LEQ; }
-    else{ 
-      std::cerr << " Selection::MakeCut--> ERROR : Comparator "<<comparator<<" can not be recognised "<<std::endl;
-      return NULL;
-    }
-
-    VarCut* varcut = new VarCut();
-    varcut->comparator = _comparator;
-    varcut->var = new VariableDef("","", t, vec_ind, moment);
-    varcut->cut = cut;
-
-
-    return varcut;
-  }
-
   template<typename T> bool AddCut(const std::string& name, T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){
 
-    VarCut* varcut = MakeCut(t, cut, comparator, vec_ind, moment);
+    VarCut* varcut = new VarCut(name, t, cut, comparator, vec_ind, moment);
     if(varcut == NULL) return false;
-    varcut->name = name;
     AddCut(varcut);
     return true;
 

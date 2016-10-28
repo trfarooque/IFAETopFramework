@@ -5,7 +5,7 @@
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/AnalysisUtils.h"
 
-WeightManager::WeightManager(OptionsBase* opt, const NtupleData* ntupData, OutputData* outData) : 
+WeightManager::WeightManager(const OptionsBase* opt, const NtupleData* ntupData, OutputData* outData) : 
   m_opt(opt),
   m_ntupData(ntupData),
   m_outData(outData),
@@ -172,7 +172,9 @@ bool WeightManager::ComputeNominalWeight(){
 
   //Read all input components and update the value held by weight
   for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ 
+    if(nom.second->IsReserve()) continue;
     m_outData -> o_eventWeight_Nom *= nom.second -> GetComponentValue();
+
   }
 
   return stat;
@@ -186,6 +188,7 @@ bool WeightManager::ComputeSystematicWeights(){
     return false;
   }
   for(std::pair<std::string, WeightObject*> sys : *m_systMap){ 
+    if(sys.second->IsReserve()) continue;
     stat = ComputeSystematicWeight(sys.second);
   }
 
@@ -196,7 +199,7 @@ bool WeightManager::ComputeSystematicWeights(){
 
 //--------------------------------------------------------------------------------
 bool WeightManager::ComputeSystematicWeight(const std::string& name){
-  
+  std::cout<<" In WeightManager::ComputeSystematicWeight"<<std::endl; 
   WeightMap::iterator it = m_systMap -> find(name);
   if(it == m_systMap->end()){
     std::cerr << "WeightManager::ComputeSystematicWeight() --> ERROR : Weight "<<name<<" not found in map"<<std::endl;
@@ -282,11 +285,22 @@ bool WeightManager::UpdateSystematicComponent(const std::string& name, double va
   return true;
 }
 
+
 //==================================== PROTECTED METHODS =================================================
-bool WeightManager::AddWeight( const std::string &name, const std::string &title, bool isNominal, 
+WeightObject* WeightManager::AddAndInitWeight( const std::string &name, const std::string &title, bool isNominal, 
 			       bool isInput, const std::string& branchName, 
 			       const std::string& affected_component, 
-			       const std::string& inputType, int vec_ind ) {
+			       const std::string& componentType, int vec_ind ) {
+
+  WeightObject* wgt = AddWeight(name, title, isNominal, isInput, branchName, affected_component);
+  if(wgt){ InitWeight(wgt, componentType, vec_ind); }
+  return wgt;
+
+}
+
+WeightObject* WeightManager::AddWeight( const std::string &name, const std::string &title, bool isNominal, 
+			       bool isInput, const std::string& branchName, 
+			       const std::string& affected_component) {
 
   if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << "WeightManager::AddWeight adding weight ("
  						     << name << ")" << " isInput = " << isInput << " isNominal = " << isNominal <<std::endl; }
@@ -294,85 +308,98 @@ bool WeightManager::AddWeight( const std::string &name, const std::string &title
   WeightMap::iterator it = wgtMap -> find(name);
   if(it != wgtMap->end()){
     std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. isNominal = "<<isNominal<<". Please chack !!" << std::endl;
-    return false;
+    return NULL;
   }
-  else{ 
-    const std::string& _branch = (branchName == "") ? name : branchName;
-    WeightObject *wgt = new WeightObject(name,title, isInput, _branch, isNominal, affected_component);
 
-    if(inputType == "D"){
-      std::map<std::string, double>* &valMap = (isInput) ? m_ntupData -> d_D_weight_components : m_outData -> o_D_weight_components;
-      if(valMap == NULL){ valMap = new std::map<std::string, double>; }
-      if( valMap->find(_branch) != valMap->end() ){
-	std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
-	return false;
-      }
-      else{ valMap->insert(std::pair<std::string, double>( _branch, 0.) ); }
-      wgt->SetVarComponent(&(valMap -> at(_branch)) );
-    }
+  const std::string& _branch = (branchName == "") ? name : branchName;
+  WeightObject *wgt = new WeightObject(name,title, isInput, _branch, isNominal, affected_component);
 
-    else if(inputType == "F"){
-      std::map<std::string, float>* &valMap = (isInput) ? m_ntupData -> d_F_weight_components : m_outData -> o_F_weight_components;
-      if(valMap == NULL){ valMap = new std::map<std::string, float>; }
-      if( valMap->find(_branch) != valMap->end() ){
-	std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
-	return false;
-      }
-      else{ valMap->insert(std::pair<std::string, float>( _branch, 0.) ); }
-      wgt->SetVarComponent(&(valMap -> at(_branch)) );
-    }
+  wgtMap->insert( std::pair<std::string, WeightObject*>(name, wgt) );
 
-    else if( (inputType == "PVD") || (inputType == "VD") ){
-      if(vec_ind < 0){
-	std::cerr<<" <!> ERROR in WeightManager::AddWeight: weight (" << name << ") : Negative vector index is not permitted "<<std::endl;
-	return false;
-      }
-      std::map<std::string, std::vector<double>* >* &valMap = (isInput) ? m_ntupData -> d_vecD_weight_components : m_outData -> o_vecD_weight_components;
-      if(valMap == NULL){ valMap = new std::map<std::string, std::vector<double>* >; }
-      if( valMap->find(_branch) == valMap->end() ){
-	valMap->insert(std::pair<std::string, std::vector<double>* >( _branch, NULL) );
-      }
-      if( inputType == "PVD" ){ wgt->SetVarComponent( &(valMap -> at(_branch)), vec_ind ); }
-      else{ wgt->SetVarComponent(valMap -> at(_branch), vec_ind ); }
+  return wgt;
 
-    }
+}
 
-    else if( (inputType == "PVF") || (inputType == "VF") ){
-      if(vec_ind < 0){
-	std::cerr<<" <!> ERROR in WeightManager::AddWeight: weight (" << name << ") : Negative vector index is not permitted "<<std::endl;
-	return false;
-      }
-      std::map<std::string, std::vector<float>* >* &valMap = (isInput) ? m_ntupData -> d_vecF_weight_components : m_outData -> o_vecF_weight_components;
-      if(valMap == NULL){ valMap = new std::map<std::string, std::vector<float>* >; }
-      if( valMap->find(_branch) == valMap->end() ){
-	valMap->insert(std::pair<std::string, std::vector<float>* >( _branch, NULL) );
-      }
-      if(inputType == "PVF"){ wgt->SetVarComponent(&(valMap -> at(_branch)), vec_ind ); }
-      else{ wgt->SetVarComponent(valMap -> at(_branch), vec_ind ); }
-    }
-    else{
-      std::cerr <<" <!> ERROR in WeightManager::AddWeight() -> VariableType " << inputType << " is not recognised. "<<std::endl;
+bool WeightManager::InitWeight( WeightObject* wgt, const std::string& componentType, int vec_ind ) {
+
+  if(m_opt -> MsgLevel() == Debug::DEBUG){ std::cout << "WeightManager::InitWeight initialising weight ("
+ 						     << wgt->Name() << ")" << " componentType = " << componentType << " vec_ind = " << vec_ind <<std::endl; }
+
+  bool isInput = wgt->IsInput();
+  const std::string& _branch = wgt->BranchName();
+  const std::string& name = wgt->Name();
+
+  if(componentType == "D"){
+    std::map<std::string, double>* &valMap = (isInput) ? m_ntupData -> d_D_weight_components : m_outData -> o_D_weight_components;
+    if(valMap == NULL){ valMap = new std::map<std::string, double>; }
+    if( valMap->find(_branch) != valMap->end() ){
+      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << _branch << ") exists already. Please chack !!" << std::endl;
       return false;
     }
-
-    if(isNominal){ 
-      wgt->SetVarWeight( &(m_outData -> o_eventWeight_Nom) );
-    }
-    else{ 
-      if( m_outData -> o_eventWeight_Systs->find(name) != m_outData -> o_eventWeight_Systs->end() ){
-	std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
-	return false;
-      }
-      m_outData -> o_eventWeight_Systs -> insert( std::pair<std::string, double>(name, 0.) );
-      wgt->SetVarWeight( &(m_outData -> o_eventWeight_Systs -> at(name)) );
-    }
-
-
-    wgtMap->insert( std::pair<std::string, WeightObject*>(name, wgt) );
- 
+    else{ valMap->insert(std::pair<std::string, double>( _branch, 0.) ); }
+    wgt->SetVarComponent(&(valMap -> at(_branch)) );
   }
+
+  else if(componentType == "F"){
+    std::map<std::string, float>* &valMap = (isInput) ? m_ntupData -> d_F_weight_components : m_outData -> o_F_weight_components;
+    if(valMap == NULL){ valMap = new std::map<std::string, float>; }
+    if( valMap->find(_branch) != valMap->end() ){
+      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << _branch << ") exists already. Please chack !!" << std::endl;
+      return false;
+    }
+    else{ valMap->insert(std::pair<std::string, float>( _branch, 0.) ); }
+    wgt->SetVarComponent(&(valMap -> at(_branch)) );
+  }
+
+  else if( (componentType == "PVD") || (componentType == "VD") ){
+    if(vec_ind < 0){
+      std::cerr<<" <!> ERROR in WeightManager::InitWeight: weight (" << name << ") : Negative vector index is not permitted "<<std::endl;
+      return false;
+    }
+    std::map<std::string, std::vector<double>* >* &valMap = (isInput) ? m_ntupData -> d_vecD_weight_components : m_outData -> o_vecD_weight_components;
+    if(valMap == NULL){ valMap = new std::map<std::string, std::vector<double>* >; }
+    if( valMap->find(_branch) == valMap->end() ){
+      valMap->insert(std::pair<std::string, std::vector<double>* >( _branch, NULL) );
+    }
+    if( componentType == "PVD" ){ wgt->SetVarComponent( &(valMap -> at(_branch)), vec_ind ); }
+    else{ wgt->SetVarComponent(valMap -> at(_branch), vec_ind ); }
+
+  }
+
+  else if( (componentType == "PVF") || (componentType == "VF") ){
+    if(vec_ind < 0){
+      std::cerr<<" <!> ERROR in WeightManager::InitWeight: weight (" << name << ") : Negative vector index is not permitted "<<std::endl;
+      return false;
+    }
+    std::map<std::string, std::vector<float>* >* &valMap = (isInput) ? m_ntupData -> d_vecF_weight_components : m_outData -> o_vecF_weight_components;
+    if(valMap == NULL){ valMap = new std::map<std::string, std::vector<float>* >; }
+    if( valMap->find(_branch) == valMap->end() ){
+      valMap->insert(std::pair<std::string, std::vector<float>* >( _branch, NULL) );
+    }
+    if(componentType == "PVF"){ wgt->SetVarComponent(&(valMap -> at(_branch)), vec_ind ); }
+    else{ wgt->SetVarComponent(valMap -> at(_branch), vec_ind ); }
+  }
+  else{
+    std::cerr <<" <!> ERROR in WeightManager::InitWeight() -> VariableType " << componentType << " is not recognised. "<<std::endl;
+    return false;
+  }
+
+  if(wgt->IsNominal()){ 
+    wgt->SetVarWeight( &(m_outData -> o_eventWeight_Nom) );
+  }
+  else{ 
+    if( m_outData -> o_eventWeight_Systs->find(name) != m_outData -> o_eventWeight_Systs->end() ){
+      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
+      return false;
+    }
+    m_outData -> o_eventWeight_Systs -> insert( std::pair<std::string, double>(name, 0.) );
+    wgt->SetVarWeight( &(m_outData -> o_eventWeight_Systs -> at(name)) );
+  }
+
   return true;
+
 }
+
 
 //____________________________________________________________________________
 bool WeightManager::AddWeightsFromString(const std::string& inputStr, bool isNominal){
@@ -384,7 +411,7 @@ bool WeightManager::AddWeightsFromString(const std::string& inputStr, bool isNom
       n = inputStr.length();
     }
     std::string tmp = inputStr.substr(i,n-i);
-    if(tmp!=""){ AddWeight(tmp, "", isNominal); }
+    if(tmp!=""){ AddAndInitWeight(tmp, "", isNominal); }
     tmp.clear();
   }
   
@@ -477,7 +504,7 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
 	  AnalysisUtils::TrimString(range);
 	  //Check formatting of range
 	  if( AnalysisUtils::CountSubstring(range, "-") == 0 ){
-	    AddWeight( name, title, isNominal, isInput, branchName, replace, input_varType, atoi(range.c_str()) );
+	    AddAndInitWeight( name, title, isNominal, isInput, branchName, replace, input_varType, atoi(range.c_str()) );
 	  }
 	  else if( AnalysisUtils::CountSubstring(range, "-") > 1 ){
 	    std::cerr << " Vector index range "<<range<<" does not follow expected format A-B. Please check";
@@ -497,7 +524,7 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
 	    }
 
 	    for(int _ind = firstInd; _ind<=lastInd; ++_ind){
-	      AddWeight( Form("%s_%i",name.c_str(),_ind), title, isNominal, isInput, branchName, replace, input_varType, _ind);
+	      AddAndInitWeight( Form("%s_%i",name.c_str(),_ind), title, isNominal, isInput, branchName, replace, input_varType, _ind);
 	    }//loop over the range
 
 	  }//proper vector range
@@ -506,7 +533,7 @@ bool WeightManager::AddWeightsFromConfig(const std::string& inputStr ){
 
       }//parse the multiple vector indices and add a weight for each one
       else{
-	AddWeight( name, title, isNominal, isInput, branchName, replace, input_varType, input_vecInd);
+	AddAndInitWeight( name, title, isNominal, isInput, branchName, replace, input_varType, input_vecInd);
       }//single vector index
       
     }//Loop over blocks in config file
