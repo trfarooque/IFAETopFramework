@@ -172,6 +172,7 @@ bool WeightManager::ComputeNominalWeight(){
 
   //Read all input components and update the value held by weight
   for(std::pair<std::string, WeightObject*> nom : *m_nomMap){ 
+    //std::cout<<" nominal component "<<nom.second->Name()<<" isReserve = "<<nom.second->IsReserve()<<std::endl;
     if(nom.second->IsReserve()) continue;
     m_outData -> o_eventWeight_Nom *= nom.second -> GetComponentValue();
 
@@ -188,6 +189,7 @@ bool WeightManager::ComputeSystematicWeights(){
     return false;
   }
   for(std::pair<std::string, WeightObject*> sys : *m_systMap){ 
+    //std::cout<<" systematic component "<<sys.second->Name()<<" isReserve = "<<sys.second->IsReserve()<<std::endl;
     if(sys.second->IsReserve()) continue;
     stat = ComputeSystematicWeight(sys.second);
   }
@@ -199,7 +201,6 @@ bool WeightManager::ComputeSystematicWeights(){
 
 //--------------------------------------------------------------------------------
 bool WeightManager::ComputeSystematicWeight(const std::string& name){
-  std::cout<<" In WeightManager::ComputeSystematicWeight"<<std::endl; 
   WeightMap::iterator it = m_systMap -> find(name);
   if(it == m_systMap->end()){
     std::cerr << "WeightManager::ComputeSystematicWeight() --> ERROR : Weight "<<name<<" not found in map"<<std::endl;

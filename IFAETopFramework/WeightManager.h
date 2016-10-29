@@ -35,7 +35,7 @@ class WeightManager{
    bool ComputeAllWeights();
   virtual bool ComputeNominalWeight();
    bool ComputeSystematicWeights();
-  virtual bool ComputeSystematicWeight(const std::string& name);
+   bool ComputeSystematicWeight(const std::string& name);
 
   //Set the nominal weight component in the OutputData map. Event weights are left unchanged.
   bool SetNominalComponent(const std::string& name, double value);
@@ -63,7 +63,7 @@ class WeightManager{
   bool AddWeightsFromString(const std::string& inputStr, bool isNominal=false);
   bool AddWeightsFromConfig( const std::string& inputStr );
 
-  bool ComputeSystematicWeight(WeightObject* sys);
+  virtual bool ComputeSystematicWeight(WeightObject* sys);
   bool SetWeightComponent(const std::string& name, double value, bool nominal );
 
   const OptionsBase* m_opt;
