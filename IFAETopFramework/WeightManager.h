@@ -16,7 +16,7 @@ class WeightManager{
 
   typedef std::map< std::string, WeightObject* > WeightMap;
 
-  WeightManager( OptionsBase* opt, const NtupleData* ntupData, OutputData* outData);
+  WeightManager( const OptionsBase* opt, const NtupleData* ntupData, OutputData* outData);
   WeightManager( const WeightManager& q); 
   ~WeightManager();
 
@@ -32,10 +32,10 @@ class WeightManager{
   bool AddAllWeights();
 
   //Calculate nominal and systematics event weights from components
-  bool ComputeAllWeights();
-  bool ComputeNominalWeight();
-  bool ComputeSystematicWeights();
-  bool ComputeSystematicWeight(const std::string& name);
+   bool ComputeAllWeights();
+  virtual bool ComputeNominalWeight();
+   bool ComputeSystematicWeights();
+   bool ComputeSystematicWeight(const std::string& name);
 
   //Set the nominal weight component in the OutputData map. Event weights are left unchanged.
   bool SetNominalComponent(const std::string& name, double value);
@@ -49,20 +49,24 @@ class WeightManager{
 
   void SetConfigBlock(const std::string& flag, const bool value);
 
- protected:
-  
-  bool AddWeight( const std::string &name, const std::string& title="", bool isNominal=true, 
+  WeightObject* AddWeight( const std::string &name, const std::string& title="", bool isNominal=true, 
+		  bool isInput=true, const std::string& branchName="",
+		  const std::string& affected_component="");
+  WeightObject* AddAndInitWeight( const std::string &name, const std::string& title="", bool isNominal=true, 
 		  bool isInput=true, const std::string& branchName="",
 		  const std::string& affected_component="",
-		  const std::string& inputType="D", int vec_ind=-1);
+		  const std::string& componentType="D", int vec_ind=-1);
+  bool InitWeight(WeightObject* wgt, const std::string& componentType="D", int vec_ind=-1);
 
+
+ protected:
   bool AddWeightsFromString(const std::string& inputStr, bool isNominal=false);
   bool AddWeightsFromConfig( const std::string& inputStr );
 
-  bool ComputeSystematicWeight(WeightObject* sys);
+  virtual bool ComputeSystematicWeight(WeightObject* sys);
   bool SetWeightComponent(const std::string& name, double value, bool nominal );
 
-  OptionsBase* m_opt;
+  const OptionsBase* m_opt;
   const NtupleData* m_ntupData;
   OutputData* m_outData;
   WeightMap* m_nomMap;

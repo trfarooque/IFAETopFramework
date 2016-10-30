@@ -10,6 +10,7 @@ class TriggerInfo{
  public:
 
   TriggerInfo(const std::string& name, int type=0, int period=0);
+  TriggerInfo(const TriggerInfo& q);
   ~TriggerInfo(){}
   void SetDecision(const bool dec);
 

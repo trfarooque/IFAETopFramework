@@ -12,9 +12,9 @@ public:
     //_______________________________________
     //
   SampleInfo();
-  SampleInfo( OptionsBase* opt );
+  SampleInfo( const OptionsBase* opt );
   SampleInfo( const std::string& dsID, const std::string& configFile);
-  SampleInfo( OptionsBase* opt, const std::string& configFile);
+  SampleInfo( const OptionsBase* opt, const std::string& configFile);
   SampleInfo( const SampleInfo& q );
   ~SampleInfo();
 
@@ -34,7 +34,7 @@ public:
     inline void SetSampleName( const std::string& sampleName){ m_sampleName = sampleName; }
 
 private:
-    OptionsBase* m_opt;
+    const OptionsBase* m_opt;
     double m_nWeightedEvents;
     double m_crossSection;
     std::string m_sampleName;

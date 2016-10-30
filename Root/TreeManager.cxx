@@ -9,10 +9,22 @@ TreeManager::TreeManager(){
     return;
 }
 
+TreeManager::TreeManager(const TreeManager& q){
+  m_tree = q.m_tree;
+}
+
+TreeManager::~TreeManager(){
+
+  for(std::map<std::string, TTree*>::iterator trit = m_tree.begin(); trit != m_tree.end(); ++trit){
+    delete trit->second;
+    m_tree.erase(trit);
+  }
+}
 //______________________________________________________________________
 //
 TTree* TreeManager::BookTree(const std::string& name, const std::string& title, const std::string& key){
   TTree* t1 = new TTree(name.c_str(), title.c_str());
+  t1->SetDirectory(0);
   const std::string& _key = (key == "") ? name : key;
   if(m_tree.size() > 0 ){
     std::map<std::string, TTree*>::iterator it = m_tree.find(_key);

@@ -95,10 +95,10 @@ bool NtupleReader::Init(std::map<std::string, WeightObject*> *nomMap, std::map<s
     m_chain = new TChain(m_opt->InputTree().c_str());
     int nfile = 0;   
     if( m_opt->TextFileList() ){
-        nfile = ChainFromTextFile(m_chain, m_opt->InputFile());
+      nfile = ChainFromTextFile(m_chain, m_opt->InputFile(), (m_opt->MsgLevel()==Debug::DEBUG));
     }
     else{
-        nfile = ChainFromStrList(m_chain, m_opt->InputFile());
+      nfile = ChainFromStrList(m_chain, m_opt->InputFile(), (m_opt->MsgLevel()==Debug::DEBUG));
     }
     if( nfile <= 0 ){
       std::cerr << "NtupleReader::Init() --> No files were added to the chain "<<std::endl;
@@ -126,29 +126,30 @@ void NtupleReader::Finalise(){
 
 //_________________________________________________________________________________
 //
-int NtupleReader::ChainFromTextFile(TChain* ch, const std::string& inputfilename){
+int NtupleReader::ChainFromTextFile(TChain* ch, const std::string& inputfilename, const bool printDebug){
     //read the contents of the file and make the filelist
-    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::ChainFromTextFile()" << std::endl;
+    if(printDebug) std::cout << "Entering in NtupleReader::ChainFromTextFile()" << std::endl;
     
     ifstream inlist(inputfilename.c_str());
     string fstr="";
     int nfile =0;
     while(getline(inlist,fstr)){
+      if(printDebug) std::cout << "NtupleReader::ChainFromTextFile() : Adding " << fstr << " to chain" << std::endl;
       nfile += ch->Add(fstr.c_str(), 0);
       fstr.clear();
     }
     inlist.close();
     
-    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::ChainFromTextFile()" << std::endl;
+    if(printDebug) std::cout << "Leaving NtupleReader::ChainFromTextFile()" << std::endl;
 
     return nfile;
 }
 
 //_________________________________________________________________________________
 //
-int NtupleReader::ChainFromStrList(TChain* ch, const std::string& inputfilelist){
+int NtupleReader::ChainFromStrList(TChain* ch, const std::string& inputfilelist, const bool printDebug){
     
-    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::ChainFromStrList()" << std::endl;
+    if(printDebug) std::cout << "Entering in NtupleReader::ChainFromStrList()" << std::endl;
     int nfile = 0; 
     for (size_t i=0,n; i <= inputfilelist.length(); i=n+1)
     {
@@ -157,12 +158,12 @@ int NtupleReader::ChainFromStrList(TChain* ch, const std::string& inputfilelist)
             n = inputfilelist.length();
         string tmp = inputfilelist.substr(i,n-i);
 	if(!tmp.empty()){
-	  if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "NtupleReader::ChainFromStrList() : Adding " << tmp << " to chain" << std::endl;
+	  if(printDebug) std::cout << "NtupleReader::ChainFromStrList() : Adding " << tmp << " to chain" << std::endl;
 	  nfile += ch->Add(tmp.c_str(), 0);
 	}
         tmp.clear();
     }
-    if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Leaving NtupleReader::ChainFromStrList()" << std::endl;
+    if(printDebug) std::cout << "Leaving NtupleReader::ChainFromStrList()" << std::endl;
     return nfile;
 }
 

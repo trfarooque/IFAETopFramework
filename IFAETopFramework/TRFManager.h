@@ -28,10 +28,10 @@ class TRFManager{
 
 
  protected:
-  OutputData* m_outData;
-  const NtupleData* m_ntupData;
-  OptionsBase* m_opt;
-  WeightManager* m_wgtMngr;
+  OutputData* m_outData; //not owned
+  const NtupleData* m_ntupData; //not owned
+  OptionsBase* m_opt; //not owned
+  WeightManager* m_wgtMngr; //not owned
 
 };
 
