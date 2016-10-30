@@ -152,32 +152,32 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
       int nbins = ( (h1.second -> edges != NULL) && (h1.second -> edges->size() > 0) )? h1.second->edges->size() - 1 : 0;
       
       if(nbins > 0){        
-	  m_histMngr -> BookTH1D( histName, h1.second->var->Title(), nbins, ptr_edges);
-        }
-	else{
-	  m_histMngr -> BookTH1D( histName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
-	}
-	if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt(histName, h1.second->hopt); }
+	m_histMngr -> BookTH1D( histName, h1.second->var->Title(), nbins, ptr_edges);
+      }
+      else{
+	m_histMngr -> BookTH1D( histName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
+      }
+      if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt(histName, h1.second->hopt); }
+      
+      if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
 
-        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
-        
-        if(hasSyst && h1.second->hasSyst){
-            if(!m_sysMap){
-                std::cerr << "<!> ERROR in OutputHistManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
-            } else {
-                for (const auto &sys : *m_sysMap) {
-		  std::string systHistName = histName + "_" + sys.second->Name();
-		  if(nbins > 0){  
-		    m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), nbins, ptr_edges);
-		  }
-		  else{
-		    m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
-		  }
-		  if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt( systHistName, h1.second->hopt ); }
-		  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
-                }
-            }
-        }
+      if(hasSyst && h1.second->hasSyst){
+	if(!m_sysMap){
+	  std::cerr << "<!> ERROR in OutputHistManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
+	} else {
+	  for (const auto &sys : *m_sysMap) {
+	    std::string systHistName = histName + "_" + sys.second->Name();
+	    if(nbins > 0){  
+	      m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), nbins, ptr_edges);
+	    }
+	    else{
+	      m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
+	    }
+	    if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt( systHistName, h1.second->hopt ); }
+	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+	  }
+	}
+      }
     }
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::bookStandardTH1" << std::endl;
