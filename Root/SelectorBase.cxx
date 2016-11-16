@@ -126,7 +126,6 @@ Selection* SelectorBase::MakeSelection( const int index, const std::string& name
   if( selit_pair.second ) {
     selit_pair.first->second = new Selection(index, name, m_outData);
   }
-  std::cout<<" SelectorBase::MakeSelection --> "<<name<<" n_cuts = "<<(selit_pair.first->second)->VarCuts()->size()<<std::endl;
 
   return selit_pair.first->second;
 

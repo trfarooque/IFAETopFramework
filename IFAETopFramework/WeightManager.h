@@ -18,7 +18,7 @@ class WeightManager{
 
   WeightManager( const OptionsBase* opt, const NtupleData* ntupData, OutputData* outData);
   WeightManager( const WeightManager& q); 
-  ~WeightManager();
+  virtual ~WeightManager();
 
   inline WeightMap* NomMap() const{ return m_nomMap; }
   inline WeightMap* SystMap() const{ return m_systMap; }

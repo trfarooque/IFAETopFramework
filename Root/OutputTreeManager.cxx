@@ -118,8 +118,15 @@ bool OutputTreeManager::BookStandardTree( const std::string &pattern, const std:
 	if(bVar->VarType() == VariableDef::DOUBLE) _branch = _tree->Branch(bname,(double*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::FLOAT) _branch = _tree->Branch(bname,(float*)bVar->Address() ) ;
 	else if(bVar->VarType() == VariableDef::INT) _branch = _tree->Branch(bname,(int*)bVar->Address() );
+	else if(bVar->VarType() == VariableDef::UINT) _branch = _tree->Branch(bname,(unsigned int*)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::BOOL) _branch = _tree->Branch(bname,(bool*)bVar->Address() );
-																			    
+
+	//==================== These need special treatment - stupid ROOT ====================================
+	else if(bVar->VarType() == VariableDef::LONGINT) _branch = _tree->Branch(bname,(long int*)bVar->Address(), (bVar->Name()+"/L").c_str() );
+	else if(bVar->VarType() == VariableDef::ULONGINT) _branch = _tree->Branch(bname,(unsigned long int*)bVar->Address(), (bVar->Name()+"/l").c_str() );
+	else if(bVar->VarType() == VariableDef::LONGLONGINT) _branch = _tree->Branch(bname,(long long int*)bVar->Address(), (bVar->Name()+"/L").c_str() );
+	else if(bVar->VarType() == VariableDef::ULONGLONGINT) _branch = _tree->Branch(bname,(unsigned long long int*)bVar->Address(), (bVar->Name()+"/l").c_str() );
+	//=====================================================================================================																		    
 	else if(bVar->VarType() == VariableDef::PTRVECDOUBLE) _branch = _tree->Branch(bname,(std::vector<double>**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRVECFLOAT) _branch = _tree->Branch(bname,(std::vector<float>**)bVar->Address() );
 	else if(bVar->VarType() == VariableDef::PTRVECINT) _branch = _tree->Branch(bname,(std::vector<int>**)bVar->Address() );
