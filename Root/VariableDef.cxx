@@ -58,6 +58,11 @@ std::string VariableDef::GetVarTypeString(int varType){
     
     if     (varType == VariableType::INT)             {_varTypeString = "I";}
     else if(varType == VariableType::PTRINT)          {_varTypeString = "PI";}
+    else if(varType == VariableType::UINT)            {_varTypeString = "UI";}
+    else if(varType == VariableType::LONGINT)         {_varTypeString = "L";}
+    else if(varType == VariableType::ULONGINT)        {_varTypeString = "UL";}
+    else if(varType == VariableType::LONGLONGINT)     {_varTypeString = "LL";}
+    else if(varType == VariableType::ULONGLONGINT)    {_varTypeString = "ULL";}
     else if(varType == VariableType::FLOAT)           {_varTypeString = "F";}
     else if(varType == VariableType::PTRFLOAT)        {_varTypeString = "PF";}
     else if(varType == VariableType::DOUBLE)          {_varTypeString = "D";}
@@ -95,6 +100,11 @@ VariableDef::VariableType VariableDef::GetVarType(const std::string& varTypeStri
     VariableType _varType;
     if     (varTypeString == "I")         {_varType = VariableType::INT;}
     else if(varTypeString == "PI")        {_varType = VariableType::PTRINT;}
+    else if(varTypeString == "UI")        {_varType = VariableType::UINT;}
+    else if(varTypeString == "L")         {_varType = VariableType::LONGINT;}
+    else if(varTypeString == "UL")        {_varType = VariableType::ULONGINT;}
+    else if(varTypeString == "LL")        {_varType = VariableType::LONGLONGINT;}
+    else if(varTypeString == "ULL")       {_varType = VariableType::ULONGLONGINT;}
     else if(varTypeString == "F")         {_varType = VariableType::FLOAT;}
     else if(varTypeString == "PF")        {_varType = VariableType::PTRFLOAT;}
     else if(varTypeString == "D")         {_varType = VariableType::DOUBLE;}
@@ -131,7 +141,10 @@ bool VariableDef::IsPrimitive(int varType){
     
     bool _isPrimitive = false;
     _isPrimitive = (varType == VariableType::DOUBLE || varType == VariableType::FLOAT 
-		    || varType == VariableType::INT || varType == VariableType::BOOL
+		    || varType == VariableType::INT || varType == VariableType::UINT 
+		    || varType == VariableType::LONGINT || varType == VariableType::ULONGINT 
+		    || varType == VariableType::LONGLONGINT || varType == VariableType::ULONGLONGINT 
+		    || varType == VariableType::BOOL
 		    || varType == VariableType::PTRDOUBLE || varType == VariableType::PTRFLOAT 
 		    || varType == VariableType::PTRINT || varType == VariableType::PTRBOOL) ;
     return _isPrimitive;
@@ -210,6 +223,21 @@ void VariableDef::CalcDoubleValue(){
     }
     else if(m_varType == VariableType::INT){
         *m_val_store = (double)(*(int*)(m_address));
+    }
+    else if(m_varType == VariableType::UINT){
+        *m_val_store = (double)(*(unsigned int*)(m_address));
+    }
+    else if(m_varType == VariableType::LONGINT){
+        *m_val_store = (double)(*(long int*)(m_address));
+    }
+    else if(m_varType == VariableType::ULONGINT){
+        *m_val_store = (double)(*(unsigned long int*)(m_address));
+    }
+    else if(m_varType == VariableType::LONGLONGINT){
+        *m_val_store = (double)(*(long long int*)(m_address));
+    }
+    else if(m_varType == VariableType::ULONGLONGINT){
+        *m_val_store = (double)(*(unsigned long long int*)(m_address));
     }
     else if(m_varType == VariableType::PTRINT){
         *m_val_store = (double)(**(int**)(m_address));

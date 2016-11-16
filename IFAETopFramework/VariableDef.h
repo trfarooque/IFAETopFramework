@@ -16,6 +16,11 @@ class VariableDef {
     UNKNOWN,
     VOID,
     INT,
+    LONGINT,
+    LONGLONGINT,
+    UINT,
+    ULONGINT,
+    ULONGLONGINT,
     FLOAT,
     DOUBLE,
     BOOL,
@@ -148,6 +153,11 @@ class VariableDef {
       const std::type_info& testtype = typeid(t);
       if(testtype == typeid(void*)) return VOID;
       else if(testtype == typeid(int*)) return INT;
+      else if(testtype == typeid(unsigned int*)) return UINT;
+      else if(testtype == typeid(long int*)) return LONGINT;
+      else if(testtype == typeid(unsigned long int*)) return ULONGINT;
+      else if(testtype == typeid(long long int*)) return LONGINT;
+      else if(testtype == typeid(unsigned long long int*)) return ULONGINT;
       else if(testtype == typeid(float*)) return FLOAT;
       else if(testtype == typeid(double*)) return DOUBLE;
       else if(testtype == typeid(bool*)) return BOOL;
@@ -165,7 +175,7 @@ class VariableDef {
       else if(testtype == typeid(AnalysisObject*)) return AOBJ;
       else if(testtype == typeid(AOVector*)) return VECAO;
       else{
-	std::cerr << " VariableDef::FindVarType --> ERROR: type "<<testtype.name()<<" of variable is unknown."<<std::endl;
+	std::cerr << " VariableDef::FindVarType --> ERROR: type "<<testtype.name()<<" of variable "<<m_name<<" is unknown."<<std::endl;
 	exit(1);
       }
 
