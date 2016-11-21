@@ -192,7 +192,7 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else if ( temp_val.find("SGLUON") != std::string::npos){       m_sampleName = SampleName::SGLUON;      }
         else if ( temp_val.find("HPLUS") != std::string::npos){        m_sampleName = SampleName::HPLUS;      }
         else {
-            std::cout<<"Unknown sample name"<<std::endl;
+            std::cout<<"Unknown sample name '"<<temp_val<<"'"<<std::endl;
         }
         m_str_sampleName = temp_val;
     }

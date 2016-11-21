@@ -101,7 +101,10 @@ bool NtupleReader::Init(std::map<std::string, WeightObject*> *nomMap, std::map<s
       nfile = ChainFromStrList(m_chain, m_opt->InputFile(), (m_opt->MsgLevel()==Debug::DEBUG));
     }
     if( nfile <= 0 ){
-      std::cerr << "NtupleReader::Init() --> No files were added to the chain "<<std::endl;
+      std::cerr << "NtupleReader::Init() --> No files were added to the chain "<<std::endl
+                <<"Input "
+                <<(m_opt->TextFileList() ? "filelist" : "string")<<": "
+                <<"'"<<m_opt->InputFile()<<"'"<<endl;
       return false;
     }
     //This is important to allow checks on the return codes of SetBranchAddress
