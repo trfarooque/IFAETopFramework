@@ -53,6 +53,11 @@ NtupleReader::~NtupleReader()
 //
 int NtupleReader::GetChainEntry( long entry ) const {
     if(m_opt->MsgLevel()==Debug::DEBUG) std::cout << "Entering in NtupleReader::getChainEntry(" << entry << ")" << std::endl;
+    Long64_t treeReadEntry = m_chain->LoadTree(entry);
+    if(treeReadEntry<0){
+      std::cout << "ERROR: Could not read "<< entry << " in file " << m_chain->GetCurrentFile()->GetName() << "! return value="<<treeReadEntry<< std::endl;
+      return treeReadEntry;
+    }
     int stat = m_chain->GetEntry(entry);
     //Make sure all the input WeightObjects are updated
     if(m_nomMap){
