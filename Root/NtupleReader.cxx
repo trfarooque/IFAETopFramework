@@ -4,6 +4,7 @@
 //ROOT includes
 #include "TROOT.h"
 #include "TTree.h"
+#include "TFile.h"
 #include "TChain.h"
 #include "TBranch.h"
 
