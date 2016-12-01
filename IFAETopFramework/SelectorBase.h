@@ -45,6 +45,7 @@ public:
   //__________________________________
 
   virtual bool PassSelection( const int /*sel*/){ return true; }
+  bool PassSelection(Selection& sel, const bool useDecision, const bool check_primary);
 
   bool RunSelectionChain();
   bool RunSelectionNode(const int node);

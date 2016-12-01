@@ -117,7 +117,6 @@ class Selection{
   void AddFlagAtBit(const int bit_posn, const bool value); //Add the bit at position counted by bit_posn to the flags
   bool PassFlag(const int flag) const;
   bool PassFlagAtBit(const int bit_posn) const;
-  bool PassSelection( const bool useDecision=true, const bool check_primary=true);
   bool PassSelectionCuts() const;
   static bool PassCut(VarCut& cut);
 
