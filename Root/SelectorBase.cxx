@@ -245,7 +245,6 @@ bool SelectorBase::RunSelectionNode( const int node ){
 //___________________________________________________________
 //
 bool SelectorBase::PassSelection(Selection& sel, const bool useDecision, const bool check_primary){
-
   /*
     PassSelection checks the following in sequence:
     1. The decision bit of the selector IF it is set and IF useDecision=true
@@ -289,6 +288,7 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
 	      << std::endl;
 
   }
+
 
   bool pass_node = PassSelection(sel, m_useDecisions, false);// && PassSelection(sel.SelecInd());
 
@@ -349,11 +349,11 @@ void SelectorBase::PrintSelectionTree( const bool printYields ) const{
 
     if(sel.second->PrimaryAncestor() >= 0){ std::cout <<" PRIMARY ANCESTOR : " << m_selections->at(sel.second->PrimaryAncestor())->Name() << std::endl; }
     std::cout <<" ANCESTOR LIST : "<<std::endl;
-    for( Selection* anc : *(sel.second->Ancestors()) ){ std::cout << "   " << anc->Name() << std::endl; }
+    for( Selection* anc : *(sel.second->Ancestors()) ){ std::cout << "   " << anc->Name() <<" INDEX : " << anc->SelecInd() << std::endl; }
 
     std::cout <<" PRIMARY DESCENDANT LIST : "<<std::endl;
     for( int dec : *(sel.second->PrimaryDescendants()) ){
-      std::cout << "   " << m_selections->at(dec)->Name() << std::endl;
+      std::cout << "   " << m_selections->at(dec)->Name() <<" INDEX : " << m_selections->at(dec)->SelecInd() << std::endl;
     }
     std::cout << std::endl << std::endl << std::endl;
 
