@@ -2,7 +2,7 @@ Installation
 ------------
 
 ```
-rcSetup Base,2.4.14
+rcSetup Base,2.4.24
 git clone ssh://git@gitlab.cern.ch:7999/htx/IFAETopFramework.git
 # if you want to get a tagged version
 # cd IFAETopFramework; git checkout IFAETopFramework-XX-YY-ZZ; cd -
