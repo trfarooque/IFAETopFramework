@@ -54,18 +54,10 @@ Selection::Selection( const int index, const std::string& name,
 
     if(outData->o_sel_decisions == NULL){ outData->o_sel_decisions = new std::map<int, bool>;}
     std::pair< std::map<int, bool>::iterator, bool > decit_pair = outData->o_sel_decisions->insert( std::pair<int, bool>(index, false) );
-    if(!decit_pair.second){
-      std::cout << " Warning in Selection constructor --> OutputData already contains a decision element for selection index " << index <<std::endl;
-    }
 
     if(outData->o_sel_isSet == NULL){ outData->o_sel_isSet = new std::map<int, bool>;}
     std::pair< std::map<int, bool>::iterator, bool > setit_pair = outData->o_sel_isSet->insert( std::pair<int, bool>(index, false) );
-    if(!decit_pair.second){
-      std::cout << " Warning in Selection constructor --> OutputData already contains a decision element for selection index " << index <<std::endl;
-    }
-    if(!setit_pair.second){
-      std::cout << " Warning in Selection constructor --> OutputData already contains an isSet element for selection index " << index <<std::endl;
-    }
+
     m_decision     = &(decit_pair.first->second);
     m_isSet        = &(setit_pair.first->second);
 
