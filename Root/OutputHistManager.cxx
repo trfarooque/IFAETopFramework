@@ -131,7 +131,8 @@ bool OutputHistManager::AddStandardTH1(const std::string &name, const double wid
 bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool hasSyst){
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager::bookStandardTH1" << std::endl;
-    
+    m_mapHasSyst -> insert( std::pair <std::string, bool>(pattern,hasSyst));
+
     //
     // Don't do it if there is no systematics
     //
@@ -139,7 +140,6 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
         return false;
     }
     
-    m_mapHasSyst -> insert( std::pair <std::string, bool>(pattern,hasSyst));
     
     //
     // Loop over the registered histograms (to be booked for nominal and weight systematics)
@@ -194,6 +194,8 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
     std::cerr << "<!> ERROR in OutputHistManager::fillStandardTH1: We have big problems ... Please provide an OutputData object" << std::endl;
     return false;
   }
+
+  if( m_opt -> OnlyDumpSystHistograms() && !(m_mapHasSyst -> at(pattern)) ) return true; 
   
   for ( const std::pair < TString, OutputHistManager::h1Def* > h1 : *m_stdTH1Def ){
     
@@ -366,6 +368,7 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
 bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool hasSyst){
     
     if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager::bookStandardTH2" << std::endl;
+    m_mapHasSyst -> insert( std::pair <std::string, bool>(pattern,hasSyst));
     
     //
     // Don't do it if there is no systematics
@@ -373,8 +376,6 @@ bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool 
     if( m_opt -> OnlyDumpSystHistograms() && !hasSyst ){
         return false;
     }
-    
-    m_mapHasSyst -> insert( std::pair <std::string, bool>(pattern,hasSyst));
     
     for ( const auto h2 : *m_stdTH2Def ){
         
@@ -451,8 +452,12 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
         std::cerr << "<!> ERROR in OutputHistManager::fillStandardTH2: We have big problems ... Please provide an OutputData object" << std::endl;
         return false;
     }
+
+    if( m_opt -> OnlyDumpSystHistograms() && !(m_mapHasSyst -> at(pattern)) ) return true; 
     
     for ( const auto h2 : *m_stdTH2Def ){
+
+      if( m_opt -> OnlyDumpSystHistograms() && !(h2.second->hasSyst) ) continue; 
 
       double weight = h2.second->noWeight ? 1. : m_data -> o_eventWeight_Nom;        
       //
