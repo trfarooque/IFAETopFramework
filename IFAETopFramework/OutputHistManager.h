@@ -223,7 +223,7 @@ private:
             std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::endl;
             return false;
         }
-        
+
         VariableDef*  _varX = new VariableDef(nameX,titleX, tX, vec_indX, momentX);
         VariableDef* _varY = new VariableDef(nameY,titleY, tY, vec_indY, momentY);
         std::map< std::string , h2Def*>::iterator it = m_stdTH2Def -> find(name);

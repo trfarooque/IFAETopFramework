@@ -79,7 +79,6 @@ public:
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
 
         VariableDef *_var = new VariableDef(name, title, t, vec_ind, moment);
-
 	bool fill_vec = false;
 	if( ((_var->VarType() == VariableDef::VECAO) || (_var->VarType() == VariableDef::PTRVECAO))  && (vec_ind < 0) ){fill_vec = true;}
 	_var->SetFillVec(fill_vec);
