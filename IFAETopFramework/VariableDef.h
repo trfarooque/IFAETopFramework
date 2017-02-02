@@ -108,8 +108,17 @@ class VariableDef {
     */
     inline void SetVecInd(int vec_ind){m_vec_ind = vec_ind;}
     inline void SetMoment(const std::string& moment){ m_moment = moment; }
-    inline void SetFillVec(bool fill_vec){ m_fill_vec = fill_vec; }
-    
+
+    void SetFillVec(bool fill_vec){
+      m_fill_vec = fill_vec;
+      if(fill_vec){
+	if(m_vec_store == NULL) m_vec_store = new std::vector<double>();
+	m_vec_store->clear(); 
+      }
+      else{
+	if(m_val_store == NULL) m_val_store = new double();
+      }
+    }
     
     //
     // Template constructors
@@ -127,21 +136,16 @@ class VariableDef {
       m_moment(moment),
       m_val_store(NULL),
       m_vec_store(NULL),
-      m_fill_vec(fill_vec) 
+      m_fill_vec(false) 
       {
 	
         m_isPrimitive = IsPrimitive(m_varType);
         m_isPointer = IsPointer(m_varType);
 	m_isVector = IsVector(m_varType);
 	m_isAnaObject = IsAnaObject(m_varType);
-	if(m_fill_vec){
-	  m_vec_store = new std::vector<double>();
-	  m_vec_store->clear(); 
-	}
-	else{
-	  m_val_store = new double();
-	}
+	SetFillVec(fill_vec);
         SetAddress(t);
+
       }
     
     
