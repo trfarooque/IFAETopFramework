@@ -49,6 +49,8 @@ namespace SampleName{
         TTW,
         TTV,
         QCD,
+        QCDE,
+        QCDMU,
         VLQ,
         GLUINO,
         SGLUON,
@@ -80,7 +82,7 @@ namespace WeightSys{
         BtagBreak5Dw,
         BtagBreak6Up,
         BtagBreak6Dw,
-        
+
         /*Btag C breakdown*/
         CtagBreak1Up,
         CtagBreak1Dw,
@@ -94,7 +96,7 @@ namespace WeightSys{
         CtagBreak5Dw,
         CtagBreak6Up,
         CtagBreak6Dw,
-        
+
         /*Btag Light breakdown*/
         LtagBreak1Up,
         LtagBreak1Dw,
@@ -120,11 +122,11 @@ namespace WeightSys{
         LtagBreak11Dw,
         LtagBreak12Up,
         LtagBreak12Dw,
-        
+
         /*Btag extrapolation*/
         BtagExtrapUp,
         BtagExtrapDw,
-        
+
         /*Muon SF*/
         MuonTrigSFUp,
         MuonTrigSFDw,
@@ -132,7 +134,7 @@ namespace WeightSys{
         MuonRecoSFDw,
         MuonIdSFUp,
         MuonIdSFDw,
-        
+
         /*Electron SF*/
         ElectronTrigSFUp,
         ElectronTrigSFDw,
@@ -140,9 +142,9 @@ namespace WeightSys{
         ElectronRecoSFDw,
         ElectronIdSFUp,
         ElectronIdSFDw,
-        
+
         /*ttbar specific uncertainties*/
-        
+
         //tt pt reweighting
         ttbarTopPtDataWeight_ISRUp,
         ttbarTopPtDataWeight_ISRDw,
@@ -164,7 +166,7 @@ namespace WeightSys{
         ttbarTopPtDataWeight_BtagEffDw,
         ttbar_toppt_only,
         ttbar_ttbarpt_only,
-        
+
         //ttcc weight systematics
         ttbar_MadgraphMcUp,
         ttbar_MadgraphMcDw,
@@ -174,7 +176,7 @@ namespace WeightSys{
         ttbar_MadgraphQ2Dw,
         ttbar_MadgraphMatch,
         ttbar_MadgraphPP,
-        
+
         //ttbb NLO reweighting
         ttbb_defaultX2_rw,
         ttbb_defaultX05_rw,
@@ -183,18 +185,18 @@ namespace WeightSys{
         ttbb_NNPDF_rw,
         ttbb_MSTW_rw,
         ttbb_R_Mbb_rw,
-        
+
         MPI_up,
         FSR_up,
-        
+
         /*V+jets*/
         noVpT,
-        
+
         /*ttH*/
         ttH_scaleUp,
         ttH_scaleDw,
         ttH_scaleStatic,
-        
+
         /*ttV*/
         ttV_scaleUp,
         ttV_scaleDw
