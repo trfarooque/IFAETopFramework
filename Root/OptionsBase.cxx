@@ -47,9 +47,9 @@ m_pickEvent(-1)
 OptionsBase::OptionsBase( const OptionsBase& q )
 {
     m_optStr            = q.m_optStr;
-    
+
     m_msgLevel          = q.m_msgLevel;
-    
+
     m_isData                    = q.m_isData;
     m_computeWeightSys          = q.m_computeWeightSys;
     m_textFileList              = q.m_textFileList;
@@ -57,12 +57,12 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_doBlind                   = q.m_doBlind;
     m_add_underflow             = q.m_add_underflow;
     m_add_overflow              = q.m_add_overflow;
-    
+
     m_sampleName        = q.m_sampleName;
     m_sysName           = q.m_sysName;
     m_anaType           = q.m_anaType;
     m_leptonChannel     = q.m_leptonChannel;
-    
+
     m_str_sampleName     = q.m_str_sampleName;
     m_str_sampleID       = q.m_str_sampleID;
     m_str_nomName        = q.m_str_nomName;
@@ -70,15 +70,15 @@ OptionsBase::OptionsBase( const OptionsBase& q )
     m_str_wgt_configList = q.m_str_wgt_configList;
     m_str_anaType        = q.m_str_anaType;
     m_str_leptonChannel  = q.m_str_leptonChannel;
-    
+
     m_inputTree         = q.m_inputTree;
     m_outputTree        = q.m_outputTree;
-    
+
     m_inputFile         = q.m_inputFile;
     m_outputFile        = q.m_outputFile;
-    
+
     m_outputFolder      = q.m_outputFolder;
-    
+
     m_skipEvents        = q.m_skipEvents;
     m_nEvents           = q.m_nEvents;
     m_pickEvent         = q.m_pickEvent;
@@ -92,12 +92,12 @@ OptionsBase::~OptionsBase()
 //_____________________________________________________________________________________________
 //
 void OptionsBase::ParseUserOpts(int argc, char** argv){
-    
+
     m_argc = argc;
     m_argv = argv;
-    
+
     for (int i=1; i < argc; i++){// the 0th component is the name of the executable
-        
+
         //
         //Converting the argument to string format
         //
@@ -111,7 +111,7 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
         argument = opt.substr(0, pos);
         std::transform(argument.begin(), argument.end(), argument.begin(), toupper);//converts to upper letters to avoid case problems
         value=opt.erase(0, pos + 1);
-        
+
         //
         //Search for know argument names
         //
@@ -120,12 +120,12 @@ void OptionsBase::ParseUserOpts(int argc, char** argv){
         }
         else{ m_optStr += argument; }
     }
-    
+
     //
     //If necessary, prints out the value of the data members
     //
     if(m_msgLevel>Debug::SILENT) this -> PrintOptions();
-    
+
 }
 
 //_____________________________________________________________________________________________
@@ -134,7 +134,7 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
 {
     std::string temp_arg = argument;
     std::string temp_val = value;
-    
+
     if( temp_arg.find("--MSGLEVEL") != std::string::npos ){
         std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
         if ( temp_val.find("SILENT") != std::string::npos) 	m_msgLevel = Debug::SILENT;
@@ -185,6 +185,8 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else if ( temp_val.find("TTZ") != std::string::npos){          m_sampleName = SampleName::TTZ;         }
         else if ( temp_val.find("TTW") != std::string::npos){          m_sampleName = SampleName::TTW;         }
         else if ( temp_val.find("TTV") != std::string::npos){          m_sampleName = SampleName::TTV;         }
+        else if ( temp_val.find("QCDMU") != std::string::npos){        m_sampleName = SampleName::QCDMU;       }
+        else if ( temp_val.find("QCDE") != std::string::npos){         m_sampleName = SampleName::QCDE;        }
         else if ( temp_val.find("QCD") != std::string::npos){          m_sampleName = SampleName::QCD;         }
         //SIGNALS
         else if ( temp_val.find("VLQ") != std::string::npos){          m_sampleName = SampleName::VLQ;         }
@@ -203,12 +205,12 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
       std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
       m_str_nomName = temp_val;
     }
-    
+
     else if( temp_arg.find("--SYSNAME") != std::string::npos ){
       std::transform(temp_val.begin(), temp_val.end(), temp_val.begin(), toupper);
       m_str_sysName = temp_val;
     }
-    
+
     else if( temp_arg.find("--WEIGHTCONFIGS") != std::string::npos ){
       m_str_wgt_configList = temp_val;
     }
@@ -263,7 +265,7 @@ void OptionsBase::PrintOptions()
 {
     std::cout << "============== OptionsBase =================" << std::endl;
     std::cout << " m_msgLevel           = " << m_msgLevel << std::endl;
-    
+
     std::cout << " m_isData             = "     << m_isData << std::endl;
     std::cout << " m_computeWeightSys   = "     << m_computeWeightSys << std::endl;
     std::cout << " m_textFileList       = "     << m_textFileList << std::endl;
@@ -271,7 +273,7 @@ void OptionsBase::PrintOptions()
     std::cout << " m_doBlind            = "     << m_doBlind << std::endl;
     std::cout << " m_add_underflow      = "     << m_add_underflow << std::endl;
     std::cout << " m_add_overflow       = "     << m_add_overflow << std::endl;
-    
+
     std::cout << " m_sampleName         = " << m_sampleName << std::endl;
     std::cout << " m_str_sampleName     = " << m_str_sampleName << std::endl;
     std::cout << " m_str_sampleID       = " << m_str_sampleID << std::endl;
@@ -283,13 +285,13 @@ void OptionsBase::PrintOptions()
     std::cout << " m_str_anaType        = " << m_str_anaType << std::endl;
     std::cout << " m_leptonChannel      = " << m_leptonChannel << std::endl;
     std::cout << " m_str_leptonChannel  = " << m_str_leptonChannel << std::endl;
-    
+
     std::cout << " m_inputTree          = " << m_inputTree << std::endl;
     std::cout << " m_outputTree         = " << m_outputTree << std::endl;
     std::cout << " m_inputFile          = " << m_inputFile << std::endl;
     std::cout << " m_outputFile         = " << m_outputFile << std::endl;
     std::cout << " m_outputFolder       = " << m_outputFolder << std::endl;
-    
+
     std::cout << " m_skipEvents         = " << m_skipEvents << std::endl;
     std::cout << " m_nEvents            = " << m_nEvents << std::endl;
     std::cout << " m_pickEvent          = " << m_pickEvent << std::endl;
