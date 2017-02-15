@@ -12,7 +12,7 @@ AnalysisUtils::~AnalysisUtils(){}
 
 void AnalysisUtils::SortVectorPairs(std::vector<std::pair<int, double> >& vec_pair, int nsort, bool b_descending){
 
-  if(nsort <= 0){
+  if(nsort <= 0 || nsort >= vec_pair.size()){
     if(b_descending){
       std::sort( vec_pair.begin(), vec_pair.end(), orderDescend );
     }
@@ -53,7 +53,7 @@ std::vector<double> AnalysisUtils::SortVectorValues(const std::vector<double>& v
 
   std::vector<double> ret_vals(vec_value);
 
-  if(nsort <= 0){
+  if(nsort <= 0 || nsort >= vec_value.size() ){
     if(b_descending){ std::sort( ret_vals.begin(), ret_vals.end(), valOrderDescend  ); }
     else{ std::sort( ret_vals.begin(), ret_vals.end(), valOrderAscend  ); }
   }//full sort
