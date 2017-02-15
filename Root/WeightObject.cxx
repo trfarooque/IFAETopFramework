@@ -12,8 +12,8 @@ WeightObject::WeightObject():
   m_var_component(NULL),
   m_var_weight(NULL)
   //m_input_varType(DOUBLE),
-  //m_input_varTypeString("D") 
-{ 
+  //m_input_varTypeString("D")
+{
   AddFlagAtBit(NOMINAL, true);
   AddFlagAtBit(INPUT, true);
   AddFlagAtBit(RESERVE, false);
@@ -68,13 +68,13 @@ void WeightObject::AddFlagAtBit(const int bit_posn, const bool value ){
   if(value) m_flags |= flag;
   else      m_flags &= ~flag;
 
-  return; 
+  return;
 
 }
 
 //___________________________________________________________
 //
-bool WeightObject::PassFlagAtBit(const int bit_posn) const{ 
+bool WeightObject::PassFlagAtBit(const int bit_posn) const{
 
   return (m_flags & (0x1<<bit_posn));
 
@@ -92,9 +92,9 @@ void WeightObject::SetVarWeight(double* t){
 }
 
 bool WeightObject::SetComponentValue(double value){
-  if(PassFlagAtBit(INPUT)){
-    std::cout << "WeightObject::SetComponentValue() --> WARNING: Resetting value of weight component "<<m_name<<". Expected from input tree "<<std::endl;
-  }
+  //if(PassFlagAtBit(INPUT)){
+  //  std::cout << "WeightObject::SetComponentValue() --> WARNING: Resetting value of weight component "<<m_name<<". Expected from input tree "<<std::endl;
+  //}
 
   void* compAdd = m_var_component->Address();
   VariableDef::VariableType compType = m_var_component->VarType();
@@ -111,38 +111,38 @@ bool WeightObject::SetComponentValue(double value){
     if( (compType == VariableDef::PTRVECDOUBLE) || (compType == VariableDef::VECDOUBLE) ){
       std::vector<double>* vecAdd = (compType == VariableDef::PTRVECDOUBLE) ? *(std::vector<double>**)compAdd : (std::vector<double>*)compAdd;
       int vecSize = (int)(vecAdd)->size();
-      
+
       if( vecInd < vecSize )        { vecAdd->at(vecInd) = value; }
       else if( vecInd == vecSize )  { vecAdd->push_back(value); }
-      else{ std::cerr << "WeightManager::SetWeightComponent() --> ERROR: Attempt to access vector weight component " 
-		      << m_name << " at index "<< vecInd << " exceeding vector size " 
+      else{ std::cerr << "WeightManager::SetWeightComponent() --> ERROR: Attempt to access vector weight component "
+		      << m_name << " at index "<< vecInd << " exceeding vector size "
 		      << vecSize << std::endl;
       }
     }
     if( (compType == VariableDef::PTRVECFLOAT) || (compType == VariableDef::VECFLOAT) ){
       std::vector<float>* vecAdd = (compType == VariableDef::PTRVECFLOAT) ? *(std::vector<float>**)compAdd : (std::vector<float>*)compAdd;
       int vecSize = (int)(vecAdd)->size();
-      
+
       if( vecInd < vecSize )        { vecAdd->at(vecInd) = (float)value; }
       else if( vecInd == vecSize )  { vecAdd->push_back((float)value); }
-      else{ std::cerr << "WeightManager::SetWeightComponent() --> ERROR: Attempt to access vector weight component " 
-		      << m_name << " at index "<< vecInd << " exceeding vector size " 
+      else{ std::cerr << "WeightManager::SetWeightComponent() --> ERROR: Attempt to access vector weight component "
+		      << m_name << " at index "<< vecInd << " exceeding vector size "
 		      << vecSize << std::endl;
       }
     }
     else{
-      std::cerr << " WeightManager::SetWeightComponent() --> ERROR: VariableType of weight component " 
+      std::cerr << " WeightManager::SetWeightComponent() --> ERROR: VariableType of weight component "
 		<< m_name << " does not conform to permitted ones. Code should never have reached this point. " << std::endl;
 	return false;
     }
-    
+
   }
   m_var_component->CalcDoubleValue();
   return true;
 
 }
 
-//The computed weight is ALWAYS a double and, for now, always in OutputData 
+//The computed weight is ALWAYS a double and, for now, always in OutputData
 bool WeightObject::SetWeightValue(double value){
   *((double*) m_var_weight->Address() ) = value;
   m_var_weight->CalcDoubleValue();
