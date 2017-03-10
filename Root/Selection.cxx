@@ -24,7 +24,6 @@ Selection::Selection( const int index, const std::string& name,
   if(m_ancestors == NULL){ m_ancestors = new std::vector<Selection*>(); m_ancestors->clear(); }
   if(m_primary_descendants == NULL){ m_primary_descendants = new std::vector<int>(); m_primary_descendants->clear(); }
   if(m_cuts == NULL){ m_cuts = new std::vector<VarCut*>(); m_cuts->clear(); }
-
 }
 
 Selection::Selection( const int index, const std::string& name, 
@@ -43,7 +42,6 @@ Selection::Selection( const int index, const std::string& name,
   m_flags(flags),
   m_cuts(cuts)
 { 
-
 
   if(m_ancestors == NULL){ m_ancestors = new std::vector<Selection*>(); m_ancestors->clear(); }
   if(m_primary_descendants == NULL){ m_primary_descendants = new std::vector<int>(); m_primary_descendants->clear(); }
@@ -78,8 +76,6 @@ Selection::Selection(const Selection& q){
   m_primary_descendants = q.m_primary_descendants;
   m_flags = q.m_flags;
   m_cuts = q.m_cuts; //Owned
-  
-  
 
 }
 
@@ -180,6 +176,22 @@ bool Selection::PassSelectionCuts() const{
 
   bool pass = true;
   for(VarCut* varcut : *m_cuts){
+    if(varcut->is_blinder) continue; //blinding cuts are not hereditary
+    pass = pass && PassCut(*varcut);
+    if(!pass) break;
+  }
+
+  return pass;
+
+}
+
+//___________________________________________________________
+//
+bool Selection::PassBlindingCuts() const{
+
+  bool pass = true;
+  for(VarCut* varcut : *m_cuts){
+    if(!(varcut->is_blinder)) continue; //Only blinders
     pass = pass && PassCut(*varcut);
     if(!pass) break;
   }
