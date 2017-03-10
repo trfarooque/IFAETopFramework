@@ -16,8 +16,10 @@ struct VarCut{
   //bool isIntegerType;
   double cut;
   int comparator; 
+  bool is_blinder;
 
-  template<typename T> VarCut(const std::string& _name, T* t, double _cut, const std::string& str_comparator=">=", int vec_ind=-1, const std::string& moment=""){
+  template<typename T> VarCut(const std::string& _name, T* t, double _cut, const std::string& str_comparator=">=", 
+			      int vec_ind=-1, const std::string& moment="", const bool _is_blinder=false ){
 
     int _comparator = 0;
     if(str_comparator == ">"){ _comparator = GT; }
@@ -33,6 +35,7 @@ struct VarCut{
     comparator = _comparator;
     var = new VariableDef("","", t, vec_ind, moment);
     cut = _cut;
+    is_blinder = _is_blinder;
   }
 
   VarCut(const VarCut& q){
@@ -40,6 +43,7 @@ struct VarCut{
     var = new VariableDef(*(q.var));
     cut = q.cut;
     comparator = q.comparator;
+    is_blinder = q.is_blinder;
   }
   ~VarCut(){delete var;}
 };
@@ -98,17 +102,19 @@ class Selection{
   void AddPrimaryDescendant(int decendant);
   void AddCut(VarCut* cut);
 
-  template<typename T> bool AddCut(const std::string& name, T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){
+  template<typename T> bool AddCut(const std::string& name, T* t, double cut, const std::string& comparator=">=", 
+				   int vec_ind=-1, const std::string& moment="", const bool is_blinder=false){
 
-    VarCut* varcut = new VarCut(name, t, cut, comparator, vec_ind, moment);
+    VarCut* varcut = new VarCut(name, t, cut, comparator, vec_ind, moment, is_blinder);
     if(varcut == NULL) return false;
     AddCut(varcut);
     return true;
 
   }
-  template<typename T> bool AddCut(T* t, double cut, const std::string& comparator=">=", int vec_ind=-1, const std::string& moment=""){
+  template<typename T> bool AddCut(T* t, double cut, const std::string& comparator=">=", 
+				   int vec_ind=-1, const std::string& moment="", const bool is_blinder=false){
 
-    bool stat = AddCut("", t, cut, comparator, vec_ind, moment);
+    bool stat = AddCut("", t, cut, comparator, vec_ind, moment, is_blinder);
 
     return stat;
   }
@@ -118,6 +124,7 @@ class Selection{
   bool PassFlag(const int flag) const;
   bool PassFlagAtBit(const int bit_posn) const;
   bool PassSelectionCuts() const;
+  bool PassBlindingCuts() const;
   static bool PassCut(VarCut& cut);
 
  private:
@@ -132,7 +139,6 @@ class Selection{
   std::vector<int>* m_primary_descendants;
   int m_flags;
   std::vector<VarCut*>* m_cuts; //Owned
-
   
 };
 
