@@ -290,7 +290,8 @@ bool SelectorBase::RunSelectionNode( Selection& sel ){
 
   }
 
-  bool pass_node = PassSelection(sel, m_useDecisions, false);// && PassSelection(sel.SelecInd());
+  const bool check_primary = true; // false
+  bool pass_node = PassSelection(sel, m_useDecisions, check_primary);// && PassSelection(sel.SelecInd());
 
   if(m_opt->MsgLevel()==Debug::DEBUG){
     std::cout << " SECOND SelectorBase::RunSelectionNode() --> selection = " << sel.Name() << " pass_node = " << pass_node 
