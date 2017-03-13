@@ -3,6 +3,9 @@
 #include <fstream>
 #include "IFAETopFramework/AnalysisUtils.h"
 
+#include <cmath>
+#include <limits>
+
 
 AnalysisUtils::AnalysisUtils(){}
 AnalysisUtils::~AnalysisUtils(){}
@@ -348,4 +351,9 @@ int AnalysisUtils::ParseConfigFile_Lines(const std::string& config_file, std::ve
 
   return nline;
 
+}
+
+bool AnalysisUtils::FloatEq(const double &a, const double &b, int epsilon_units)
+{
+    return std::abs(a - b) < epsilon_units*std::numeric_limits<double>::epsilon();
 }

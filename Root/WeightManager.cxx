@@ -5,8 +5,6 @@
 #include "IFAETopFramework/OptionsBase.h"
 #include "IFAETopFramework/AnalysisUtils.h"
 
-#include <cmath>
-#include <limits>
 #include <sstream>
 
 WeightManager::WeightManager(const OptionsBase* opt, const NtupleData* ntupData, OutputData* outData) : 
@@ -117,14 +115,6 @@ void WeightManager::PrintWeight(WeightObject* wgtObj) const{
   std::cout<<" Weight address: "<<wgtObj->GetWeightAddress()<<" nomAddress = "<<&(m_outData->o_eventWeight_Nom)<<std::endl;
 }
 
-// from
-// http://stackoverflow.com/questions/17333/what-is-the-most-effective-way-for-float-and-double-comparison
-// and "What every computer scientist should know about floating point numbers"
-bool double_equal(const double &a, const double &b)
-{
-    return std::abs(a - b) < std::numeric_limits<double>::epsilon();
-}
-
 std::string WeightManager::CoefficientsAsString() const{
     std::ostringstream oss;
     using std::string;
@@ -140,7 +130,7 @@ std::string WeightManager::CoefficientsAsString() const{
         for(const auto name_weight : *m_nomMap){
             const string &name = name_weight.first;
             const WeightObject &weight = *name_weight.second;
-            const bool consistent = isNominal==weight.IsNominal() and double_equal(product, weight.GetWeightValue());
+            const bool consistent = isNominal==weight.IsNominal() and AnalysisUtils::FloatEq(product, weight.GetWeightValue());
             oss<<(first_item ? "" : sep)
                <<weight.GetComponentValue()
                <<" ("<<name

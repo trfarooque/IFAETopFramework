@@ -42,8 +42,13 @@ class AnalysisUtils{
 				   std::string> >& ret_map, const std::string& delim=" : ",
 				   const std::string& /*flagList*/="", const std::string& /*vetoList*/="");
 
-  //
-  static bool FloatEq(double f1, double f2, double epsilon=1.e-10){ return fabs(f1-f2) < epsilon; }
+  /** @brief double comparison
+      Notes: see also
+      http://stackoverflow.com/questions/17333/what-is-the-most-effective-way-for-float-and-double-comparison
+      http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
+      and "What every computer scientist should know about floating point numbers"
+  */
+  static bool FloatEq(const double &a, const double &b, const int epsilon_units=2);
 
  protected:
   static  bool orderAscend(std::pair<int, double> p1, std::pair<int, double> p2 ){
