@@ -107,7 +107,7 @@ bool SelectorBase::AddAncestors(Selection& sel, const std::vector<int> &anclist,
     if(is_primary){ found_primary = true; }
     AddAncestor(sel, anc, is_primary);
   }
-  if(!found_primary){ AddPrimary(sel, primary); }
+  if(!found_primary && primary>=0){ AddPrimary(sel, primary); }
 
   return true;
 
