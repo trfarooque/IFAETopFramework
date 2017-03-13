@@ -27,6 +27,7 @@ class WeightManager{
   void Print(const bool fullInfo=true) const;
   void PrintWeight(const std::string& name, bool isNominal=true) const;
   void PrintWeight(WeightObject* wgtObj) const;
+  std::string CoefficientsAsString() const; ///< one-line summary of weight as product of coefficients
 
   //Create the maps of nominal and systematics weights from input command line options
   bool AddAllWeights();
