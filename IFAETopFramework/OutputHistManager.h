@@ -65,6 +65,10 @@ public:
     // Inline functions
     inline HistManager* HistMngr(){ return m_histMngr; }
     inline void SetSystMap( WeightManager::WeightMap *sysMap ){ m_sysMap = sysMap; }
+
+    StdTH1* StdTH1Def(){ return m_stdTH1Def; }
+    StdTH1* StdTProfileDef(){ return m_stdTProfileDef;}
+    StdTH2* StdTH2Def(){ return m_stdTH2Def; }
     
     //
     //___________________________________________________________
@@ -94,7 +98,7 @@ public:
     
     bool BookStandardTH1( const std::string &pattern, const bool hasSyst = false);
     bool FillStandardTH1( const std::string &name, const bool updateStores = true );
-    bool SaveStandardTH1( const std::string&, const bool newFile = true);
+    bool SaveStandardTH1( const std::string&, const bool newFile = true, const std::string& pattern = "" );
     
     //
     //___________________________________________________________
@@ -145,7 +149,7 @@ public:
     }
     bool BookStandardTH2( const std::string &pattern, const bool hasSyst = false);
     bool FillStandardTH2( const std::string &name, const bool updateStores = true );
-    bool SaveStandardTH2( const std::string&, const bool newFile = true );
+    bool SaveStandardTH2( const std::string&, const bool newFile = true, const std::string& pattern = "" );
     
     //
     // Light TProfile interface
