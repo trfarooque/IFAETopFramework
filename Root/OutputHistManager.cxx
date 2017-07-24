@@ -300,12 +300,13 @@ bool OutputHistManager::FillTH1FromVector( void* t, const VariableDef::VariableT
 
 //________________________________________________________________________________________
 //
-bool OutputHistManager::SaveStandardTH1( const std::string &outputName, const bool newFile){
+bool OutputHistManager::SaveStandardTH1( const std::string &outputName, const bool newFile, const std::string& pattern){
    
   TFile *f = new TFile( outputName.c_str(), ( newFile ? "recreate" : "update" ) );
     //Storing TH1 in the output file
     vector<string> h1list = m_histMngr->GetTH1KeyList();
     for( const auto it_h1 : h1list ){
+      if(!pattern.empty() && (it_h1.find(pattern) == std::string::npos)){ continue; }
       m_histMngr->FinaliseTH1Bins(it_h1);
       f->cd();
       m_histMngr->GetTH1D(it_h1)->Write();
@@ -750,7 +751,7 @@ bool OutputHistManager::FillTH2FromAOVectors( AOVector* tX, AOVector* tY
 
 //________________________________________________________________________________________
 //
-bool OutputHistManager::SaveStandardTH2( const std::string &outputName, const bool newFile ){
+bool OutputHistManager::SaveStandardTH2( const std::string &outputName, const bool newFile, const std::string& pattern ){
     
   TFile *f = new TFile( outputName.c_str(), ( newFile ? "recreate" : "update" ) );
   //
@@ -758,6 +759,9 @@ bool OutputHistManager::SaveStandardTH2( const std::string &outputName, const bo
   //
   std::vector<std::string> h2list = m_histMngr->GetTH2KeyList();
   for( const auto it_h2 : h2list ){
+
+    if(!pattern.empty() && (it_h2.find(pattern) == std::string::npos)){ continue; }
+
     f->cd();
     TH2D* h_temp = m_histMngr->GetTH2D(it_h2);
     h_temp -> Write();
