@@ -104,6 +104,8 @@ void HistManager::FinaliseTH1Bins(const string &s_hist){
     bool addUF = (hopt & FCHECK) ? (hopt & UFLOW) : m_addUF;
     bool addOF = (hopt & FCHECK) ? (hopt & OFLOW) : m_addOF;
 
+    HistManager::FinaliseTH1Bins(h1_it->second, addOF, addUF);
+    /*
     int entries=h1_it->second->GetEntries(); // get number of entries of histogram to preserve it in the following
     int nbins = h1_it->second->GetNbinsX();
     if(addOF){
@@ -128,6 +130,38 @@ void HistManager::FinaliseTH1Bins(const string &s_hist){
     h1_it->second->SetBinContent(nbins+1, 0.);
     h1_it->second->SetBinError(nbins+1, 0.);
     h1_it->second->SetEntries(entries); // set the old number of entries for histogram so that it's not changed by the underflow/overflow adding procedure
+    */
+    return;
+}
+
+//__________________________________________________________________
+//
+void HistManager::FinaliseTH1Bins(TH1D* hist, const bool addOF, const bool addUF){
+
+    int entries=hist->GetEntries(); // get number of entries of histogram to preserve it in the following
+    int nbins = hist->GetNbinsX();
+    if(addOF){
+      double v_of       = hist->GetBinContent(nbins+1);
+      double v_last     = hist->GetBinContent(nbins);
+      double e_of       = hist->GetBinError(nbins+1);
+      double e_last     = hist->GetBinError(nbins);
+      hist->SetBinContent(nbins, v_last + v_of);
+      hist->SetBinError(nbins, sqrt(e_last*e_last + e_of*e_of) );
+    }
+    if(addUF){
+      double v_uf       = hist->GetBinContent(0);
+      double v_first    = hist->GetBinContent(1);
+      double e_uf       = hist->GetBinError(0);
+      double e_first    = hist->GetBinError(1);
+      hist->SetBinContent(1, v_first + v_uf);
+      hist->SetBinError(1, sqrt(e_first*e_first + e_uf*e_uf) );
+    }
+    //Always set the underflow/overflow to zero, whether or not it is included in the first/last bin
+    hist->SetBinContent(0, 0.);
+    hist->SetBinError(0, 0.);
+    hist->SetBinContent(nbins+1, 0.);
+    hist->SetBinError(nbins+1, 0.);
+    hist->SetEntries(entries); // set the old number of entries for histogram so that it's not changed by the underflow/overflow adding procedure
 
     return;
 }
