@@ -1,8 +1,6 @@
 //Get all histograms from a root file and plot them to quickly inspect the content, simple and dirty 
 //nicolaorlandowork@gmail.com https://gitlab.cern.ch/orlando https://github.com/nicola-orlando
 
-#include "AtlasUtils.C"
-
 /*
 First argument enable a flat rebin
 Second argument to cd in a folder contained in the root file 
@@ -14,8 +12,6 @@ void ScanOutputFile(bool rebin = true, std::string sdirectory="", std::string sF
 {
 
   if(sdirectory=="")rebin=false;
-
-  gROOT->ProcessLine(".x AtlasStyle.C");
 
   char Filename[1000];  sprintf(Filename,"%s.root",sFilename.c_str());
   TFile *f_Filename = new TFile(Filename);
