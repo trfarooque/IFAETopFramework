@@ -27,4 +27,4 @@
 
 ScanOutputFile.C
 =============
-Usefult to plot in one go the full content of a root file for quick validation, comments inside the file for detailed instructions. Run as root -b -q -l ScanOutputFile.C with arguments as needed. 
+Usefult to plot in one go the full content of a root file for quick validation, comments inside the file for detailed instructions. Run as root -l -b -q ScanOutputFile.C+ with arguments as needed. 

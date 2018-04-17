@@ -8,6 +8,19 @@ Third argument the full path and filename
 Last, plot format
 */
 
+//ROOT
+#include "TFile.h"
+#include "TCanvas.h"
+#include "TColor.h"
+#include "TH2.h"
+#include "TH2F.h"
+#include "TH1.h"
+#include "TH1F.h"
+#include "TLegend.h"
+#include "TKey.h"
+//C++
+#include <iostream>
+
 void ScanOutputFile(bool rebin = true, std::string sdirectory="", std::string sFilename="/eos/atlas/user/o/orlando/VLQAnalysisOutputs_test_VLQ_bare_2017_11_11_2218_merged_FCNC_60OP/Wjets22beauty", std::string format="png")
 {
 
@@ -24,43 +37,39 @@ void ScanOutputFile(bool rebin = true, std::string sdirectory="", std::string sF
 
   gDirectory->ls() ;
 
-  //TObject *obj = NULL ;
-
   TIter next(gDirectory->GetListOfKeys());            
   
-  TKey *m_key;    
-  TObject *m_iobj;
+  TKey *m_key=0;    
+  TObject *m_iobj=0;
   TCanvas *cnv = new TCanvas();
   char nameplot[1000];
 
-  int col_sig = kSpring+10;
+  const int col_sig = kSpring+10;
   //Fancy color setting for 2D plots
   const int Number = 3;
-  Double_t Red[Number]    = { 0.50, 0.00, 0.00};
-  Double_t Green[Number]  = { 0.50, 0.80, 0.00};
-  Double_t Blue[Number]   = { 0.50, 0.80, 1.00};
-  Double_t Length[Number] = { 0.00, 0.50, 1.00};
+  Double_t Red[Number]    = { 0.50, 0.00, 0.00 };
+  Double_t Green[Number]  = { 0.50, 0.80, 0.00 };
+  Double_t Blue[Number]   = { 0.50, 0.80, 1.00 };
+  Double_t Length[Number] = { 0.00, 0.50, 1.00 };
   Int_t nb=50;
   TColor::CreateGradientColorTable(Number,Length,Red,Green,Blue,nb);
   
-  int i = 0; 
-
-  while(m_key = (TKey*)next()) 
+  while( ( m_key = (TKey*)next() ) ) 
     {
       m_iobj     = m_key->ReadObj();	  
 
       if(format=="pdf")sprintf(nameplot,"%s.pdf", m_iobj->GetName() );
       if(format=="png")sprintf(nameplot,"%s.png", m_iobj->GetName() );
       
-      if( m_iobj->InheritsFrom(TH2F::Class()) ) 
+      if( m_iobj->InheritsFrom(TH2::Class()) ) 
 	{ 
 	  cnv->SetRightMargin(0.12);
-	  if(rebin)((TH2I*)m_iobj)->RebinX(15);
-	  if(rebin)((TH2I*)m_iobj)->RebinY(15);
-       	  ((TH2I*)m_iobj)->Draw("colz");
-	  float corr_v = ((TH2I*)m_iobj)->GetCorrelationFactor();
+	  if(rebin)((TH2*)m_iobj)->RebinX(15);
+	  if(rebin)((TH2*)m_iobj)->RebinY(15);
+       	  ((TH2*)m_iobj)->Draw("colz");
+	  float corr_v = ((TH2*)m_iobj)->GetCorrelationFactor();
+	  //not currently used
 	  char corr[1000]; sprintf(corr,"Correlation %0.2f",corr_v);
-	  myText( 0.32,0.9,1,corr);
        	  cnv->SaveAs(nameplot);
 	}
       
@@ -75,7 +84,7 @@ void ScanOutputFile(bool rebin = true, std::string sdirectory="", std::string sF
 
 	  ((TH1F*)m_iobj)->Draw("hist");
 	  
-	  TLegend * leg = new TLegend(0.30,0.89,0.85,0.95);
+	  TLegend * leg = new TLegend(0.20,0.89,0.75,0.95);
 	  leg -> SetNColumns(1);
 	  char leg_entry[1000]; sprintf(leg_entry,"%s",m_iobj->GetName());
 	  leg->AddEntry(((TH1F*)m_iobj),leg_entry,"f");
@@ -86,14 +95,11 @@ void ScanOutputFile(bool rebin = true, std::string sdirectory="", std::string sF
 	  leg->Draw();
 
 	  cnv->SaveAs(nameplot);
-
 	}
       else
 	{
-	  std::cout<<"Format not recognized"<<std::endl;
+	  std::cout<<"Format not recognized not a TH2, nor a TH1"<<std::endl;
 	}
-      
-      i++;
     } 
   
   return;
