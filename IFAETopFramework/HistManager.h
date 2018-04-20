@@ -33,6 +33,7 @@ public:
     vector<string> GetTH3KeyList();
     
     void FinaliseTH1Bins( const string &s_hist);
+    static void FinaliseTH1Bins( TH1D* hist, const bool addOF=true, const bool addUF=true);
     
     void ClearAllTH1();
     void ClearAllTProfile();

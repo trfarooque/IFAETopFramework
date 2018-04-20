@@ -45,6 +45,13 @@ class AnalysisUtils{
   //
   static bool FloatEq(double f1, double f2, double epsilon=1.e-10){ return fabs(f1-f2) < epsilon; }
 
+  //
+  template<typename T> static bool CleanContainer(std::vector<T*>& ptvec){
+    for(T* tobj : ptvec){ delete tobj;}
+    ptvec.clear();
+    return true;
+  }
+
  protected:
   static  bool orderAscend(std::pair<int, double> p1, std::pair<int, double> p2 ){
     return valOrderAscend(p1.second, p2.second);
