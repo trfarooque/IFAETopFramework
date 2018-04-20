@@ -26,7 +26,7 @@ public:
     void SetMoment(const std::string &name,const double value);
     void UpdateMoment( const std::string &name, const double value );
     double GetMoment(const std::string &name) const;
-    
+
     template<typename T> void SetGeneralMoment(const std::string &name, T* value){ 
       
       if(IsKnownGeneralMoment(name)){
