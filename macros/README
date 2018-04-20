@@ -23,3 +23,8 @@
  For template checking (e.g. check that all files corresponding to "rucio list-files user.toto.*.bla.root")
      python CheckFiles.py --path=<path> --template=<template> [--check_corruption=true]
      []: optional arguments
+
+
+ScanOutputFile.C
+=============
+Usefult to plot in one go the full content of a root file for quick validation, comments inside the file for detailed instructions. Run as root -l -b -q ScanOutputFile.C+ with arguments as needed. 
