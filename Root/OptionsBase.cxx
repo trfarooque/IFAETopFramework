@@ -193,6 +193,8 @@ bool OptionsBase::IdentifyOption ( const std::string &argument, const std::strin
         else if ( temp_val.find("GLUINO") != std::string::npos){       m_sampleName = SampleName::GLUINO;      }
         else if ( temp_val.find("SGLUON") != std::string::npos){       m_sampleName = SampleName::SGLUON;      }
         else if ( temp_val.find("HPLUS") != std::string::npos){        m_sampleName = SampleName::HPLUS;      }
+        else if ((temp_val.find("UHBW") != std::string::npos) or
+                 (temp_val.find("UHCW") != std::string::npos)) {       m_sampleName = SampleName::FCNC;       }
         else {
             std::cout<<"Unknown sample name '"<<temp_val<<"'"<<std::endl;
         }
