@@ -27,7 +27,7 @@ void CutFlowTools::addCutFlow(std::string cutFlowID, std::string sCutIDs)
     if (icutflowItr->first == cutFlowID) {
       std::cout<<"Duplicate cutflow "<<std::endl;
       //return error status code
-      exit(0);
+      exit(1);
     }
   }
 
@@ -57,7 +57,7 @@ void CutFlowTools::cutFlow(std::string cutFlowID, std::string cutID, double weig
   if (!cutFlowExists){
     std::cout<< "CutFlow does not exist"<<std::endl;
     //return error status code
-    exit(0);
+    exit(1);
   }
 
   for (unsigned int i=0; i<m_vecCutFlowID[cutFlowID].size(); i++)
@@ -65,7 +65,7 @@ void CutFlowTools::cutFlow(std::string cutFlowID, std::string cutID, double weig
   if (nCut==-1) {
     std::cout<<"Cut ID does not exist"<<std::endl;
     //return error status code
-    exit(0);
+    exit(1);
   }
 
   m_vecCutFlows[cutFlowID]->Fill(nCut, weight);
