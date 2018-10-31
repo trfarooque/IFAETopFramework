@@ -143,7 +143,7 @@ def filterListWithTemplate( originalTotalFile, templates, filterFile):
 ##___________________________________________________________________
 ##
 def produceList(Patterns, InputDirectory, listName):
-    com = "ls "+InputDirectory+"{*,*/*}.root*"
+    com = "ls "+InputDirectory+"{*,*/*}root*"
     if "/eos/atlas/" in InputDirectory:
         com = "/afs/cern.ch/project/eos/installation/atlas/bin/eos.select find -f "+InputDirectory+" | grep \"\\.root\""
     for iPattern in range(len(Patterns)):
