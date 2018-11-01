@@ -24,6 +24,7 @@ class JobSet:
         self.queue=""
         self.jobRecoveryFileName="JobCheck.chk"
         self.writeSubmissionCommandsToFileOnly=False
+        self.setUpCommand=""
 
     ##_________________________________________________________________________
     ##
@@ -79,6 +80,11 @@ class JobSet:
 
     ##_________________________________________________________________________
     ##
+    def setSetUpCommand(self,name):
+        self.setUpCommand = name
+
+    ##_________________________________________________________________________
+    ##
     def Initialize(self,f):
         f.write("#!/bin/bash \n")
         f.write("export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase \n")
@@ -97,11 +103,16 @@ class JobSet:
         f.write("echo '==> After extracting the tarball'\n")
         f.write("ls -lrth\n")
         f.write("\n")
-        f.write("rm -rvf RootCoreBin \n")
-        f.write("rm  rcSetup* \n")
-        f.write("rcSetup Base,2.4.43 \n")
-        f.write("rc find_packages \n")
-        f.write("rc compile \n")
+        if self.setUpCommand=="" :
+            f.write("rcSetup \n")
+        else :
+            #recompiling the package with the given release passed as input
+            CommandSetUp=self.setUpCommand+" \n"
+            f.write("rm -rvf RootCoreBin \n")
+            f.write("rm  rcSetup* \n")
+            f.write(CommandSetUp)
+            f.write("rc find_packages \n")
+            f.write("rc compile \n")
         f.write("\n")
         f.write("echo '==> After the setup' \n")
         f.write("ls -lrth \n")
