@@ -221,21 +221,21 @@ int NtupleReader::SetWeightBranchAddress(WeightObject* wgt){
   if(varType == VariableDef::DOUBLE){
     if( m_ntupData->d_D_weight_components->find(branchName) == m_ntupData->d_D_weight_components->end() ){
       std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
-		<< " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
+		<< " does not exist in the list of input nominal weight branches. Please check!!! " << std::endl;
     }
     stat = SetVariableToChain(branchName, &(m_ntupData->d_D_weight_components->at(branchName)) );
   }
   else if(varType == VariableDef::FLOAT){
     if( m_ntupData->d_F_weight_components->find(branchName) == m_ntupData->d_F_weight_components->end() ){
       std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
-		<< " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
+		<< " does not exist in the list of input nominal weight branches. Please check!!! " << std::endl;
     }
     stat = SetVariableToChain(branchName, &(m_ntupData->d_F_weight_components->at(branchName)) );
   }
   else if( (varType == VariableDef::PTRVECDOUBLE) || (varType == VariableDef::VECDOUBLE) ){
     if( m_ntupData->d_vecD_weight_components->find(branchName) == m_ntupData->d_vecD_weight_components->end() ){
       std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
-		<< " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
+		<< " does not exist in the list of input nominal weight branches. Please check!!! " << std::endl;
     }
     if(varType == VariableDef::PTRVECDOUBLE){
       stat = SetVariableToChain(branchName, &(m_ntupData->d_vecD_weight_components->at(branchName)) );
@@ -247,7 +247,7 @@ int NtupleReader::SetWeightBranchAddress(WeightObject* wgt){
   else if( (varType == VariableDef::PTRVECFLOAT) || (varType == VariableDef::VECFLOAT) ){
     if( m_ntupData->d_vecF_weight_components->find(branchName) == m_ntupData->d_vecF_weight_components->end() ){
       std::cout << " WARNING NtupleReader::SetWeightBranchAddress : " << name
-		<< " does not exist in the list of input nominal weight branches. Please chack!!! " << std::endl;
+		<< " does not exist in the list of input nominal weight branches. Please check!!! " << std::endl;
     }
     if(varType == VariableDef::PTRVECFLOAT){
       stat = SetVariableToChain(branchName, &(m_ntupData->d_vecF_weight_components->at(branchName)) );
@@ -261,7 +261,7 @@ int NtupleReader::SetWeightBranchAddress(WeightObject* wgt){
     stat = -1;
   }
   if(stat != 0){
-    std::cerr<< "NtupleReader::SetWeightBranchAddresses() --> ERROR code " << stat << " encountered on branch "<<branchName<<". Please chack!!"<<std::endl;
+    std::cerr<< "NtupleReader::SetWeightBranchAddresses() --> ERROR code " << stat << " encountered on branch "<<branchName<<". Please check!!"<<std::endl;
     return stat;
   }
   

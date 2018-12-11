@@ -308,7 +308,7 @@ WeightObject* WeightManager::AddWeight( const std::string &name, const std::stri
   WeightMap* wgtMap = (isNominal) ? m_nomMap : m_systMap;
   WeightMap::iterator it = wgtMap -> find(name);
   if(it != wgtMap->end()){
-    std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. isNominal = "<<isNominal<<". Please chack !!" << std::endl;
+    std::cerr << "<!> ERROR in WeightManager::AddWeight: weight (" << name << ") exists already. isNominal = "<<isNominal<<". Please check !!" << std::endl;
     return NULL;
   }
 
@@ -334,7 +334,7 @@ bool WeightManager::InitWeight( WeightObject* wgt, const std::string& componentT
     std::map<std::string, double>* &valMap = (isInput) ? m_ntupData -> d_D_weight_components : m_outData -> o_D_weight_components;
     if(valMap == NULL){ valMap = new std::map<std::string, double>; }
     if( valMap->find(_branch) != valMap->end() ){
-      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << _branch << ") exists already. Please chack !!" << std::endl;
+      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << _branch << ") exists already. Please check !!" << std::endl;
       return false;
     }
     else{ valMap->insert(std::pair<std::string, double>( _branch, 0.) ); }
@@ -345,7 +345,7 @@ bool WeightManager::InitWeight( WeightObject* wgt, const std::string& componentT
     std::map<std::string, float>* &valMap = (isInput) ? m_ntupData -> d_F_weight_components : m_outData -> o_F_weight_components;
     if(valMap == NULL){ valMap = new std::map<std::string, float>; }
     if( valMap->find(_branch) != valMap->end() ){
-      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << _branch << ") exists already. Please chack !!" << std::endl;
+      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << _branch << ") exists already. Please check !!" << std::endl;
       return false;
     }
     else{ valMap->insert(std::pair<std::string, float>( _branch, 0.) ); }
@@ -390,7 +390,7 @@ bool WeightManager::InitWeight( WeightObject* wgt, const std::string& componentT
   }
   else{ 
     if( m_outData -> o_eventWeight_Systs->find(name) != m_outData -> o_eventWeight_Systs->end() ){
-      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << name << ") exists already. Please chack !!" << std::endl;
+      std::cerr << "<!> ERROR in WeightManager::InitWeight: weight (" << name << ") exists already. Please check !!" << std::endl;
       return false;
     }
     m_outData -> o_eventWeight_Systs -> insert( std::pair<std::string, double>(name, 0.) );

@@ -72,6 +72,7 @@ double AnalysisObject::GetMoment(const std::string &name) const
 {
     if(name == "Pt"){ return Pt(); }
     else if(name == "Eta"){ return Eta(); }
+    else if(name == "Rapidity"){ return Rapidity(); }
     else if(name == "Phi"){ return Phi(); }
     else if(name == "M"){ return M(); }
     else if(name == "E"){ return E(); }
@@ -104,7 +105,7 @@ void* AnalysisObject::GetGeneralMoment(const std::string &name) const
 //
 bool AnalysisObject::IsKinematicMoment(const std::string &name) const
 {
-    if( (name == "Pt") || (name == "Eta") || (name == "Phi") || (name == "M") || (name == "E") ){ return true; }
+  if( (name == "Pt") || (name == "Eta") || (name == "Rapidity") || (name == "Phi") || (name == "M") || (name == "E") ){ return true; }
     return false;
 }
 
