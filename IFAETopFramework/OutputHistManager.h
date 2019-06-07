@@ -57,7 +57,7 @@ public:
     
     //________________________
     // Member functions
-    OutputHistManager(OptionsBase *opt, OutputData* data=NULL, WeightManager::WeightMap *sysMap=NULL);
+    OutputHistManager(OptionsBase *opt, OutputData* data=NULL, WeightManager::WeightMap *sysMap=NULL, bool _debug=false);
     OutputHistManager( const OutputHistManager &q );
     ~OutputHistManager();
     
@@ -314,7 +314,7 @@ private:
     std::map < std::string, bool > *m_mapHasSyst;
     
     std::set < std::string > *m_vecH2ToProfile;
-    
+    bool m_debug;    
 };
 
 #endif // OUTPUTMANAGER_H

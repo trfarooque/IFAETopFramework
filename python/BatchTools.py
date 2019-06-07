@@ -142,17 +142,23 @@ def filterListWithTemplate( originalTotalFile, templates, filterFile):
 
 ##___________________________________________________________________
 ##
-def produceList(Patterns, InputDirectory, listName):
-    com = "ls "+InputDirectory+"{*,*/*}root*"
-    if "/eos/atlas/" in InputDirectory:
-        com = "/afs/cern.ch/project/eos/installation/atlas/bin/eos.select find -f "+InputDirectory+" | grep \"\\.root\""
+def produceList(Patterns, InputDirectory, listName, fileLevel=True):
+
+    com = ""
+    if fileLevel:
+        com="ls "+InputDirectory+"{*,*/*}.root*"
+    else:
+        com="ls "+InputDirectory+"*"
+        
+    #if "/eos/atlas/" in InputDirectory:
+    #    com = "/afs/cern.ch/project/eos/installation/atlas/bin/eos.select find -f "+InputDirectory+" | grep \"\\.root\""
     for iPattern in range(len(Patterns)):
 	if Patterns[iPattern]=="": continue
         com += " | grep "+Patterns[iPattern]
 
     com += " | grep -v \":\""
-    if "/eos/atlas/" in InputDirectory:
-        com+=" | sed \'s/\/eos\/atlas\//root:\/\/eosatlas\/\/eos\/atlas\//g\'"
+    #if "/eos/atlas/" in InputDirectory:
+    #    com+=" | sed \'s/\/eos\/atlas\//root:\/\/eosatlas\/\/eos\/atlas\//g\'"
     com += " > "+listName
     result = os.system(com)
 

@@ -113,6 +113,7 @@ class JobSet:
             f.write(CommandSetUp)
             f.write("rc find_packages \n")
             f.write("rc compile \n")
+
         f.write("\n")
         f.write("echo '==> After the setup' \n")
         f.write("ls -lrth \n")

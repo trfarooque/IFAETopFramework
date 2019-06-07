@@ -68,6 +68,8 @@ class VariableDef {
     static bool IsVector(int varType);
     static bool IsPointer(int varType);
 
+    bool PointsToNull();
+    AnalysisObject* RetrieveAnalysisObject();
     void CalcDoubleValue();
     void FillVectorStore();
         
@@ -88,9 +90,11 @@ class VariableDef {
     inline double* ValStore() const{ return m_val_store; }
     inline std::vector<double>* VecStore() const{ return m_vec_store; }
     inline double GetDoubleValue() const{ return *m_val_store; }
+    inline bool IsValidValue() const{ return m_valid_value; }
     inline int GetVecSize() const{ return m_vec_size; }
     inline bool FillVec() const{ return m_fill_vec; }
-
+    inline double DefaultValue() const{ return m_default; }
+ 
     //
     // Setter functions
     //
@@ -119,6 +123,8 @@ class VariableDef {
 	if(m_val_store == NULL) m_val_store = new double();
       }
     }
+
+    inline void SetDefault( double _default){ m_default = _default; } 
     
     //
     // Template constructors
@@ -136,7 +142,9 @@ class VariableDef {
       m_moment(moment),
       m_val_store(NULL),
       m_vec_store(NULL),
-      m_fill_vec(false) 
+      m_fill_vec(false),
+      m_valid_value(true),
+      m_default(0.)
       {
 	
         m_isPrimitive = IsPrimitive(m_varType);
@@ -240,7 +248,8 @@ class VariableDef {
     std::vector<double>* m_vec_store; 
     int m_vec_size;
     bool m_fill_vec;        
-
+    bool m_valid_value; //whether value in store is sensible 
+    double m_default; //a dummy value to use as default, especially for trees
 };
 
 

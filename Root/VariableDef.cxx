@@ -19,7 +19,9 @@ VariableDef::VariableDef():
   m_val_store(NULL),
   m_vec_store(NULL),
   m_vec_size(0),
-  m_fill_vec(false) 
+  m_fill_vec(false),
+  m_valid_value(true),
+  m_default(0.)
 {}
 
 //_____________________________________________________________________________________
@@ -48,6 +50,8 @@ VariableDef::VariableDef( const VariableDef &q ){
     m_vec_store     = q.m_vec_store;
     m_vec_size      = q.m_vec_size;
     m_fill_vec      = q.m_fill_vec;
+    m_valid_value   = q.m_valid_value;
+    m_default       = q.m_default;
 }
 
 //_____________________________________________________________________________________
@@ -190,6 +194,10 @@ bool VariableDef::IsAnaObject(int varType){
     return _isAnaObj;
 }
 
+
+
+
+
 //
 void VariableDef::FillVectorStore(){
 
@@ -197,7 +205,12 @@ void VariableDef::FillVectorStore(){
   if( (m_varType == VariableDef::VECAO) || (m_varType == VariableDef::PTRVECAO) ){
     m_vec_store->clear();
     AOVector& vec = (m_varType == VariableDef::VECAO) ? *((AOVector*)m_address) : **((AOVector**)m_address);
-    for ( AnalysisObject* obj : vec ){ m_vec_store->push_back( obj->GetMoment(m_moment) ); }
+    for ( AnalysisObject* obj : vec ){ 
+      //Only use objects for which the moment exists
+      if(obj -> IsKnownMoment(m_moment)){
+	m_vec_store->push_back( obj->GetMoment(m_moment) );
+      }
+    }
   }
 
   return;
@@ -205,11 +218,101 @@ void VariableDef::FillVectorStore(){
 
 //_____________________________________________________________________________________
 //
-void VariableDef::CalcDoubleValue(){
-    *m_val_store = 0.;
-    if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return;}
+bool VariableDef::PointsToNull(){
+  // Check if any PTR type variable is currently pointing to NULL
+    if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return true;}
     
-    if( (m_varType == VariableType::DOUBLE)){
+    if( (m_varType == VariableType::PTRDOUBLE)){
+      return (*(double**)(m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRFLOAT){
+      return (*(float**)(m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRINT){
+      return (*(int**)(m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRBOOL){
+      return (*(bool**)(m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRAOBJ){
+      return (*(AnalysisObject**)(m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRVECDOUBLE){
+      return (*((std::vector<double>**)m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRVECFLOAT){
+      return (*((std::vector<float>**)m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRVECINT){
+      return (*((std::vector<int>**)m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRVECBOOL){
+      return (*((std::vector<bool>**)m_address) == NULL);
+    }
+    else if(m_varType == VariableType::PTRVECAO){
+      return (*((AOVector**)m_address) == NULL);
+    }
+
+    return false;
+}
+
+//_____________________________________________________________________________________
+//
+AnalysisObject* VariableDef::RetrieveAnalysisObject(){
+
+  AnalysisObject* aobj = NULL;
+  if(m_varType == VariableType::AOBJ){
+    aobj = (AnalysisObject*)(m_address);
+  }
+  else if(m_varType == VariableType::PTRAOBJ){
+    aobj = *(AnalysisObject**)(m_address);
+  }
+  else if( (m_varType == VariableType::PTRVECAO) || (m_varType == VariableType::VECAO) ){
+    const AOVector* aovec = (m_varType == VariableType::PTRVECAO) 
+      ? *(AOVector**)m_address : (AOVector*)m_address;
+
+    if( (m_vec_ind >= 0) && m_vec_ind < (int)(aovec->size()) ){
+      aobj = aovec->at(m_vec_ind); 
+    }
+  }
+
+  return aobj;
+
+}
+
+//_____________________________________________________________________________________
+//
+void VariableDef::CalcDoubleValue(){
+    *m_val_store = m_default;
+    if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return;}
+
+    m_valid_value = true;
+
+    //Check if points to null
+    if(m_isPointer && PointsToNull()){
+      m_valid_value = false;
+      return; 
+    }
+
+    //Check if vector index is valid
+    if(m_isVector && (m_vec_ind < 0)){
+      std::cerr<<"ERROR : Please provide vector index to obtain value from VariableDef" << std::endl;
+      m_valid_value = false;
+      return;
+    }
+
+    if( m_isAnaObject ){
+      AnalysisObject* aobj = RetrieveAnalysisObject();
+
+      //Check if moment exists
+      if( ! (aobj && aobj->IsKnownMoment(m_moment)) ){ 
+	m_valid_value = false;
+	return;
+      }
+      *m_val_store = aobj -> GetMoment(m_moment);
+
+    }
+    else if( (m_varType == VariableType::DOUBLE)){
         *m_val_store = *(double*)(m_address);
     }
     else if( (m_varType == VariableType::PTRDOUBLE)){
@@ -248,17 +351,7 @@ void VariableDef::CalcDoubleValue(){
     else if(m_varType == VariableType::PTRBOOL){
         *m_val_store = (double)(**(bool**)(m_address));
     }
-    else if(m_varType == VariableType::AOBJ){
-      *m_val_store = ((AnalysisObject*)(m_address))->GetMoment(m_moment);
-    } 
-    else if(m_varType == VariableType::PTRAOBJ){
-      *m_val_store = (*(AnalysisObject**)(m_address))->GetMoment(m_moment);
-    } 
     else{
-      if(m_vec_ind < 0){
-	std::cerr<<"ERROR : Please provide vector index to obtain value from VariableDef" << std::endl;
-	return;
-      }
       if( (m_varType == VariableType::VECDOUBLE) || (m_varType == VariableType::PTRVECDOUBLE) ){
 	const std::vector<double>& vecD = (m_varType == VariableType::PTRVECDOUBLE) 
 	  ? **((std::vector<double>**)m_address) : *((std::vector<double>*)m_address);
@@ -285,15 +378,7 @@ void VariableDef::CalcDoubleValue(){
 	m_vec_size = (int)vecB.size();
 	if( m_vec_size > m_vec_ind ){ *m_val_store = (double)(vecB.at(m_vec_ind)); }
       }
-      else if( (m_varType == VariableType::PTRVECAO) || (m_varType == VariableType::VECAO) ){
-	const AOVector* aovec = (m_varType == VariableType::PTRVECAO) 
-	  ? *(AOVector**)m_address : (AOVector*)m_address;
-	m_vec_size = (int)(aovec->size());
-	if( m_vec_size > m_vec_ind ){
-	  *m_val_store = (double)(aovec->at(m_vec_ind)->GetMoment(m_moment));
-	}
-      }
-      if(m_vec_ind > m_vec_size){ *m_val_store = 0.; }
+      if(m_vec_ind > m_vec_size){ m_valid_value = false; }
 
 
     }//Vector variables

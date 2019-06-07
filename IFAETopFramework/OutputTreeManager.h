@@ -68,7 +68,7 @@ public:
         return true;
     }
 
-    template< typename T > bool AddStandardBranch( const std::string &name,  const std::string &title, T *t, const int vec_ind = -1, const std::string moment="") {
+    template< typename T > bool AddStandardBranch( const std::string &name,  const std::string &title, T *t, const int vec_ind = -1, const std::string moment="", const double _default=0.) {
         
         if(m_opt -> MsgLevel() == Debug::DEBUG){
             std::cout << "In OutputManager::addStandardBranch" << std::endl;
@@ -79,6 +79,8 @@ public:
         if(!t) std::cerr << "<!> ERROR in OutputManager::addStandardBranch(template): I cannot access the pointer (" << t << "). Please check !" << std::endl;
 
         VariableDef *_var = new VariableDef(name, title, t, vec_ind, moment);
+	_var->SetDefault(_default);
+
 	bool fill_vec = false;
 	if( ((_var->VarType() == VariableDef::VECAO) || (_var->VarType() == VariableDef::PTRVECAO))  && (vec_ind < 0) ){fill_vec = true;}
 	_var->SetFillVec(fill_vec);

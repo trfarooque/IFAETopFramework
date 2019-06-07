@@ -11,7 +11,7 @@
 
 //______________________________________________________________________________________
 //
-OutputHistManager::OutputHistManager( OptionsBase* opt, OutputData* data, WeightManager::WeightMap *sysMap):
+OutputHistManager::OutputHistManager( OptionsBase* opt, OutputData* data, WeightManager::WeightMap *sysMap, bool _debug):
   OutputManager(opt, data),
   m_stdTH1Def(0),
   m_stdTProfileDef(0),
@@ -19,9 +19,11 @@ OutputHistManager::OutputHistManager( OptionsBase* opt, OutputData* data, Weight
   m_histMngr(0),
   m_sysMap(sysMap),
   m_mapHasSyst(0),
-  m_vecH2ToProfile(0)
+  m_vecH2ToProfile(0),
+  m_debug(_debug)
 {
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputHistManager constructor" << std::endl;
+  m_debug = m_debug || (m_opt -> MsgLevel() == Debug::DEBUG);
+    if(m_debug) std::cout << "Entering in OutputHistManager constructor" << std::endl;
     
     m_stdTH1Def     = new StdTH1();
     m_stdTProfileDef= new StdTH1();
@@ -35,7 +37,7 @@ OutputHistManager::OutputHistManager( OptionsBase* opt, OutputData* data, Weight
     m_vecH2ToProfile->clear();
 
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager constructor" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager constructor" << std::endl;
 }
 
 //______________________________________________________________________________________
@@ -43,7 +45,7 @@ OutputHistManager::OutputHistManager( OptionsBase* opt, OutputData* data, Weight
 OutputHistManager::OutputHistManager( const OutputHistManager &q ) : 
   OutputManager(q)
 {
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager copy-constructor" << std::endl;
+    if(m_debug) std::cout << "In OutputHistManager copy-constructor" << std::endl;
     
     m_stdTH1Def        = q.m_stdTH1Def;
     m_stdTProfileDef   = q.m_stdTProfileDef;
@@ -53,14 +55,14 @@ OutputHistManager::OutputHistManager( const OutputHistManager &q ) :
     m_mapHasSyst       = q.m_mapHasSyst;
     m_vecH2ToProfile   = q.m_vecH2ToProfile;
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager copy-constructor" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager copy-constructor" << std::endl;
 }
 
 //______________________________________________________________________________________
 //
 OutputHistManager::~OutputHistManager()
 {
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager destructor" << std::endl;
+    if(m_debug) std::cout << "In OutputHistManager destructor" << std::endl;
 
 
     for( std::pair<std::string, h1Def*> hist : *m_stdTH1Def ){
@@ -85,7 +87,7 @@ OutputHistManager::~OutputHistManager()
     delete m_histMngr;
     delete m_mapHasSyst;
     delete m_vecH2ToProfile;
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager destructor" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager destructor" << std::endl;
 }
 
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
@@ -98,7 +100,7 @@ bool OutputHistManager::AddStandardTH1(const std::string &name, const double wid
     //
   bool _hasSyst = hasSyst && !noWeight;
 
-    if(m_opt -> MsgLevel() == Debug::DEBUG){
+    if(m_debug){
         std::cout << "In OutputHistManager::addStandardTH1" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
         std::cout << "  width    = " << width << std::endl;
@@ -121,7 +123,7 @@ bool OutputHistManager::AddStandardTH1(const std::string &name, const double wid
     hist -> noWeight = noWeight;
     m_stdTH1Def -> insert( std::pair < std::string, h1Def* >( name, hist ) );
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::addStandardTH1" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager::addStandardTH1" << std::endl;
     
     return true;
 }
@@ -130,7 +132,7 @@ bool OutputHistManager::AddStandardTH1(const std::string &name, const double wid
 //
 bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool hasSyst){
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager::bookStandardTH1" << std::endl;
+    if(m_debug) std::cout << "In OutputHistManager::bookStandardTH1" << std::endl;
     m_mapHasSyst -> insert( std::pair <std::string, bool>(pattern,hasSyst));
 
     //
@@ -159,7 +161,7 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
       }
       if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt(histName, h1.second->hopt); }
       
-      if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
+      if(m_debug) std::cout << "  -> Booked histogram : " << histName << std::endl;
 
       if(hasSyst && h1.second->hasSyst){
 	if(!m_sysMap){
@@ -174,13 +176,13 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
 	      m_histMngr -> BookTH1D( systHistName, h1.second->var->Title(), h1.second->width, h1.second->min, h1.second->max);
 	    }
 	    if(h1.second->hopt > 0){ m_histMngr->SetTH1Opt( systHistName, h1.second->hopt ); }
-	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+	    if(m_debug) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
 	  }
 	}
       }
     }
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::bookStandardTH1" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager::bookStandardTH1" << std::endl;
     return true;
 }
 
@@ -188,7 +190,7 @@ bool OutputHistManager::BookStandardTH1( const std::string &pattern, const bool 
 //
 bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool updateStores ){
     
-  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
+  if(m_debug) std::cout << "Entering in OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
   
   if(!m_data){
     std::cerr << "<!> ERROR in OutputHistManager::fillStandardTH1: We have big problems ... Please provide an OutputData object" << std::endl;
@@ -198,7 +200,7 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
   if( m_opt -> OnlyDumpSystHistograms() && !(m_mapHasSyst -> at(pattern)) ) return true; 
   
   for ( const std::pair < TString, OutputHistManager::h1Def* > h1 : *m_stdTH1Def ){
-    
+
     //
     // Nominal histogram filling
     //
@@ -206,19 +208,27 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
     double weight = (h1.second->noWeight) ? 1. : m_data->o_eventWeight_Nom;
     if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){
 
-      if(m_opt -> MsgLevel() == Debug::DEBUG){
-	std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" ADDRESS = "<<h1.second->var->Address()<<std::endl;
-	std::cout<<" VALSTORE = "<<h1.second->var->ValStore()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
+      if(m_debug){
+	std::cout<<" PATTERN = "<<pattern<<" NAME = "<<h1.second->var->Name()<<" VALUE = "<<h1.second->var->GetDoubleValue()<<std::endl;        
       }
       if(updateStores){ 
 	h1.second->var->CalcDoubleValue();
       }
-      if(m_opt -> MsgLevel() == Debug::DEBUG){
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //
+      // Do not fill histograms in cases of invalidity: 
+      // Variable currently pointing to NULL, index larger than vector size, unknown moment for AnalysisObject
+      //
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+      if( !h1.second->var->IsValidValue() ) continue;    
+
+      if(m_debug){
 	std::cout<<" pattern = "<<pattern<<" varName = "<<h1.second->var->Name()<<" double_value = "<< h1.second->var->GetDoubleValue()<<std::endl;
       }
-      if( !h1.second->var->IsVector() || (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ){
-	m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), weight);
-      }
+      //if( !h1.second->var->IsVector() || (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ){
+      m_histMngr -> FillTH1D(histName, h1.second->var->GetDoubleValue(), weight);
+      //}
     } 
     else {
 
@@ -229,11 +239,12 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
       FillTH1FromVector( h1.second->var->Address(),
 			 h1.second->var->VarType(), histName, weight, h1.second->var->Moment() );
     }
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
+    if(m_debug) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
     //
     // Now checking systematics (if needed and if existing)
     //
+
     if(h1.second->hasSyst && m_mapHasSyst->at(pattern)){
       if(!m_sysMap){
 	std::cerr << "<!> ERROR in OutputHistManager::bookStandardTH1: You want to use systematics, but none is defined ... Please check !" << std::endl;
@@ -241,18 +252,18 @@ bool OutputHistManager::FillStandardTH1( const std::string &pattern, const bool 
 	for (const auto sys : *m_sysMap) {
 	  std::string systHistName = histName + "_" + sys.second->Name();
 
-	  if( !h1.second->var->IsVector() || ( (h1.second->var->VecInd() >= 0) && (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ) ){
+	  if( !h1.second->var->IsVector() || (h1.second->var->VecInd() >= 0) ){ // && (h1.second->var->VecInd() < h1.second->var->GetVecSize()) ) ){
 	    m_histMngr -> FillTH1D(systHistName, h1.second->var->GetDoubleValue(), sys.second->GetWeightValue());
 	  } else {
 	    FillTH1FromVector( h1.second->var->Address(),
 			       h1.second->var->VarType(), systHistName, sys.second->GetWeightValue(), h1.second->var->Moment());
 	  }
-	  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
+	  if(m_debug) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
 	}
       }
     }
   }
-  if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
+  if(m_debug) std::cout << "Leaving OutputHistManager::fillStandardTH1("<<pattern<<")" << std::endl;
   return true;
 }
 
@@ -290,7 +301,12 @@ bool OutputHistManager::FillTH1FromVector( void* t, const VariableDef::VariableT
   else if( (type == VariableDef::PTRVECAO) || (type == VariableDef::VECAO) ){
     AOVector* vec = (type == VariableDef::PTRVECAO) ? 
       *(AOVector**)t : (AOVector*)t;
-    for ( AnalysisObject* obj : *vec ){ m_histMngr -> FillTH1D(histName, obj->GetMoment(moment), weight); }
+    for ( AnalysisObject* obj : *vec ){ 
+      if( obj -> IsKnownMoment(moment) ){
+	m_histMngr -> FillTH1D(histName, obj->GetMoment(moment), weight);
+      }
+    }
+
   }
   else {
     std::cerr << "<!> ERROR in OutputHistManager::FillTH1FromVector: the object type is unknown. Please check." << std::endl;
@@ -328,7 +344,7 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
     //
   bool _hasSyst = hasSyst && !noWeight;
 
-    if(m_opt -> MsgLevel() == Debug::DEBUG){
+    if(m_debug){
         std::cout << "In OutputHistManager::addStandardTH2" << std::endl;
         std::cout << "Adding variable: "<< name << std::endl;
         std::cout << "  widthX  = " << widthX << std::endl;
@@ -359,7 +375,7 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
 
     m_stdTH2Def -> insert( std::pair < std::string, h2Def* >( name, hist ) );
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::addStandardTH2" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager::addStandardTH2" << std::endl;
     
     return true;
 }
@@ -368,7 +384,7 @@ bool OutputHistManager::AddStandardTH2( const std::string &name, const double wi
 //
 bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool hasSyst){
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "In OutputHistManager::bookStandardTH2" << std::endl;
+    if(m_debug) std::cout << "In OutputHistManager::bookStandardTH2" << std::endl;
     m_mapHasSyst -> insert( std::pair <std::string, bool>(pattern,hasSyst));
     
     //
@@ -406,7 +422,7 @@ bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool 
 				  h2.second->widthY, h2.second->minY, h2.second->maxY);
 	}
 
-        if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << histName << std::endl;
+        if(m_debug) std::cout << "  -> Booked histogram : " << histName << std::endl;
         
         if(hasSyst && h2.second->hasSyst){
             if(!m_sysMap){
@@ -435,12 +451,12 @@ bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool 
 		  }
 		  
 		  
-                    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
+                    if(m_debug) std::cout << "  -> Booked histogram : " << systHistName << std::endl;
                 }
             }
         }
     }
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::bookStandardTH2" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager::bookStandardTH2" << std::endl;
     return true;
 }
 
@@ -448,7 +464,7 @@ bool OutputHistManager::BookStandardTH2( const std::string &pattern, const bool 
 //
 bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool updateStores ){
     
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Entering in OutputHistManager::fillStandardTH2("<<pattern<<")" << std::endl;
+    if(m_debug) std::cout << "Entering in OutputHistManager::fillStandardTH2("<<pattern<<")" << std::endl;
     if(!m_data){
         std::cerr << "<!> ERROR in OutputHistManager::fillStandardTH2: We have big problems ... Please provide an OutputData object" << std::endl;
         return false;
@@ -457,6 +473,13 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
     if( m_opt -> OnlyDumpSystHistograms() && !(m_mapHasSyst -> at(pattern)) ) return true; 
     
     for ( const auto h2 : *m_stdTH2Def ){
+      /*
+      //
+      // Do not fill histogram if either X or Y variable is currently NULL
+      //
+      if( h2.second->varX->PointsToNull() ) continue;    
+      if( h2.second->varY->PointsToNull() ) continue;    
+      */
 
       if( m_opt -> OnlyDumpSystHistograms() && !(h2.second->hasSyst) ) continue; 
 
@@ -470,9 +493,16 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
       if( updateStores && bX_flat ){ h2.second->varX->CalcDoubleValue(); }
       if( updateStores && bY_flat ){ h2.second->varY->CalcDoubleValue(); }
 
+      if( bX_flat && !h2.second->varX->IsValidValue() ) continue;
+      if( bY_flat && !h2.second->varY->IsValidValue() ) continue;
+
+      /*
+      // TO BE REMOVED
       //Check whether the given indices for the variables are within range of the vectors
-      if(bX_flat && h2.second->varX->IsVector() && (h2.second->varX->VecInd() >= h2.second->varX->GetVecSize()) ){ continue; }
-      if(bY_flat && h2.second->varY->IsVector() && (h2.second->varY->VecInd() >= h2.second->varY->GetVecSize()) ){ continue; }
+      //
+      //if(bX_flat && h2.second->varX->IsVector() && (h2.second->varX->VecInd() >= h2.second->varX->GetVecSize()) ){ continue; }
+      //if(bY_flat && h2.second->varY->IsVector() && (h2.second->varY->VecInd() >= h2.second->varY->GetVecSize()) ){ continue; }
+      */
 
       if( bX_flat && bY_flat ){
 	m_histMngr -> FillTH2D(histName, h2.second->varX->GetDoubleValue(), h2.second->varY->GetDoubleValue(), weight);
@@ -493,7 +523,7 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
 
       }
 
-      if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << histName << std::endl;
+      if(m_debug) std::cout << "  -> Filled histogram : " << histName << std::endl;
         
       //
       // Now checking systematics (if needed and if existing)
@@ -524,12 +554,12 @@ bool OutputHistManager::FillStandardTH2( const std::string &pattern, const bool 
 
 	    }
 
-	    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
+	    if(m_debug) std::cout << "  -> Filled histogram : " << systHistName << std::endl;
 	  }
 	}
       }
     }
-    if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputHistManager::fillStandardTH2("<<pattern<<")" << std::endl;
+    if(m_debug) std::cout << "Leaving OutputHistManager::fillStandardTH2("<<pattern<<")" << std::endl;
     return true;
 }
 
@@ -712,6 +742,7 @@ bool OutputHistManager::FillTH2FromOneVector(const double& flatVal, void* t, con
   else if( (type == VariableDef::PTRVECAO) || (type == VariableDef::VECAO) ){
     AOVector* vec = (type == VariableDef::PTRVECAO) ? *(AOVector**)t : (AOVector*)t;
     for ( AnalysisObject* obj : *vec ){
+      if( !obj-> IsKnownMoment(moment) ) continue;
       if(vecAxis=="Y"){ m_histMngr -> FillTH2D(histName, flatVal, obj->GetMoment(moment), weight); }
       else if(vecAxis=="X"){ m_histMngr -> FillTH2D(histName, obj->GetMoment(moment), flatVal, weight); }
     }
@@ -734,9 +765,11 @@ bool OutputHistManager::FillTH2FromAOVectors( AOVector* tX, AOVector* tY
   double valX = 0.; double valY = 0.;
   int iX = 0;
   for(AnalysisObject* compX : *tX){
+    if(!compX->IsKnownMoment(momentX)) continue;
     valX = compX->GetMoment(momentX); 
     int iY = 0;
     for(AnalysisObject* compY : *tY){
+      if(!compY->IsKnownMoment(momentY)) continue;
       if( ( (tX == tY) && !pairwise && (iY <= iX) ) || ( pairwise && (iX != iY) ) ){ iY++; continue; }
       valY = compY->GetMoment(momentY);
       m_histMngr -> FillTH2D(histName, valX, valY, weight );
