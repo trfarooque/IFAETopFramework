@@ -46,13 +46,13 @@ void AnalysisObject::Reset(){
 //
 void AnalysisObject::SetMoment(const std::string &name,const double value){
 
-  if(IsKnownMoment(name)){
-    //The moment is already in the map ... you should use UpdateMoment function
-    std::cout << "<!> WARNING in AnalysisObject::SetMoment(): The moment \"" << name << "\" is already used and set. Please use UpdateMoment function instead." << std::endl;
-    return;
-  }
   if(IsKinematicMoment(name)){ std::cerr<<" AnalysisObject::SetMoment() --> ERROR Please use TLorentzVector::SetPtEtaPhiM() to set kinematic moment "<<name<<std::endl;}
-  m_moments.insert(std::pair<std::string,double>(name,value));
+  if(IsKnownMoment(name)){
+    m_moments[name] = value;
+  }
+  else{
+    m_moments.insert(std::pair<std::string,double>(name,value));
+  }
 }
 
 //_______________________________________________________________________
@@ -71,6 +71,9 @@ void AnalysisObject::UpdateMoment(const std::string &name,const double value){
 double AnalysisObject::GetMoment(const std::string &name) const
 {
     if(name == "Pt"){ return Pt(); }
+    else if(name == "Px"){ return Px(); }
+    else if(name == "Py"){ return Py(); }
+    else if(name == "Pz"){ return Pz(); }
     else if(name == "Eta"){ return Eta(); }
     else if(name == "Rapidity"){ return Rapidity(); }
     else if(name == "Phi"){ return Phi(); }
@@ -105,7 +108,9 @@ void* AnalysisObject::GetGeneralMoment(const std::string &name) const
 //
 bool AnalysisObject::IsKinematicMoment(const std::string &name) const
 {
-  if( (name == "Pt") || (name == "Eta") || (name == "Rapidity") || (name == "Phi") || (name == "M") || (name == "E") ){ return true; }
+  if( (name == "Pt") || (name == "Px") || (name == "Py") || (name == "Pz") || 
+      (name == "Eta") || (name == "Rapidity") || (name == "Phi") 
+      || (name == "M") || (name == "E") ){ return true; }
     return false;
 }
 
@@ -113,6 +118,7 @@ bool AnalysisObject::IsKinematicMoment(const std::string &name) const
 //
 bool AnalysisObject::IsKnownMoment(const std::string &name) const
 {
+    if(IsKinematicMoment(name)) return true;
     std::map<std::string,double>::const_iterator it=m_moments.find(name);
     if (it!=m_moments.end()) return true;
 

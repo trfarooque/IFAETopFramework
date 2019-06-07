@@ -21,6 +21,7 @@ class AnalysisUtils{
   static std::vector<double> SortVectorValues(const std::vector<double>& vec_value, int nsort=-1, bool b_descending=true );
   static std::vector<size_t> SortObjectIndices(const AOVector& vec_obj, const std::string& sort_by="Pt", int nsort=-1, bool b_descending=true );
   static AOVector SortObjectValues(const AOVector& vec_obj, const std::string& sort_by="Pt", int nsort=-1, bool b_descending=true );
+  static void SortVectorPairs(std::vector<std::pair<int, double> >& vec_pair, int nsort=-1, bool b_descending=true );
 
   static void TrimString(std::string& str, const std::string& whitespace=" \t");
   static std::string::size_type ParseString(std::string& base, std::string& piece, const std::string& delim);
@@ -63,7 +64,6 @@ class AnalysisUtils{
   static bool valOrderAscend(double val1, double val2){ return (val1 < val2); }
   static bool valOrderDescend(double val1, double val2){ return (val1 > val2); }
 
-  static void SortVectorPairs(std::vector<std::pair<int, double> >& vec_pair, int nsort=-1, bool b_descending=true );
 
 
 }; 

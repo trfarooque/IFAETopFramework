@@ -156,15 +156,21 @@ bool Selection::PassFlagAtBit(const int bit_posn) const{
 //
 bool Selection::PassCut(VarCut& varcut) {
 
-  varcut.var->CalcDoubleValue();
-  double val = varcut.var->GetDoubleValue();
 
   bool pass = false;
-  if(varcut.comparator == GT){ pass = (val > varcut.cut); }
-  else if(varcut.comparator == GEQ){ pass = (val >= varcut.cut); }
-  else if(varcut.comparator == EQ){ pass = AnalysisUtils::FloatEq( val, varcut.cut ); }
-  else if(varcut.comparator == LEQ){ pass = (val <= varcut.cut); }
-  else if(varcut.comparator == LT){ pass = (val < varcut.cut); }
+  varcut.var->CalcDoubleValue();
+
+  // if the value of the variable is not valid then selection should fail (for now)
+  if( varcut.var -> IsValidValue() ){
+
+    double val = varcut.var->GetDoubleValue();
+    if(varcut.comparator == GT){ pass = (val > varcut.cut); }
+    else if(varcut.comparator == GEQ){ pass = (val >= varcut.cut); }
+    else if(varcut.comparator == EQ){ pass = AnalysisUtils::FloatEq( val, varcut.cut ); }
+    else if(varcut.comparator == LEQ){ pass = (val <= varcut.cut); }
+    else if(varcut.comparator == LT){ pass = (val < varcut.cut); }
+
+  }
 
   return pass;
 
