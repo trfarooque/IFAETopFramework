@@ -13,20 +13,20 @@ from BatchTools import *
 ##______________________________________________________
 ##
 def submitFailedJobs( expectedRootFile, scriptFile ):
-    platform = socket.gethostname()
-    com = ""
-    if platform.find("pic")>-1:#we work at PIC
-        com += "qsub "
-    elif platform.find("lxplus")>-1:#we work at lxbatch
-        com += "bsub "
-    com += "-q " + batchQueue + " " + scriptFile
+    com = "condor_submit " + scriptFile
+    #platform = socket.gethostname()
+    #com = ""
+    #if platform.find("pic")>-1:#we work at PIC
+    #    com += "qsub "
+    #elif platform.find("lxplus")>-1:#we work at lxbatch
+    #    com += "bsub "
+    #com += "-q " + batchQueue + " " + scriptFile
 
     place_to_store_the_logfiles = ""
     for splitted in expectedRootFile.split("/"):
         if splitted.find(".root")==-1:
             place_to_store_the_logfiles += splitted + "/"
 
-    com += " -o " + place_to_store_the_logfiles + " -e " + place_to_store_the_logfiles
 
     if not(os.path.isfile(scriptFile)):
         printWarning("WARNING: Cannot resubmit job since the script is missing ! ")
