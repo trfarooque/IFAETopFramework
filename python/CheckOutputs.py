@@ -13,26 +13,29 @@ from BatchTools import *
 ##______________________________________________________
 ##
 def submitFailedJobs( expectedRootFile, scriptFile ):
-    com = "condor_submit " + scriptFile
-    #platform = socket.gethostname()
-    #com = ""
-    #if platform.find("pic")>-1:#we work at PIC
-    #    com += "qsub "
-    #elif platform.find("lxplus")>-1:#we work at lxbatch
-    #    com += "bsub "
-    #com += "-q " + batchQueue + " " + scriptFile
 
-    place_to_store_the_logfiles = ""
-    for splitted in expectedRootFile.split("/"):
-        if splitted.find(".root")==-1:
-            place_to_store_the_logfiles += splitted + "/"
-
-
-    if not(os.path.isfile(scriptFile)):
-        printWarning("WARNING: Cannot resubmit job since the script is missing ! ")
-        print "    -> ", scriptFile
+    if batchSystem == "condor":
+        com = "condor_submit " + scriptFile
     else:
-        os.system(com)
+        platform = socket.gethostname()
+        com = ""
+        if platform.find("pic")>-1:#we work at PIC
+            com += "qsub "
+        elif platform.find("lxplus")>-1:#we work at lxbatch
+            com += "bsub "
+        com += "-q " + batchQueue + " " + scriptFile
+
+        place_to_store_the_logfiles = ""
+        for splitted in expectedRootFile.split("/"):
+            if splitted.find(".root")==-1:
+                place_to_store_the_logfiles += splitted + "/"
+
+
+        if not(os.path.isfile(scriptFile)):
+            printWarning("WARNING: Cannot resubmit job since the script is missing ! ")
+            print "    -> ", scriptFile
+        else:
+            os.system(com)
 
 
 ##------------------------------------------------------
@@ -44,6 +47,8 @@ if(len(sys.argv)<2):
     print "with as options:"
     print "    relaunch=TRUE/FALSE"
     print "        -> if some outputs are missing/corrupted, relaunch the corresponding jobs"
+    print "    batch=<name of the batch system>"
+    print "        -> name of the batch system on which to submit the resubmitted jobs (condor/pbs)"
     print "    queue=<name of the batch queue>"
     print "        -> name of the batch queue on which to submit the resubmitted jobs"
     print ""
@@ -54,12 +59,14 @@ if(len(sys.argv)<2):
 ##------------------------------------------------------
 inputFile=""
 relaunchJobs=False
+batchSystem="condor"
 batchQueue="at3_short"
 for iArg in range(1,len(sys.argv)):
     splitted=sys.argv[iArg].split("=")
     if(splitted[0]=="input"): inputFile = splitted[1]
     elif(splitted[0]=="relaunch"):
         if(splitted[1].upper()=="TRUE"): relaunchJobs= True
+    elif(splitted[0]=="batch"): batchSystem = splitted[1]
     elif(splitted[0]=="queue"): batchQueue = splitted[1]
 if(inputFile==""):
     printError("<!> Please provide an input file to check !")

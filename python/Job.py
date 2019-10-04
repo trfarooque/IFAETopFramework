@@ -21,6 +21,7 @@ class JobSet:
         self.scriptDir=""
         self.scriptName=""
         self.tarballPath=""
+        self.batch="condor"
         self.queue=""
         self.jobRecoveryFileName="JobCheck.chk"
         self.writeSubmissionCommandsToFileOnly=False
@@ -41,6 +42,11 @@ class JobSet:
     def clear(self):
         self.jobs=[]
         self.scriptName=""
+
+    ##_________________________________________________________________________
+    ##
+    def setBatch(self,batch):
+	self.batch=batch
 
     ##_________________________________________________________________________
     ##
@@ -133,7 +139,8 @@ class JobSet:
         f.write(">& "+job.jobName+".log \n")
         f.write("\n")
         f.write("echo '==> After running the code'\n")
-        #f.write("mkdir -p $OUTDIR \n")
+        if self.batch == "pbs":
+            f.write("mkdir -p $OUTDIR \n")
         f.write("\n")
         f.write("mv *.root $OUTDIR \n")
         f.write("mv *.log $OUTDIR \n")
@@ -144,7 +151,9 @@ class JobSet:
     ##_________________________________________________________________________
     ##
     def Terminate(self,f):
-        #f.write("rm -rf $TMPDIR/*")
+
+        if self.batch == "pbs":
+            f.write("rm -rf $TMPDIR/*")
         f.write("\n")
 
     ##_________________________________________________________________________
@@ -205,46 +214,47 @@ class JobSet:
             if not self.jobRecoveryFileName == "":
                 for iOption in range(len(temp_job.jobOptions)):
                     if temp_job.jobOptions[iOption][0].upper()=="OUTPUTFILE":
-                        #f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+current_sub_script_name+"\n")
-                        f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+self.scriptName+".sub \n")
+                        if self.batch == "pbs":
+                            f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+current_sub_script_name+"\n")
+                        else:
+                            f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+self.scriptName+".sub \n")
                         break
 
         self.Terminate(f)
         f_reco_file.close()
         f.close()
-        self.writeCondorSubmitScript()
+        if self.batch != "pbs":
+            self.writeCondorSubmitScript()
         os.chmod(current_merged_script_name, 0755)
 
     ##_________________________________________________________________________
     ##
-    def submitCondorJob(self):
-        com="condor_submit " + self.scriptDir + "/" + self.scriptName + ".sub"
-        os.system(com)
-
-    ##_________________________________________________________________________
-    ##
     def submitSet(self):
-        com=""
-        if(self.platform == "lxplus"):
-            com += "bsub -q "
-        elif(self.platform == "pic"):
-            com += "qsub -q "
-        else:
-            printError("The system you are running on is not supported yet ... Please move to lxplus or PIC")
-        if(self.queue==""):
-            self.queue="at3_short"
-        com += self.queue
-        com += " " + self.scriptDir+"/"+self.scriptName+" "
-        if not(self.logDir==""):
-            if(self.platform == "lxplus"):
-                com += " -o "+self.logDir+"/"+self.scriptName+"_batch.log -e "+self.logDir+"/"+self.scriptName+"_batch.log"
-            else:
-                com += " -o "+self.logDir+" -e "+self.logDir
-        if self.writeSubmissionCommandsToFileOnly:
-            self.submissioncommandsfile.write("echo "+self.scriptName+"\n")
-            self.submissioncommandsfile.write(com+"\n")
-        else:
+        if self.batch != "pbs":
+            com="condor_submit " + self.scriptDir + "/" + self.scriptName + ".sub"
             os.system(com)
+        else:
+            com=""
+            if(self.platform == "lxplus"):
+                com += "bsub -q "
+            elif(self.platform == "pic"):
+                com += "qsub -q "
+            else:
+                printError("The system you are running on is not supported yet ... Please move to lxplus or PIC")
+            if(self.queue==""):
+                self.queue="at3_short"
+            com += self.queue
+            com += " " + self.scriptDir+"/"+self.scriptName+" "
+            if not(self.logDir==""):
+                if(self.platform == "lxplus"):
+                    com += " -o "+self.logDir+"/"+self.scriptName+"_batch.log -e "+self.logDir+"/"+self.scriptName+"_batch.log"
+                else:
+                    com += " -o "+self.logDir+" -e "+self.logDir
+            if self.writeSubmissionCommandsToFileOnly:
+                self.submissioncommandsfile.write("echo "+self.scriptName+"\n")
+                self.submissioncommandsfile.write(com+"\n")
+            else:
+                os.system(com)
 
 
 ##
