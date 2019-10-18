@@ -172,6 +172,7 @@ class JobSet:
         f.write("\n")
         f.write("\n")
         f.write("#Script options \n")
+        f.write("#request_memory           = 4 GB \n")
         f.write("nJobs                   = 1 \n")
         f.write("\n")
         f.write("\n")
@@ -217,7 +218,7 @@ class JobSet:
                         if self.batch == "pbs":
                             f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+current_sub_script_name+"\n")
                         else:
-                            f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+self.scriptName+".sub \n")
+                            f_reco_file.write(temp_job.outDir+"/"+temp_job.jobOptions[iOption][1]+" "+self.scriptDir+"/"+self.scriptName+".sub \n")
                         break
 
         self.Terminate(f)

@@ -16,6 +16,7 @@ def submitFailedJobs( expectedRootFile, scriptFile ):
 
     if batchSystem == "condor":
         com = "condor_submit " + scriptFile
+        os.system(com)
     else:
         platform = socket.gethostname()
         com = ""
