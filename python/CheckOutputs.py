@@ -10,7 +10,6 @@ import datetime
 from ROOT import *
 from BatchTools import *
 
-
 ##______________________________________________________
 ##
 def submitFailedJobs( expectedRootFile, scriptFile ):

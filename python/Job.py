@@ -1,6 +1,5 @@
 #!/bin/python
 from BatchTools import *
-
 ##
 ##
 ## CLASS JOBSET
@@ -173,7 +172,7 @@ class JobSet:
         f.write("\n")
         f.write("\n")
         f.write("#Script options \n")
-        f.write("#request_memory           = 4 GB \n")
+        f.write("request_memory           = 4 GB \n")
         f.write("nJobs                   = 1 \n")
         f.write("\n")
         f.write("\n")
