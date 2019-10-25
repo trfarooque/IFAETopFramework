@@ -1,5 +1,6 @@
 #!/bin/python
 from BatchTools import *
+
 ##
 ##
 ## CLASS JOBSET
