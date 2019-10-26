@@ -184,7 +184,7 @@ def prepareTarBall(pathToPackage,pathToTarball):
     
     printGoodNews("=> Creating tarball !")
     print "   -> ", pathToTarball
-    com = "tar czf " + pathToTarball + " * .RootCoreBin"
+    com = "tar czf " + pathToTarball + " * "
     os.system(com)
     printGoodNews("=> Tarball done :-)")
     

@@ -109,17 +109,19 @@ class JobSet:
         f.write("echo '==> After extracting the tarball'\n")
         f.write("ls -lrth\n")
         f.write("\n")
-        if self.setUpCommand=="" :
-            f.write("rcSetup \n")
-        else :
+        #if self.setUpCommand=="" :
+        #    f.write("rcSetup \n")
+        #else :
             #recompiling the package with the given release passed as input
-            CommandSetUp=self.setUpCommand+" \n"
-            f.write("rm -rvf RootCoreBin \n")
-            f.write("rm  rcSetup* \n")
-            f.write(CommandSetUp)
-            f.write("rc find_packages \n")
-            f.write("rc compile \n")
+        #    CommandSetUp=self.setUpCommand+" \n"
+        #    f.write("rm -rvf RootCoreBin \n")
+        #    f.write("rm  rcSetup* \n")
+            #f.write(CommandSetUp)
+        #    f.write("rc find_packages \n")
+        #    f.write("rc compile \n")
 
+        f.write("cd VLQAnalysisFramework \n")
+        f.write("source compileScript.sh \n")
         f.write("\n")
         f.write("echo '==> After the setup' \n")
         f.write("ls -lrth \n")
