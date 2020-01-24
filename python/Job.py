@@ -120,8 +120,8 @@ class JobSet:
         #    f.write("rc find_packages \n")
         #    f.write("rc compile \n")
 
-        f.write("cd VLQAnalysisFramework \n")
-        f.write("source compileScript.sh \n")
+        f.write("cd build && asetup --restore && make && source */setup.sh \n")
+        #f.write("source compileScript.sh \n")
         f.write("\n")
         f.write("echo '==> After the setup' \n")
         f.write("ls -lrth \n")
