@@ -26,7 +26,8 @@ public:
     inline double NormFactor( const double lumi = 1. ) { return ( m_ready ? (m_crossSection * lumi / m_nWeightedEvents) : 1. ); }
     inline const std::string& SampleName(){ return m_sampleName; }
     inline bool Ready() const { return m_ready; }
-    
+    inline std::map<std::string, double > SystWeightFactorMap() const { return m_systWeightFactorMap; }
+
     //_______________________________________
     //
     inline void SetCrossSection( const double xSec ){ m_crossSection = xSec; }
@@ -39,6 +40,7 @@ private:
     double m_crossSection;
     std::string m_sampleName;
     bool m_ready;
+    std::map<std::string, double > m_systWeightFactorMap;
     
 };
 
