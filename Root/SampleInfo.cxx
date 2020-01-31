@@ -49,10 +49,6 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
   m_ready = false;
   m_systWeightFactorMap.clear();
 
-  //
-  // Reads an input config file following the structure:
-  //    <sample ID> <number of weighted events> <cross-section in pb-1> <sample name>
-  //    
   std::ifstream infile(configFile);
   if(!infile){
     std::cout << "<!> ERROR in SampleInfo::SampleInfo(): Cannot open the config file: " << configFile << std::endl;
@@ -61,6 +57,16 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
 
   json j;
 
+  //
+  // Reads a json formatting input config file following the structure:
+  //    { <sample ID> : 
+  //      { "nWeightedEvents" : <number of weighted events>, 
+  //        "crossSection" : <cross-section in pb-1>,
+  //        OPTIONAL: 
+  //        "nWeightedEvents_<weight name> : <adjusted number of weighted events>
+  //        ...
+  //
+
   try {
     j = json::parse(infile);
 
@@ -68,20 +74,26 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
     m_crossSection    = j[sampleID]["crossSection"];
 
     // if( m_opt -> ComputeWeightSys() ){
-
-    for (auto& [key,val] : j[sampleID].items() ){
-      if( key.find("nWeightedEvents_") != std::string::npos ){
-        std::string propname = key;
-        propname.erase(0,16);
-        propname.insert(0,"weight_pmg_");
-        double factor = m_nWeightedEvents/(double)val;
-        m_systWeightFactorMap.insert( {propname, factor} );
+      for (auto& [key,val] : j[sampleID].items() ){
+        if( key.find("nWeightedEvents_") != std::string::npos ){
+          std::string propname = key;
+          propname.erase(0,16);
+          propname.insert(0,"weight_pmg_");
+          double factor = m_nWeightedEvents/(double)val;
+          m_systWeightFactorMap.insert( {propname, factor} );
+        }
       }
-    }
     // }
+    m_ready = true;
   }
+
+  //
+  // Reads an input config file following the structure:
+  //    <sample ID> <number of weighted events> <cross-section in pb-1> <sample name>
+  //
+
   catch (json::parse_error& e) {
-    std::cout << "SampleInfo: no json format configFile found in " << configFile << " - reverting to old configFile format..." << std::endl;
+    std::cout << "Warning :: no proper json format configFile found in " << configFile << " - reverting to old configFile format..." << std::endl;
 
     std::string fLine="",paramString="",param="",dsid="",nEvents="",xSec="",sampleName="";
     int nparam = 0; std::string::size_type pos = 0;
@@ -111,19 +123,7 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
       break;
     }
   }
-
-
-
-
-
-  // }
-
-  m_ready = true;
-
 }
-
-//___________________________________________________________
-//
 
 //___________________________________________________________
 //
@@ -134,6 +134,7 @@ SampleInfo::SampleInfo( const SampleInfo &q )
     m_crossSection    = q.m_crossSection;
     m_sampleName      = q.m_sampleName;
     m_ready           = q.m_ready;
+    m_systWeightFactorMap = q.m_systWeightFactorMap;
 }
 
 //___________________________________________________________
