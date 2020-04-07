@@ -113,6 +113,14 @@ bool NtupleReader::Init(std::map<std::string, WeightObject*> *nomMap, std::map<s
                 <<"'"<<m_opt->InputFile()<<"'"<<endl;
       return false;
     }
+    if(ChainNEntries() <= 0){
+      std::cerr << "NtupleReader::Init() --> No entries found in chain "<<std::endl
+                <<"Input "
+                <<(m_opt->TextFileList() ? "filelist" : "string")<<": "
+                <<"'"<<m_opt->InputFile()<<"'"<<endl;
+      return false;
+    }
+
     //This is important to allow checks on the return codes of SetBranchAddress
     m_chain->LoadTree(0);
     m_chain -> SetBranchStatus("*",0);

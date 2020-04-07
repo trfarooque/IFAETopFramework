@@ -1,4 +1,5 @@
 #!/bin/python
+import time
 from BatchTools import *
 ##
 ##
@@ -95,7 +96,9 @@ class JobSet:
         f.write("#!/bin/bash \n")
         f.write("export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase \n")
         f.write("source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh \n")
+        f.write("echo 'Changing to directory' $TMPDIR \n")
         f.write("cd $TMPDIR \n")
+        f.write("echo 'In directory' $PWD \n")
         f.write("\n")
         f.write("echo '==> Before copying tarball'\n")
         f.write("ls -lrth\n")
@@ -235,6 +238,7 @@ class JobSet:
     def submitSet(self):
         if self.batch != "pbs":
             com="condor_submit " + self.scriptDir + "/" + self.scriptName + ".sub"
+            time.sleep(2)
             os.system(com)
         else:
             com=""

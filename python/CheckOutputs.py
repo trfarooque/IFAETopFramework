@@ -17,6 +17,7 @@ def submitFailedJobs( expectedRootFile, scriptFile ):
     if batchSystem == "condor":
         com = "condor_submit " + scriptFile
         os.system(com)
+        time.sleep(2)
     else:
         platform = socket.gethostname()
         com = ""
@@ -37,7 +38,7 @@ def submitFailedJobs( expectedRootFile, scriptFile ):
             print "    -> ", scriptFile
         else:
             os.system(com)
-
+            time.sleep(2)
 
 ##------------------------------------------------------
 ## Check there is enough arguments
