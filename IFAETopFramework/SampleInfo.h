@@ -2,6 +2,7 @@
 #define SAMPLEINFO_H
 
 #include <string>
+#include <map>
 
 class OptionsBase;
 
@@ -21,26 +22,26 @@ public:
   void ReadSample( const std::string& dsID, const std::string& configFile);
     //_______________________________________
     //
-    inline double NWeightedEvents() const { return m_nWeightedEvents; }
+    double NWeightedEvents(const std::string& wgt_name="nominal") const;
     inline double CrossSection() const { return m_crossSection; }
-    inline double NormFactor( const double lumi = 1. ) { return ( m_ready ? (m_crossSection * lumi / m_nWeightedEvents) : 1. ); }
+    double NormFactor( const std::string& wgt_name="nominal", double lumi = 1. ) const;
     inline const std::string& SampleName(){ return m_sampleName; }
     inline bool Ready() const { return m_ready; }
-    inline std::map<std::string, double > SystWeightFactorMap() const { return m_systWeightFactorMap; }
+    //inline std::map<std::string, double > SystWeightFactorMap() const { return m_systWeightFactorMap; }
 
     //_______________________________________
     //
     inline void SetCrossSection( const double xSec ){ m_crossSection = xSec; }
-    inline void SetNWeightedEvents( const double evts ){ m_nWeightedEvents = evts; }
+    void SetNWeightedEvents( const double evts, const std::string& wgt_name );
     inline void SetSampleName( const std::string& sampleName){ m_sampleName = sampleName; }
 
 private:
     const OptionsBase* m_opt;
-    double m_nWeightedEvents;
+    std::map<std::string, double>* m_nWeightedEvents;
     double m_crossSection;
     std::string m_sampleName;
     bool m_ready;
-    std::map<std::string, double > m_systWeightFactorMap;
+    //std::map<std::string, double > m_systWeightFactorMap;
     
 };
 

@@ -8,19 +8,55 @@
 
 #include "IFAETopFramework/AnalysisUtils.h"
 
-#include <map>
 
 using json = nlohmann::json;
 
+
+//___________________________________________________________
+//
+double SampleInfo::NWeightedEvents(const std::string& wgt_name) const { 
+
+  const std::string& search = (wgt_name == "") ? "nominal" : wgt_name;
+  double nwgt = -1.;
+
+  if( m_nWeightedEvents -> find(search) != m_nWeightedEvents -> end() ){
+   nwgt = m_nWeightedEvents -> at(search);
+  }
+  else{
+    std::cerr << "<ERROR> SampleInfo::NWeightedEvents weight name " << wgt_name << " not found in map " << std::endl;
+  }
+  return nwgt;
+
+}
+
+//___________________________________________________________
+//
+double SampleInfo::NormFactor( const std::string& wgt_name, const double lumi ) const { 
+
+  return ( m_ready ? (m_crossSection * lumi / NWeightedEvents(wgt_name)) : 1. ); 
+
+}
+
+//___________________________________________________________
+//
+void SampleInfo::SetNWeightedEvents( const double evts, const std::string& wgt_name ){
+
+  if( m_nWeightedEvents -> find(wgt_name) != m_nWeightedEvents -> end() ){
+    m_nWeightedEvents -> at(wgt_name) = evts;
+  }
+  else{
+
+  }
+
+}
 //___________________________________________________________
 //
 SampleInfo::SampleInfo(  ):
   m_opt(NULL),
-  m_nWeightedEvents(-1.),
+  m_nWeightedEvents(NULL),
   m_crossSection(-1.),
   m_sampleName(""),
-  m_ready(false),
-  m_systWeightFactorMap()
+  m_ready(false)
 {}
 
 
@@ -43,11 +79,11 @@ SampleInfo::SampleInfo( const OptionsBase *opt, const std::string &configFile ):
 
 void SampleInfo::ReadSample( const std::string& sampleID, const std::string &configFile ){
   
-  m_nWeightedEvents = -1.;
+  m_nWeightedEvents = new std::map<std::string, double>();
   m_crossSection = -1.;
   m_sampleName = "";
   m_ready = false;
-  m_systWeightFactorMap.clear();
+  //m_systWeightFactorMap.clear();
 
   std::ifstream infile(configFile);
   if(!infile){
@@ -70,7 +106,7 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
   try {
     j = json::parse(infile);
 
-    m_nWeightedEvents = j[sampleID]["nWeightedEvents"];
+    m_nWeightedEvents->insert({"nominal", j[sampleID]["nWeightedEvents"]});
     m_crossSection    = j[sampleID]["crossSection"];
 
     // if( m_opt -> ComputeWeightSys() ){
@@ -78,9 +114,9 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
         if( key.find("nWeightedEvents_") != std::string::npos ){
           std::string propname = key;
           propname.erase(0,16);
-          propname.insert(0,"weight_pmg_");
-          double factor = m_nWeightedEvents/(double)val;
-          m_systWeightFactorMap.insert( {propname, factor} );
+          //propname.insert(0,"weight_pmg_");
+          //double factor = m_nWeightedEvents/(double)val;
+          m_nWeightedEvents->insert( {propname, (double)val} );
         }
       }
     // }
@@ -106,9 +142,9 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
         pos = AnalysisUtils::ParseString(paramString, param, " ");
         AnalysisUtils::TrimString(param); if(param.empty()) continue;
         if( nparam == 0 ){
-    if(param.find(dsid) == std::string::npos) { std::cout<< "Warning :: Line << "<<fLine<<" does not begin with the sample ID"<<std::endl; }
+	  if(param.find(dsid) == std::string::npos) { std::cout<< "Warning :: Line << "<<fLine<<" does not begin with the sample ID"<<std::endl; }
         }
-        else if(nparam == 1) m_nWeightedEvents = atof(param.c_str()); //nEvents = param;
+        else if(nparam == 1) m_nWeightedEvents ->insert({"nominal", atof(param.c_str())}); //nEvents = param;
         else if(nparam == 2) m_crossSection = atof(param.c_str()); //xSec = param;
         else if(nparam == 3) m_sampleName = param;
         else{ 
@@ -134,7 +170,7 @@ SampleInfo::SampleInfo( const SampleInfo &q )
     m_crossSection    = q.m_crossSection;
     m_sampleName      = q.m_sampleName;
     m_ready           = q.m_ready;
-    m_systWeightFactorMap = q.m_systWeightFactorMap;
+    //m_systWeightFactorMap = q.m_systWeightFactorMap;
 }
 
 //___________________________________________________________
