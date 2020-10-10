@@ -20,7 +20,8 @@ SampleInfo::SampleInfo(  ):
   m_crossSection(-1.),
   m_sampleName(""),
   m_ready(false),
-  m_systWeightFactorMap()
+  m_systWeightFactorMap(),
+  m_signalRWMap()
 {}
 
 
@@ -48,6 +49,7 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
   m_sampleName = "";
   m_ready = false;
   m_systWeightFactorMap.clear();
+  m_signalRWMap.clear();
 
   std::ifstream infile(configFile);
   if(!infile){
@@ -81,6 +83,12 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
           propname.insert(0,"weight_pmg_");
           double factor = m_nWeightedEvents/(double)val;
           m_systWeightFactorMap.insert( {propname, factor} );
+        }
+        else if( key.find("sumOfWeights_") != std::string::npos ){
+          double sumWeights = (double)val;
+          std::string b_name = key;
+          b_name.erase(0,13); // Make the key name match what we expect from command line input
+          m_signalRWMap.insert( {b_name, sumWeights} );
         }
       }
     // }
