@@ -2,6 +2,7 @@
 #define SAMPLEINFO_H
 
 #include <string>
+#include <map>
 
 class OptionsBase;
 
@@ -34,12 +35,12 @@ public:
     //_______________________________________
     //
     inline void SetCrossSection( const double xSec ){ m_crossSection = xSec; }
-    inline void SetNWeightedEvents( const double evts ){ m_nWeightedEvents = evts; }
+    void SetNWeightedEvents( const double evts, const std::string& wgt_name );
     inline void SetSampleName( const std::string& sampleName){ m_sampleName = sampleName; }
 
 private:
     const OptionsBase* m_opt;
-    double m_nWeightedEvents;
+    std::map<std::string, double>* m_nWeightedEvents;
     double m_crossSection;
     std::string m_sampleName;
     bool m_ready;
