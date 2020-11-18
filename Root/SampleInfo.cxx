@@ -14,16 +14,22 @@ using json = nlohmann::json;
 
 //___________________________________________________________
 //
-double SampleInfo::NWeightedEvents(const std::string& wgt_name) const { 
+double SampleInfo::NWeightedEvents(const std::string& wgt_name, const bool ignore_missing) const { 
 
   const std::string& search = (wgt_name == "") ? "nominal" : wgt_name;
   double nwgt = -1.;
 
   if( m_nWeightedEvents -> find(search) != m_nWeightedEvents -> end() ){
-   nwgt = m_nWeightedEvents -> at(search);
+    nwgt = m_nWeightedEvents -> at(search);
+    
   }
   else{
-    std::cerr << "<ERROR> SampleInfo::NWeightedEvents weight name " << wgt_name << " not found in map " << std::endl;
+    if(ignore_missing){
+      nwgt = m_nWeightedEvents -> at("nominal");
+    }
+    else{
+      std::cerr << "<ERROR> SampleInfo::NWeightedEvents weight name " << wgt_name << " not found in map " << std::endl;
+    }
   }
   return nwgt;
 
@@ -31,9 +37,9 @@ double SampleInfo::NWeightedEvents(const std::string& wgt_name) const {
 
 //___________________________________________________________
 //
-double SampleInfo::NormFactor( const std::string& wgt_name, const double lumi ) const { 
+double SampleInfo::NormFactor( const std::string& wgt_name, const double lumi, const bool ignore_missing ) const { 
 
-  return ( m_ready ? (m_crossSection * lumi / NWeightedEvents(wgt_name)) : 1. ); 
+  return ( m_ready ? (m_crossSection * lumi / NWeightedEvents(wgt_name, ignore_missing)) : 1. ); 
 
 }
 
@@ -45,7 +51,7 @@ void SampleInfo::SetNWeightedEvents( const double evts, const std::string& wgt_n
     m_nWeightedEvents -> at(wgt_name) = evts;
   }
   else{
-
+    m_nWeightedEvents ->insert ({wgt_name, evts});
   }
 
 }
@@ -56,9 +62,7 @@ SampleInfo::SampleInfo(  ):
   m_nWeightedEvents(NULL),
   m_crossSection(-1.),
   m_sampleName(""),
-  m_ready(false),
-  m_systWeightFactorMap(),
-  m_signalRWMap()
+  m_ready(false)
 {}
 
 
@@ -85,8 +89,6 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
   m_crossSection = -1.;
   m_sampleName = "";
   m_ready = false;
-  m_systWeightFactorMap.clear();
-  m_signalRWMap.clear();
 
   std::ifstream infile(configFile);
   if(!infile){
@@ -112,23 +114,24 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
     m_nWeightedEvents->insert({"nominal", j[sampleID]["nWeightedEvents"]});
     m_crossSection    = j[sampleID]["crossSection"];
 
-    // if( m_opt -> ComputeWeightSys() ){
-      for (auto& [key,val] : j[sampleID].items() ){
-        if( key.find("nWeightedEvents_") != std::string::npos ){
-          std::string propname = key;
-          propname.erase(0,16);
-          //propname.insert(0,"weight_pmg_");
-          //double factor = m_nWeightedEvents/(double)val;
-          m_nWeightedEvents->insert( {propname, (double)val} );
-        }
-        else if( key.find("sumOfWeights_") != std::string::npos ){
-          double sumWeights = (double)val;
-          std::string b_name = key;
-          b_name.erase(0,13); // Make the key name match what we expect from command line input
-          m_signalRWMap.insert( {b_name, sumWeights} );
-        }
+    for (auto& [key,val] : j[sampleID].items() ){
+      if( key.find("nWeightedEvents_") != std::string::npos ){
+	std::string propname = key;
+	propname.erase(0,16);
+	std::cout << " propname : " << propname << std::endl;
+	propname.insert(0,"weight_pmg_");
+
+	m_nWeightedEvents->insert( {propname, (double)val} );
       }
-    // }
+      else if( key.find("sumOfWeights_") != std::string::npos ){
+
+	std::string b_name = key;
+	b_name.erase(0,13); // Make the key name match what we expect from command line input
+	m_nWeightedEvents->insert( {b_name, (double)val} );
+
+      }
+    }
+
     m_ready = true;
   }
 
@@ -179,7 +182,7 @@ SampleInfo::SampleInfo( const SampleInfo &q )
     m_crossSection    = q.m_crossSection;
     m_sampleName      = q.m_sampleName;
     m_ready           = q.m_ready;
-    //m_systWeightFactorMap = q.m_systWeightFactorMap;
+
 }
 
 //___________________________________________________________
