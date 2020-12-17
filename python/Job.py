@@ -238,7 +238,7 @@ class JobSet:
     def submitSet(self):
         if self.batch != "pbs":
             com="condor_submit " + self.scriptDir + "/" + self.scriptName + ".sub"
-            time.sleep(2)
+            time.sleep(1)
             os.system(com)
         else:
             com=""
