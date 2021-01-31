@@ -16,6 +16,7 @@ def submitFailedJobs( expectedRootFile, scriptFile ):
 
     if batchSystem == "condor":
         com = "condor_submit " + scriptFile
+        os.system(com)
     else:
         platform = socket.gethostname()
         com = ""
@@ -58,7 +59,7 @@ if(len(sys.argv)<2):
 ## Selects the arguments
 ##------------------------------------------------------
 inputFile=""
-relaunchJobs=False
+relaunchJobs=True
 batchSystem="condor"
 batchQueue="at3_short"
 for iArg in range(1,len(sys.argv)):
@@ -91,7 +92,7 @@ for line in f:
     
     line_splitted = line.replace("\n","").split(" ")
     fileToCheck = line_splitted[0]
-    scriptFile = line_splitted[1]
+    scriptFile = os.path.join(os.path.dirname(inputFile), line_splitted[1]) 
 
     hasProblems = False
     if not(os.path.isfile(fileToCheck)):
