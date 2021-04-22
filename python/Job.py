@@ -14,6 +14,8 @@ class JobSet:
             self.platform = "lxplus"
         elif(platform.find("pic")>-1):
             self.platform = "pic"
+        elif(platform.find("aglt2")>-1):
+            self.platform = "aglt2"
         else:
             printError("<!> In JobSet class constructor ... Sorry guy I do not know the platform you run on ... yet ... " + platform)
             self.platform = "pic"
@@ -138,6 +140,9 @@ class JobSet:
 
         f.write("export OUTDIR='"+job.outDir+"' \n")
         f.write("\n")
+        if(job.execName.find("python") != -1):
+            f.write("cd x86_64-centos7-gcc8-opt/python/VLQAnalysis \n")
+            f.write("\n")
         f.write(job.execName + " ")
         for iOption in range(len(job.jobOptions)):
             f.write("--"+job.jobOptions[iOption][0]+"="+job.jobOptions[iOption][1]+" ")
@@ -172,12 +177,19 @@ class JobSet:
         f.write("log                     = "+self.logDir+"/VLQAna.$(ClusterId).log \n")
         f.write("\n")
         f.write("\n")
-        f.write("#Duration of job \n")
-        f.write("+IsMediumJob = true")
-        f.write("\n")
-        f.write("\n")
+        if(self.platform == "aglt2"):
+            f.write("#Duration of job \n")
+            if(self.queue.upper() == "MEDIUM"):
+                f.write("+IsMediumJob = true \n")
+            elif(self.queue.upper() == "LONG"):
+                f.write("+IsLongJob = true \n")
+            else:
+                f.write("+IsShortJob = true \n")
+            f.write("\n")
+            f.write("\n")
         f.write("#Script options \n")
-        f.write("request_memory           = 4 GB \n")
+        if(self.platform != "aglt2"):
+            f.write("request_memory           = 4 GB \n")
         f.write("nJobs                   = 1 \n")
         f.write("\n")
         f.write("\n")
@@ -282,6 +294,8 @@ class Job:
             self.platform = "pic"
         elif(platform.find("lxplus")>-1):
             self.platform = "lxplus"
+        elif(platform.find("aglt2")>-1):
+            self.platform = "aglt2"
         else:
             printError("<!> In Job class constructor ... Sorry guy I do not know the platform you run on ... " + platform)
             self.platform = "pic"
