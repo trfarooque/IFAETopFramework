@@ -378,7 +378,7 @@ void VariableDef::CalcDoubleValue(){
 	m_vec_size = (int)vecB.size();
 	if( m_vec_size > m_vec_ind ){ *m_val_store = (double)(vecB.at(m_vec_ind)); }
       }
-      if(m_vec_ind > m_vec_size){ m_valid_value = false; }
+      if(m_vec_ind >= m_vec_size){ m_valid_value = false; }
 
 
     }//Vector variables
