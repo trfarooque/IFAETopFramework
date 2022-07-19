@@ -189,7 +189,7 @@ class JobSet:
             f.write("\n")
         f.write("#Script options \n")
         if(self.platform != "aglt2"):
-            f.write("request_memory           = 4 GB \n")
+            f.write("request_memory           = 8 GB \n")
         f.write("nJobs                   = 1 \n")
         f.write("\n")
         f.write("\n")
