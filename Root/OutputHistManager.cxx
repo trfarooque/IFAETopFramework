@@ -91,6 +91,44 @@ OutputHistManager::~OutputHistManager()
 }
 
 //-----------------------------TH1-SPECIFIC METHODS-------------------------------
+
+//______________________________________________________________________________________
+//
+bool OutputHistManager::AddStandardTH1(  VariableDef* varDef, const double width, const double min, const double max,
+					 const std::vector<double>* edges,
+					 const bool hasSyst, const int hopt, const bool noWeight) {
+
+  const std::string& name = varDef->Name();
+  bool _hasSyst = hasSyst && !noWeight;
+
+  //                                                                                                                          
+  // Don't do it if there is no systematics                                                                                   
+  //                                                                                                                          
+  if( m_opt -> OnlyDumpSystHistograms() && !_hasSyst ){
+    return false;
+  }
+
+  bool added = AddStandardTH1(name, width, min, max, edges, _hasSyst, hopt, noWeight);
+  if(!added) {
+    std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): could not add the variable !! Please check." << std::\
+      endl;
+    return false;
+  }
+
+  std::map< std::string , h1Def*>::iterator it = m_stdTH1Def -> find(name);
+
+  if(it != m_stdTH1Def->end()){
+    m_stdTH1Def->at(name)->var = varDef;
+  }
+  else {
+    std::cerr << "<!> ERROR in OutputManager::addStandardTH1(template): The searched variable has not been booked previously.\
+ Please check !" << std::endl;
+  }
+
+  return true;
+
+}
+
 //______________________________________________________________________________________
 //
 bool OutputHistManager::AddStandardTH1(const std::string &name, const double width, const double min, const double max, const std::vector<double>* edges, const bool hasSyst, const int hopt, const bool noWeight){
@@ -333,6 +371,49 @@ bool OutputHistManager::SaveStandardTH1( const std::string &outputName, const bo
 }
 
 //-----------------------------TH2-SPECIFIC METHODS-------------------------------
+
+//______________________________________________________________________________________
+//
+bool OutputHistManager::AddStandardTH2( VariableDef* varDefX, VariableDef* varDefY,
+		     const double widthX, const double minX, const double maxX,
+		     const double widthY, const double minY, const double maxY,
+		     const std::vector<double>* edgesX,
+		     const std::vector<double>* edgesY,
+		     const bool hasSyst,
+		     const bool pairwise, const bool noWeight) {
+
+  bool _hasSyst = hasSyst && !noWeight;
+  //                                                                                                                          
+  // Don't do it if there is no systematics                                                                                   
+  //                                                                                                                          
+  if( m_opt -> OnlyDumpSystHistograms() && !_hasSyst ){
+    return false;
+  }
+
+  const std::string& nameX = varDefX->Name();
+  const std::string& nameY = varDefY->Name();
+
+  std::string name = nameY + "_vs_" + nameX;
+  bool added = AddStandardTH2(name, widthX, minX, maxX, widthY, minY, maxY, edgesX, edgesY, _hasSyst, pairwise, noWeight);
+  if(!added) {
+    std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): could not add the variable !! Please check." << std::\
+      endl;
+    return false;
+  }
+  std::map< std::string , h2Def*>::iterator it = m_stdTH2Def -> find(name);
+  if(it != m_stdTH2Def->end()){
+    m_stdTH2Def->at(name)->varX = varDefX;
+    m_stdTH2Def->at(name)->varY = varDefY;
+  }
+
+  else std::cerr << "<!> ERROR in OutputManager::addStandardTH2(template): The searched variable has not been booked previo\
+usly. Please check !" << std::endl;
+
+
+  return true;
+
+}
+
 //______________________________________________________________________________________
 //
 bool OutputHistManager::AddStandardTH2( const std::string &name, const double widthX, const double minX, const double maxX,

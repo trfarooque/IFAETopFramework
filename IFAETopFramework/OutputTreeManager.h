@@ -61,7 +61,7 @@ public:
 	bool fill_vec = false;
 	if( ((_var->VarType() == VariableDef::VECAO) || (_var->VarType() == VariableDef::PTRVECAO))  && (_var->VecInd() < 0) ){fill_vec = true;}
 	_var->SetFillVec(fill_vec);
-        m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( name, _var ) );
+        m_stdBranchDef -> insert( std::pair < std::string, VariableDef* >( _var->Name(), _var ) );
         
         if(m_opt -> MsgLevel() == Debug::DEBUG) std::cout << "Leaving OutputManager::addStandardBranch" << std::endl;
         

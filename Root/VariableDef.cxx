@@ -16,6 +16,7 @@ VariableDef::VariableDef():
   m_isVector(true),
   m_isAnaObject(true),
   m_moment(""),
+  m_float_val_store(NULL),
   m_val_store(NULL),
   m_vec_store(NULL),
   m_vec_size(0),
@@ -28,6 +29,7 @@ VariableDef::VariableDef():
 //
 VariableDef::~VariableDef()
 { 
+  delete m_float_val_store;
   delete m_val_store;
   delete m_vec_store;
 }
@@ -45,7 +47,8 @@ VariableDef::VariableDef( const VariableDef &q ){
     m_isPointer     = q.m_isPointer;
     m_isVector      = q.m_isVector;
     m_isAnaObject   = q.m_isAnaObject;
-    m_moment        = q.m_moment;
+    m_moment              = q.m_moment;
+    m_float_val_store     = q.m_float_val_store;
     m_val_store     = q.m_val_store;
     m_vec_store     = q.m_vec_store;
     m_vec_size      = q.m_vec_size;
@@ -282,6 +285,112 @@ AnalysisObject* VariableDef::RetrieveAnalysisObject(){
 
 //_____________________________________________________________________________________
 //
+void VariableDef::CalcFloatValue(){
+    *m_float_val_store = m_default;
+    if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return;}
+
+    m_valid_value = true;
+
+    //Check if points to null
+    if(m_isPointer && PointsToNull()){
+      m_valid_value = false;
+      return; 
+    }
+
+    //Check if vector index is valid
+    if(m_isVector && (m_vec_ind < 0)){
+      std::cerr<<"ERROR : Please provide vector index to obtain value from VariableDef" << std::endl;
+      m_valid_value = false;
+      return;
+    }
+
+    if( m_isAnaObject ){
+      AnalysisObject* aobj = RetrieveAnalysisObject();
+
+      //Check if moment exists
+      if( ! (aobj && aobj->IsKnownMoment(m_moment)) ){ 
+	m_valid_value = false;
+	return;
+      }
+      *m_float_val_store = (float)(aobj -> GetMoment(m_moment));
+
+    }
+    else if( (m_varType == VariableType::DOUBLE)){
+      *m_float_val_store = (float)(*(double*)(m_address));
+    }
+    else if( (m_varType == VariableType::PTRDOUBLE)){
+      *m_float_val_store = (float)(**(double**)(m_address));
+    }
+    else if(m_varType == VariableType::FLOAT){
+        *m_float_val_store = *(float*)(m_address);
+    }
+    else if(m_varType == VariableType::PTRFLOAT){
+        *m_float_val_store = **(float**)(m_address);
+    }
+    else if(m_varType == VariableType::INT){
+        *m_float_val_store = (float)(*(int*)(m_address));
+    }
+    else if(m_varType == VariableType::UINT){
+        *m_float_val_store = (float)(*(unsigned int*)(m_address));
+    }
+    else if(m_varType == VariableType::LONGINT){
+        *m_float_val_store = (float)(*(long int*)(m_address));
+    }
+    else if(m_varType == VariableType::ULONGINT){
+        *m_float_val_store = (float)(*(unsigned long int*)(m_address));
+    }
+    else if(m_varType == VariableType::LONGLONGINT){
+        *m_float_val_store = (float)(*(long long int*)(m_address));
+    }
+    else if(m_varType == VariableType::ULONGLONGINT){
+        *m_float_val_store = (float)(*(unsigned long long int*)(m_address));
+    }
+    else if(m_varType == VariableType::PTRINT){
+        *m_float_val_store = (float)(**(int**)(m_address));
+    }
+    else if(m_varType == VariableType::BOOL){
+        *m_float_val_store = (float)(*(bool*)(m_address));
+    }
+    else if(m_varType == VariableType::PTRBOOL){
+        *m_float_val_store = (float)(**(bool**)(m_address));
+    }
+    else{
+      if( (m_varType == VariableType::VECDOUBLE) || (m_varType == VariableType::PTRVECDOUBLE) ){
+	const std::vector<double>& vecD = (m_varType == VariableType::PTRVECDOUBLE) 
+	  ? **((std::vector<double>**)m_address) : *((std::vector<double>*)m_address);
+	m_vec_size = (int)vecD.size();
+	if( m_vec_size > m_vec_ind ){ *m_float_val_store = (float)(vecD.at(m_vec_ind)); }
+      }
+      else if( (m_varType == VariableType::VECFLOAT) || (m_varType == VariableType::PTRVECFLOAT) ){
+	const std::vector<float>& vecF = (m_varType == VariableType::PTRVECFLOAT) 
+	  ? **((std::vector<float>**)m_address) : *((std::vector<float>*)m_address);
+	m_vec_size = (int)vecF.size();
+	if( m_vec_size > m_vec_ind ){ *m_float_val_store = vecF.at(m_vec_ind); }
+      }
+      else if( (m_varType == VariableType::VECINT) || (m_varType == VariableType::PTRVECINT) ){
+	const std::vector<int>& vecI = (m_varType == VariableType::PTRVECINT) 
+	  ? **((std::vector<int>**)m_address) : *((std::vector<int>*)m_address);
+
+	m_vec_size = (int)vecI.size();
+	if( m_vec_size > m_vec_ind ){ *m_float_val_store = (float)(vecI.at(m_vec_ind)); }
+      }
+      else if( (m_varType == VariableType::VECBOOL) || (m_varType == VariableType::PTRVECBOOL) ){
+	const std::vector<bool>& vecB = (m_varType == VariableType::PTRVECBOOL) 
+	  ? **((std::vector<bool>**)m_address) : *((std::vector<bool>*)m_address);
+
+	m_vec_size = (int)vecB.size();
+	if( m_vec_size > m_vec_ind ){ *m_float_val_store = (float)(vecB.at(m_vec_ind)); }
+      }
+      if(m_vec_ind >= m_vec_size){ m_valid_value = false; }
+
+
+    }//Vector variables
+
+    return;
+}
+
+//_____________________________________________________________________________________
+//
 void VariableDef::CalcDoubleValue(){
     *m_val_store = m_default;
     if(m_address == NULL){std::cout << "Error: VariableDef points to NULL" << std::endl; return;}
@@ -385,3 +494,5 @@ void VariableDef::CalcDoubleValue(){
 
     return;
 }
+
+

@@ -70,6 +70,7 @@ class VariableDef {
 
     bool PointsToNull();
     AnalysisObject* RetrieveAnalysisObject();
+    void CalcFloatValue();
     void CalcDoubleValue();
     void FillVectorStore();
         
@@ -87,8 +88,10 @@ class VariableDef {
     inline bool IsVector() const{ return m_isVector; }
     inline bool IsAnaObject() const{ return m_isAnaObject; }
     inline const std::string& Moment() const{ return m_moment; }    
+    inline float* FloatValStore() const{ return m_float_val_store; }
     inline double* ValStore() const{ return m_val_store; }
     inline std::vector<double>* VecStore() const{ return m_vec_store; }
+    inline float GetFloatValue() const{ return *m_float_val_store; }
     inline double GetDoubleValue() const{ return *m_val_store; }
     inline bool IsValidValue() const{ return m_valid_value; }
     inline int GetVecSize() const{ return m_vec_size; }
@@ -120,6 +123,7 @@ class VariableDef {
 	m_vec_store->clear(); 
       }
       else{
+	if(m_float_val_store == NULL) m_float_val_store = new float();
 	if(m_val_store == NULL) m_val_store = new double();
       }
     }
@@ -140,6 +144,7 @@ class VariableDef {
       m_isVector(false),
       m_isAnaObject(false),
       m_moment(moment),
+      m_float_val_store(NULL),
       m_val_store(NULL),
       m_vec_store(NULL),
       m_fill_vec(false),
@@ -244,6 +249,7 @@ class VariableDef {
     bool m_isAnaObject;
 
     std::string m_moment; //for analysis objects;
+    float* m_float_val_store; 
     double* m_val_store; 
     std::vector<double>* m_vec_store; 
     int m_vec_size;
