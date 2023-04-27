@@ -63,7 +63,9 @@ std::string VariableDef::GetVarTypeString(int varType){
     
   std::string _varTypeString = "";
     
-    if     (varType == VariableType::INT)             {_varTypeString = "I";}
+    if     (varType == VariableType::VOID)            {_varTypeString = "V";}
+    else if(varType == VariableType::PTRVOID)         {_varTypeString = "PV";}
+    else if(varType == VariableType::INT)             {_varTypeString = "I";}
     else if(varType == VariableType::PTRINT)          {_varTypeString = "PI";}
     else if(varType == VariableType::UINT)            {_varTypeString = "UI";}
     else if(varType == VariableType::LONGINT)         {_varTypeString = "L";}
@@ -105,7 +107,9 @@ std::string VariableDef::GetVarTypeString(int varType){
 //
 VariableDef::VariableType VariableDef::GetVarType(const std::string& varTypeString){
     VariableType _varType;
-    if     (varTypeString == "I")         {_varType = VariableType::INT;}
+    if     (varTypeString == "V")         {_varType = VariableType::VOID;}
+    else if(varTypeString == "PV")        {_varType = VariableType::PTRVOID;}
+    else if(varTypeString == "I")         {_varType = VariableType::INT;}
     else if(varTypeString == "PI")        {_varType = VariableType::PTRINT;}
     else if(varTypeString == "UI")        {_varType = VariableType::UINT;}
     else if(varTypeString == "L")         {_varType = VariableType::LONGINT;}

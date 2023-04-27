@@ -35,6 +35,7 @@ class VariableDef {
     AOBJ,
     VECAO,
 
+    PTRVOID,
     PTRINT,
     PTRFLOAT,
     PTRDOUBLE,
@@ -136,8 +137,8 @@ class VariableDef {
     template<typename T> VariableDef(const std::string& name, const std::string& title, T *t, int vec_ind = -1, const std::string& moment="", bool fill_vec=false):
     m_name(name),
       m_title(title),
-      m_varType(FindVarType(t)), //t is the address to the variable, so dereference it first
-      m_varTypeString(GetVarTypeString(m_varType)),
+      m_varType(VariableType::VOID), 
+      m_varTypeString(""),
       m_vec_ind(vec_ind),
       m_address(0),
       m_isPrimitive(true),
@@ -152,17 +153,24 @@ class VariableDef {
       m_default(0.)
       {
 	
-        m_isPrimitive = IsPrimitive(m_varType);
-        m_isPointer = IsPointer(m_varType);
-	m_isVector = IsVector(m_varType);
-	m_isAnaObject = IsAnaObject(m_varType);
 	SetFillVec(fill_vec);
         SetAddress(t);
 
       }
     
     
-    template< typename T > void SetAddress( T *t ){ m_address = (void*)t; }
+    template< typename T > void SetAddress( T *t ){ 
+      m_address = (void*)t;
+
+      m_varType = FindVarType(t); 
+      m_varTypeString = GetVarTypeString(m_varType);
+      m_isPrimitive = IsPrimitive(m_varType);
+      m_isPointer = IsPointer(m_varType);
+      m_isVector = IsVector(m_varType);
+      m_isAnaObject = IsAnaObject(m_varType);
+      
+
+    }
     //VariableType FindVarType(const std::string& vartypestr){ return INT; }
 
     template<typename T> VariableType FindVarType(T* t){
@@ -205,7 +213,8 @@ class VariableDef {
       
       VariableType ret = FindVarType(*t);
       
-      if(ret == INT) return PTRINT;
+      if(ret == VOID) return PTRVOID;
+      else if(ret == INT) return PTRINT;
       else if(ret == FLOAT) return PTRFLOAT;
       else if(ret == DOUBLE) return PTRDOUBLE;
       else if(ret == BOOL) return PTRBOOL;

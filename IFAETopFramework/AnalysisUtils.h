@@ -31,6 +31,7 @@ class AnalysisUtils{
 
   static std::string ReplaceString(const std::string& inputStr, const std::string& orig, const std::string& replacement);
   static int CountSubstring(const std::string& str, const std::string& sub);
+  static std::vector<std::string> SplitString(const std::string& str, const std::string& delim);
 
   static int ParseConfigFile(const std::string& config_file, std::vector<std::map<std::string, 
 			     std::string> >& ret_map, const std::string& delim=" : ", 

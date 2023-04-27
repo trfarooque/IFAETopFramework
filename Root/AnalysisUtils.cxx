@@ -169,6 +169,24 @@ int AnalysisUtils::CountSubstring(const std::string& str, const std::string& sub
 }
 
 
+std::vector<std::string> AnalysisUtils::SplitString(const std::string& str, const std::string& delim){
+
+  std::vector<std::string> strList = {};
+  std::string piece; piece.clear();
+  std::string base = str;
+  //int npiece = 0;
+  std::string::size_type pos = 0;
+  do{ 
+    pos = ParseString(base, piece, delim);
+    TrimString(piece);
+    strList.push_back(piece);
+    //npiece++;
+  }while(pos != std::string::npos);
+
+  return strList;
+}
+
+
 bool AnalysisUtils::BoolValue(std::string& arg_val, bool& bin_val){
 
   std::transform(arg_val.begin(), arg_val.end(), arg_val.begin(), ::toupper);
