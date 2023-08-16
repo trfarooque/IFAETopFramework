@@ -101,14 +101,14 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
             nListFiles=nListFiles+1
 
         # Get the weight systematics in case we run over the nominal object
-        listWeight=""
-        if( Systs[iSys].upper()=="NOMINAL" ):
-            for iWS in sample['weightSyst']:
-                if iWS['oneSided']:
-                    listWeight+=iWS['name']+","
-                else:
-                    listWeight+=iWS['nameUp']+","
-                    listWeight+=iWS['nameDown']+","
+        #listWeight=""
+        #if( Systs[iSys].upper()=="NOMINAL" ):
+        #    for iWS in sample['weightSyst']:
+        #        if iWS['oneSided']:
+        #            listWeight+=iWS['name']+","
+        #        else:
+        #            listWeight+=iWS['nameUp']+","
+        #            listWeight+=iWS['nameDown']+","
 
         # For each file/syst, creates a dictionnary
         for i in range(nListFiles):
@@ -122,7 +122,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
                         'name':SampleName,
                         'filelist':",".join(thisJobFileList),
                         'objSyst':Systs[iSys],
-                        'weightSyst':listWeight,
+                        #'weightSyst':listWeight,
                         'objectTree':Systs[iSys]
                     }
             Result += [sample]
@@ -183,7 +183,8 @@ def prepareTarBall(pathToPackage,pathToTarball):
     os.chdir(pathToPackage)
     
     printGoodNews("=> Creating tarball !")
-    print "   -> ", pathToTarball
+    print(" tarball output  -> "+ pathToTarball)
+    print(" tarball input  -> "+pathToPackage)
     com = "tar czf " + pathToTarball + " * "
     os.system(com)
     printGoodNews("=> Tarball done :-)")

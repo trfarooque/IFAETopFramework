@@ -32,12 +32,13 @@ def getSystematics(name="",nameUp="",nameDown="",oneSided=False,type="O"):
 
 ##____________________________________________________________
 ## Defining the samples
-def getSampleUncertainties(type="",name="",objSyst=[],weightSyst=[],isSignal=False):
+def getSampleUncertainties(type="",name="",objSyst=[]#,weightSyst=[]
+                           ,isSignal=False):
     Sample = {
                 'sampleType':type,
                 'name':name,
                 'objSyst':objSyst,
-                'weightSyst':weightSyst,
+                #'weightSyst':weightSyst,
                 'isSignal':isSignal
             }
     return Sample
