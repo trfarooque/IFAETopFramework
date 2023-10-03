@@ -142,6 +142,7 @@ def main(args):
         print "Relaunched jobs : "+`nRelaunchedJobs`
     print "============================="
 
+    return nRelaunchedJobs
 
 if __name__ == '__main__':
     main(sys.argv[1:])

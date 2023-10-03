@@ -150,7 +150,6 @@ void SampleInfo::ReadSample( const std::string& sampleID, const std::string &con
       if( key.find("nWeightedEvents_") != std::string::npos ){
 	std::string propname = key;
 	propname.erase(0,16);
-	std::cout << " propname : " << propname << std::endl;
 	propname.insert(0,"weight_pmg_");
 
 	m_nWeightedEvents->insert( {propname, (double)val} );
