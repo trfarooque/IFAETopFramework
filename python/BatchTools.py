@@ -97,7 +97,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
 
         # Split the list according to the number of input files to be merged
         nListFiles=len(filelist)/int(NFiles)
-        if len(filelist) % NFiles>0:
+        if len(filelist) % int(NFiles)>0:
             nListFiles=nListFiles+1
 
         # Get the weight systematics in case we run over the nominal object
@@ -113,7 +113,7 @@ def getSampleJobs(sample,InputDir="",NFiles="1",UseList=False,ListFolder="./",ex
         # For each file/syst, creates a dictionnary
         for i in range(nListFiles):
             thisJobFileList=[]
-            for ifile in range(i*NFiles,min(len(filelist),(i+1)*NFiles)):
+            for ifile in range(i*int(NFiles),min(len(filelist),(i+1)*int(NFiles))):
                 thisJobFileList.append(filelist[ifile])
 
             # Builds a dictionnary with all interesting informations for the loop
